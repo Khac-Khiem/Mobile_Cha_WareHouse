@@ -37,7 +37,7 @@ class CustomizedButton extends StatelessWidget {
                   BorderRadius.circular(radius * SizeConfig.ratioWidth),
             ),
             primary: bgColor,
-            padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+           // padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
           ),
           // disabledColor: Colors.grey,
           // color: bgColor,

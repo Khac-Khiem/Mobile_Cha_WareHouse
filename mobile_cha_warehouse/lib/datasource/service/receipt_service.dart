@@ -1,14 +1,14 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:mobile_cha_warehouse/constant.dart';
 import '../../presentation/screens/receipt/receipt_params.dart';
 
-String token =
-    'eyJhbGciOiJSUzI1NiIsImtpZCI6IjU2QzJFNzI3OUExN0UwMDc3RTVFOTJFMDAzRDg4NUFCIiwidHlwIjoiYXQrand0In0.eyJpc3MiOiJodHRwczovL2F1dGhlbnRpY2F0aW9uc2VydmVyMjAyMjAxMTEwOTQzNDMuYXp1cmV3ZWJzaXRlcy5uZXQiLCJuYmYiOjE2NTMyOTMzNTMsImlhdCI6MTY1MzI5MzM1MywiZXhwIjoxNjUzMzIyMTUzLCJhdWQiOiJodHRwczovL2F1dGhlbnRpY2F0aW9uc2VydmVyMjAyMjAxMTEwOTQzNDMuYXp1cmV3ZWJzaXRlcy5uZXQvcmVzb3VyY2VzIiwic2NvcGUiOlsib3BlbmlkIiwibmF0aXZlLWNsaWVudC1zY29wZSIsInByb2ZpbGUiXSwiYW1yIjpbInB3ZCJdLCJjbGllbnRfaWQiOiJuYXRpdmUtY2xpZW50Iiwic3ViIjoiNDMyYmIxMmItOTcxZi00ZDZmLTc3ZTMtMDhkYTJmNDA2Yjc0IiwiYXV0aF90aW1lIjoxNjUzMjkzMzUyLCJpZHAiOiJsb2NhbCIsIkFzcE5ldC5JZGVudGl0eS5TZWN1cml0eVN0YW1wIjoiN0dKSFNHNFlLWVlWNk1JT0hFNU82S1hFS1JNSUpPV0ciLCJyb2xlIjoiV2FyZWhvdXNlQ29vcmRpbmF0b3IiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJuaG1kdW5nIiwibmFtZSI6Im5obWR1bmciLCJzaWQiOiJGQkI1RDY0MTAyNTREMjUzMUI2MzUzMDAwRDJDRkE3NCIsImp0aSI6IkJCNkMzREJFOTkwQkRDNzE5QUM2Mzk3RDA5MDdBQUMzIn0.hM5_cU3THhGwaQeW7Pib3RTOpodRVLurOW_NIfmtF7NP8I1zVn-FRinZggmnFHca-VoEuEcu66DB7uIlKQmPaeJESBop0g1zWQivJpVLmvWKYEk0M6mVhezAR8OdAyy-S1-X-QWZMqsjVRjDu8WuB44MNtfQ2kckft7urxqwI7Aoy2lKcfJYUoKty49F7yZtCMPbqQCGbOmkLyJhw_duDN7nl7kENBLKIOuEA5ScQWyfaUuvuEVPMIBpDTXGryNLFDnYZUYQZlaDgsbwjs-HBTmJDy_mvoNxYqABnPqU9JJ5TdV9CysyBNT2xL7jxUyLTmbSBluHlcfrqTQ1XDeFfg';
+String token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IkU0OUZBQkNEMjRGNkE5M0IxODdERUVBMDRGNDQ5RTI3IiwidHlwIjoiYXQrand0In0.eyJpc3MiOiJodHRwczovL2F1dGhlbnRpY2F0aW9uc2VydmVyMjAyMjA4MjIxMDE0MTkuYXp1cmV3ZWJzaXRlcy5uZXQiLCJuYmYiOjE2NjEyMjY4NDUsImlhdCI6MTY2MTIyNjg0NSwiZXhwIjoxNjYxMjU1NjQ1LCJhdWQiOiJodHRwczovL2F1dGhlbnRpY2F0aW9uc2VydmVyMjAyMjA4MjIxMDE0MTkuYXp1cmV3ZWJzaXRlcy5uZXQvcmVzb3VyY2VzIiwic2NvcGUiOlsib3BlbmlkIiwibmF0aXZlLWNsaWVudC1zY29wZSIsInByb2ZpbGUiXSwiYW1yIjpbInB3ZCJdLCJjbGllbnRfaWQiOiJuYXRpdmUtY2xpZW50Iiwic3ViIjoiNTIwY2FjM2QtZDUzMS00ZDQxLTY4MTgtMDhkYTgzZWUyMWYyIiwiYXV0aF90aW1lIjoxNjYxMjI2ODQyLCJpZHAiOiJsb2NhbCIsIkFzcE5ldC5JZGVudGl0eS5TZWN1cml0eVN0YW1wIjoiWEFHWERYSzRPVlIzQVZHSzVTQ1ZFSlgzTEVaMkVaUE8iLCJyb2xlIjoiV2FyZWhvdXNlQ29vcmRpbmF0b3IiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJwa2toaWVtIiwibmFtZSI6InBra2hpZW0iLCJzaWQiOiI0NkFDOEJFODFFN0U3NjA1NjIyMzk2OEU3ODBFNTMyOCIsImp0aSI6IjhDQjI2QUVGRUVEMDA1NUJBMzE0OUQ4MDI1MUNCNDUyIn0.f_Mtw-3nKBiUS8MeUlexQx3Mw2pAaa9w2OtwlbSQXicSu1HD4ZHNr9yetM5rBK6-78f00FlRjeqpeiybdTz08FIsXBQL_vVtZ-wcvooc7BVY8bauWGGull9k0CkOlrfAv6UqH_PcO823SVFK6YYvD0d6rVg7miqIvvc3uXlGOwFeeXWYqcXCJZzmyT_tc58zIfmCyj4ObH2INZxToJaNd1cZMwKd7RIPVWdnjOvdIKZ5ClriXTMoCaIMfLQ8r-E_Ys3A5RSNDFhDt3VR8Du2sBnpNsx1hYNHrCX6CDDo-UVh6HCJX3XOp3XrN7UKSG-vvIlD8neCxIjkIWmzSrMZ6w';
 
 class ReceiptService {
   List bodyJson = [];
-  Future postNewReceiptService(
+  Future<int> postNewReceiptService(
       List<GoodsReceiptEntryContainerData> goodsReceiptEntryContainerData,
       String receiptId) async {
     for (int i = 0; i < goodsReceiptEntryContainerData.length; i++) {
@@ -16,48 +16,63 @@ class ReceiptService {
         "itemId": goodsReceiptEntryContainerData[i].itemId,
         "employeeId": goodsReceiptEntryContainerData[i].employeeId,
         "containerId": goodsReceiptEntryContainerData[i].containerId,
-        "quantity": goodsReceiptEntryContainerData[i].actualQuantity,
-        "productionDate": goodsReceiptEntryContainerData[i].productionDate
+        "quantity": double.parse(
+            goodsReceiptEntryContainerData[i].actualQuantity.toString()),
+        "productionDate": DateFormat('yyyy-MM-dd')
+            .format(DateTime.now().subtract(Duration(days: 1)))
+            .toString()
+        // "itemId": "i1",
+        // "employeeId": "pkkhiem",
+        // "containerId": "r3",
+        // "quantity": 50.0,
+        // "productionDate": "2022-08-10"
       };
       bodyJson.add(dimensionJson);
     }
-    final res = await http.post(
-        Uri.parse('https://cha-warehouse-management.azurewebsites.net/api/'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Accept': '*/*',
-          'Authorization': 'Bearer $token',
-        },
-        // body: json.encode(goodsReceiptEntryContainerData)
-        body: jsonEncode(<Map<String, dynamic>>[
-          {
-            "goodsReceiptId": receiptId,
-            "timestamp": DateTime.now(),
-            "containers": bodyJson
-          },
-        ]));
-
+    final res =
+        await http.post(Uri.parse(Constants.baseUrl + 'api/goodsreceipts/'),
+            headers: {
+              'Content-Type': 'application/json',
+              //  'Accept': '*/*',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(
+              <String, dynamic>{
+                "goodsReceiptId": receiptId,
+                "timestamp": DateFormat('yyyy-MM-ddThh:mm:ss')
+                    .format(DateTime.now())
+                    .toString(),
+                "containers": bodyJson
+                // "containers": [
+                //   {
+                //     "itemId": "i1",
+                //     "employeeId": "pkkhiem",
+                //     "containerId": "r2",
+                //     "quantity": 50.0,
+                //     "productionDate": "2022-08-10"
+                //   },
+                // ]
+              },
+            ));
     return res.statusCode;
   }
 
-  Future updateLocationService(
+  Future<int> updateLocationService(
       String containerId, String shelfId, int rowId, int id) async {
     final res = await http.patch(
-        Uri.parse(
-            'https://cha-warehouse-management.azurewebsites.net/api/containers/$containerId/location'),
+        Uri.parse(Constants.baseUrl + 'api/containers/$containerId/location'),
         headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Accept': '*/*',
-          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          //'Accept': '*/*',
+          // 'Authorization': 'Bearer $token',
         },
-        body: jsonEncode(<Map<String, dynamic>>[
-          {
-            "shelfId": shelfId,
-            "row": rowId,
-            "column": id
+        body: jsonEncode(
+          <String, dynamic>{
+            "shelfId": shelfId, "row": rowId, "column": id
+            //  "shelfId": "A", "row": 1, "column": 3
           },
-        ]));
-
+        ));
+    print(res.statusCode);
     return res.statusCode;
   }
 }

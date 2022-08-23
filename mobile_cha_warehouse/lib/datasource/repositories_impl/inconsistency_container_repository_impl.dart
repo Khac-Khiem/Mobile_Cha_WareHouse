@@ -1,11 +1,12 @@
 import 'package:mobile_cha_warehouse/datasource/service/container_service.dart';
+import 'package:mobile_cha_warehouse/datasource/service/inconsistency_container_service.dart';
 import 'package:mobile_cha_warehouse/domain/entities/container_inconsistency.dart';
 import 'package:mobile_cha_warehouse/domain/repositories/inconsistency_container_repository.dart';
 
 class InconsistencyContainerRepoImpl
     implements InconsistencyContainerRepository {
-  ContainerService containerService;
-  InconsistencyContainerRepoImpl(this.containerService);
+  InconsistencyContainerService inconsistencyContainerService;
+  InconsistencyContainerRepoImpl(this.inconsistencyContainerService);
   @override
   Future<List<ContainerInconsistency>> getUnfixedInconsistency() {
     // TODO: implement getUnfixedInconsistency
@@ -20,9 +21,11 @@ class InconsistencyContainerRepoImpl
   }
 
   @override
-  Future reportInconsistency(
-      String containerId, String goodsIssueId, DateTime timestamp) {
+  Future<int> reportInconsistency(
+      String containerId, int newQuantity, String note, DateTime timestamp) {
     // TODO: implement reportInconsistency
-    throw UnimplementedError();
+    final request = inconsistencyContainerService.reportInconsistencyContainer(
+        containerId, newQuantity, note, timestamp);
+    return request;
   }
 }

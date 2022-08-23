@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
+import 'package:mobile_cha_warehouse/presentation/screens/issue/issue_params.dart';
 
 abstract class IssueEvent extends Equatable {}
+
 // sự kiện load tất cả đơn xuất kho về
 // nút nhấn xuất kho
 class LoadIssueEvent extends IssueEvent {
@@ -19,41 +21,36 @@ class ChooseIssueEvent extends IssueEvent {
   @override
   List<Object> get props => [timestamp, goodIssueId];
 }
+
+// nút nhấn hoàn thành xuất kho 1 đơn
+// gửi rổ lên server
 // confirm 
 class ConFirmExportingContainer extends IssueEvent {
+  DateTime timestamp;
   String issueId;
-  List<String> containerId;
-  ConFirmExportingContainer(this.issueId, this.containerId);
+  List<ContainerIssueExportServer> containers;
+  ConFirmExportingContainer(this.issueId, this.containers, this.timestamp);
   @override
 
   // TODO: implement props
-  List<Object?> get props => [containerId];
+  List<Object?> get props => [timestamp];
 }
 
-
-// class ToggleContainerIssueEvent extends IssueEvent {
-//   final int index;
-//   ToggleContainerIssueEvent(this.index);
-//   @override
-//   List<Object> get props => [index];
-// }
-
-// sự kiện báo lỗi rổ sai thông tin
-// class ReportInconsistencyIssueEvent extends IssueEvent {
-//   final int index;
-//   ReportInconsistencyIssueEvent(this.index);
-//   @override
-//   List<Object> get props => [index];
-// }
-
-// event load vị trí rổ khi truy xuất container
-// class FetchLocationIssueEvent extends IssueEvent {
-//   String id;
-//   DateTime timeStamp;
-//   FetchLocationIssueEvent(this.id, this.timeStamp);
+// class AddContainerExport extends IssueEvent {
+//   ContainerIssueExportServer containers;
+//   AddContainerExport(this.containers);
 //   @override
 //   // TODO: implement props
-//   List<Object?> get props => [id, timeStamp];
+//   List<Object?> get props => [containers];
 // }
 
-
+// sự kiện load các rổ đã được xuất ứng với từng đơn
+class LoadContainerExportEvent extends IssueEvent {
+  DateTime timestamp;
+  String issueId;
+  String itemId;
+  LoadContainerExportEvent(this.timestamp, this.issueId, this.itemId);
+  @override
+  // TODO: implement props
+  List<Object?> get props => [timestamp];
+}

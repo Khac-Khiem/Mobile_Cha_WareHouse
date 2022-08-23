@@ -19,6 +19,7 @@ import 'package:mobile_cha_warehouse/domain/entities/warehouse_employee.dart';
 //     );
 //   }
 // }
+// model 1 container entry
 class GoodsIssueEntryContainerModel extends GoodsIssueEntryContainer {
   GoodsIssueEntryContainerModel(
       int goodsIssueEntryId,
@@ -43,27 +44,27 @@ class GoodsIssueEntryContainerModel extends GoodsIssueEntryContainer {
 
 class GoodsIssueEntryModel extends GoodsIssueEntry {
   GoodsIssueEntryModel(
-      double plannedQuantity,
-      int id,
-      int itemId,
-      int goodsIssueId,
+      int plannedQuantity,
+   //   int id,
+    //  int itemId,
+   //   int goodsIssueId,
       Item item,
-      WarehouseEmployee employee,
-      List<GoodsIssueEntryContainer> container)
-      : super(plannedQuantity, id, itemId, goodsIssueId, item, employee,
+   //   WarehouseEmployee employee,
+      List<dynamic> container)
+      : super(plannedQuantity, item,
             container);
   factory GoodsIssueEntryModel.fromJson(Map<String, dynamic> json) {
     return GoodsIssueEntryModel(
-        json["id"],
-        json["goodsIssueId"],
-        json["iemId"],
+        // json["id"],
+        // json["goodsIssueId"],
+        // json["iemId"],
         json["plannedQuantity"],
         json["item"] == null ? null! : ItemModel.fromJson(json["item"]),
-        json["employee"] == null
-            ? null!
-            : WarehouseEmployeeModel.fromJson(json["employee"]),
+        // json["employee"] == null
+        //     ? null!
+        //     : WarehouseEmployeeModel.fromJson(json["employee"]),
         json["containers"] == null
-            ? null!
+            ? []
             : (json["containers"] as List)
                 .map((e) => GoodsIssueEntryContainerModel.fromJson(e))
                 .toList());
@@ -73,10 +74,10 @@ class GoodsIssueEntryModel extends GoodsIssueEntry {
 class GoodsIssueModel extends GoodsIssue {
   GoodsIssueModel(
       String goodsIssueId,
-      DateTime timestamp,
-      WarehouseEmployee employee,
+      String timestamp,
+      WarehouseEmployeeModel employee,
       bool isConfirmed,
-      List<GoodsIssueEntry> entries)
+      List<GoodsIssueEntryModel> entries)
       : super(goodsIssueId, timestamp, employee, isConfirmed, entries);
   factory GoodsIssueModel.fromJson(Map<String, dynamic> json) {
     return GoodsIssueModel(

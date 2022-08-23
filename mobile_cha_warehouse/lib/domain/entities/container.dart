@@ -16,10 +16,10 @@ class ContainerData extends Equatable {
   int quantity;
   String productionDate;
   bool isNotEmpty;
-  Item item;
-  ProductionEmployee productionEmployee;
-  Cell location;
-  ContainerType containerType;
+  Item? item;
+  //ProductionEmployee? productionEmployee;
+  Cell? location;
+  ContainerType? containerType;
   ContainerData(
       this.containerId,
       this.quantity,
@@ -27,7 +27,7 @@ class ContainerData extends Equatable {
       this.isNotEmpty,
       this.item,
       this.location,
-      this.productionEmployee,
+     // this.productionEmployee,
       this.containerType);
   @override
   // TODO: implement props

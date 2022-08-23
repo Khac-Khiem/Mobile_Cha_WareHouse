@@ -26,8 +26,9 @@ class PostReceiptStateSuccess extends ReceiptState {
 }
 
 class PostReceiptStateFailure extends ReceiptState {
+  String error;
   DateTime timestamp;
-  PostReceiptStateFailure(this.timestamp);
+  PostReceiptStateFailure(this.error,this.timestamp);
   @override
   // TODO: implement props
   List<Object?> get props => [timestamp];
@@ -45,6 +46,13 @@ class UpdateLocationReceiptStateSuccess extends ReceiptState {
 class UpdateLocationReceiptStateFailure extends ReceiptState {
   DateTime timestamp;
   UpdateLocationReceiptStateFailure(this.timestamp);
+  @override
+  // TODO: implement props
+  List<Object?> get props => [timestamp];
+}
+class RefershStateSuccess extends ReceiptState {
+  DateTime timestamp;
+  RefershStateSuccess(this.timestamp);
   @override
   // TODO: implement props
   List<Object?> get props => [timestamp];

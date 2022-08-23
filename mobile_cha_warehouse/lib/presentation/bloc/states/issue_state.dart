@@ -55,6 +55,14 @@ class IssueStateConfirmLoading extends IssueState {
   List<Object> get props => [];
 }
 
+// class AddContainerExportSuccess extends IssueState {
+//   List<ContainerIssueExportServer> containers;
+//   AddContainerExportSuccess(this.containers);
+//   @override
+//   // TODO: implement props
+//   List<Object?> get props => throw UnimplementedError();
+// }
+
 class ConfirmSuccessIssueState extends IssueState {
   final DateTime timestamp;
   ConfirmSuccessIssueState(this.timestamp);
@@ -70,46 +78,42 @@ class ConfirmFailureIssueState extends IssueState {
   List<Object> get props => [timestamp];
 }
 
-//Vì trong screen không gọi loadingDialog vượt class được, nên phải thêm stateLoading
-class ReportInconsistencyLoadingIssueState extends IssueState {
-  final DateTime timestamp;
-  ReportInconsistencyLoadingIssueState(this.timestamp);
-  @override
-  List<Object> get props => [timestamp];
-}
-
-class ReportInconsistencySuccessIssueState extends IssueState {
-  final DateTime timestamp;
-  ReportInconsistencySuccessIssueState(this.timestamp);
-  @override
-  List<Object> get props => [timestamp];
-}
-
-class ReportInconsistencyFailedIssueState extends IssueState {
-  final DateTime timestamp;
-  ReportInconsistencyFailedIssueState(this.timestamp);
-  @override
-  List<Object> get props => [timestamp];
-}
-
-class LoadLocationContainerSuccess extends IssueState {
-  DateTime timeStamp;
-  LoadLocationContainerSuccess(this.timeStamp);
+class LoadContainerExportStateSuccess extends IssueState {
+  DateTime timestamp;
+  List<ContainerIssueExportServer> containers;
+  double totalQuatity;
+  LoadContainerExportStateSuccess(this.containers, this.totalQuatity, this.timestamp);
   @override
   // TODO: implement props
-  List<Object?> get props => [timeStamp];
+  List<Object?> get props => [timestamp];
 }
 
-class LoadingLocationState extends IssueState {
+class LoadContainerExportStateFail extends IssueState {
+  DateTime timestamp;
+  LoadContainerExportStateFail(this.timestamp);
   @override
   // TODO: implement props
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [timestamp];
 }
 
-class LoadLocationFailState extends IssueState {
-  DateTime timeStamp;
-  LoadLocationFailState(this.timeStamp);
-  @override
-  // TODO: implement props
-  List<Object?> get props => [timeStamp];
-}
+// class LoadLocationContainerSuccess extends IssueState {
+//   DateTime timeStamp;
+//   LoadLocationContainerSuccess(this.timeStamp);
+//   @override
+//   // TODO: implement props
+//   List<Object?> get props => [timeStamp];
+// }
+
+// class LoadingLocationState extends IssueState {
+//   @override
+//   // TODO: implement props
+//   List<Object?> get props => throw UnimplementedError();
+// }
+
+// class LoadLocationFailState extends IssueState {
+//   DateTime timeStamp;
+//   LoadLocationFailState(this.timeStamp);
+//   @override
+//   // TODO: implement props
+//   List<Object?> get props => [timeStamp];
+// }

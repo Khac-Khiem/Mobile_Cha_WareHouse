@@ -24,21 +24,21 @@ class ContainerModel extends ContainerData {
       String productionDate,
       bool isNotEmpty,
       Item item,
-      ProductionEmployee productionEmployee,
+    //  ProductionEmployee productionEmployee,
       Cell location,
       ContainerType containerType)
       : super(containerId, quantity, productionDate, isNotEmpty, item, location,
-            productionEmployee, containerType);
+             containerType);
   factory ContainerModel.fromJson(Map<String, dynamic> json) {
     return ContainerModel(
       json["containerId"],
       json["quantity"],
       json["productionDate"],
-      json["isNotEmpty"],
+      json["consistent"],
       json["item"] == null ? null! : ItemModel.fromJson(json["item"]),
-      json["productionEmployee"] == null
-          ? null!
-          : ProductionEmployeeModel.fromJson(json["productionEmployee"]),
+      // json["productionEmployee"] == null
+      //     ? null!
+      //     : ProductionEmployeeModel.fromJson(json["productionEmployee"]),
       json["location"] == null
           ? null!
           : CellDataModel.fromJson(json["location"]),

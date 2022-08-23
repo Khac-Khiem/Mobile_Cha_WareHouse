@@ -20,25 +20,25 @@ class GoodsIssueEntryContainer extends Equatable {
 
 // từng dòng của một đơn xuất kho
 class GoodsIssueEntry extends Equatable {
-  int id;
-  int goodsIssueId;
-  int itemId;
-  double plannedQuantity;
-  WarehouseEmployee employee;
+ // int id;
+ // int goodsIssueId;
+ // int itemId;
+  int plannedQuantity;
+ // WarehouseEmployee employee;
   Item item;
-  List<GoodsIssueEntryContainer> container;
+  List<dynamic> container;
   //List<dynamic> container;
-  GoodsIssueEntry(this.plannedQuantity, this.id, this.itemId, this.goodsIssueId,
-      this.item, this.employee, this.container);
+  GoodsIssueEntry(this.plannedQuantity,
+      this.item, this.container);
   @override
   // TODO: implement props
-  List<Object?> get props => [plannedQuantity, employee, item, container];
+  List<Object?> get props => [plannedQuantity, item, container];
 }
 
 //Model của một đơn xuất kho
 class GoodsIssue extends Equatable {
   String goodsIssueId;
-  DateTime timestamp;
+  String timestamp;
   bool isConfirmed;
   WarehouseEmployee employee;
   List<GoodsIssueEntry> entries;

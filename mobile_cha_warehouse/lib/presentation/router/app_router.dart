@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/injector.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/check_info_bloc.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/blocs/edit_per_basket_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/issue_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/login_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/receipt_bloc.dart';
@@ -31,7 +32,7 @@ class AppRoute {
       case '/':
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case '//':
-         return MaterialPageRoute(
+        return MaterialPageRoute(
             builder: (context) => MultiBlocProvider(providers: [
                   BlocProvider<LoginBloc>(create: (context) => injector()),
                 ], child: LoginScreen()));
@@ -60,7 +61,7 @@ class AppRoute {
                   BlocProvider<IssueBloc>(create: (context) => injector()),
                   BlocProvider<CheckInfoBloc>(create: (context) => injector()),
                 ], child: ListContainerScreen()));
-     
+
       case '/qr_scanner_issue_screen':
         return MaterialPageRoute(
             builder: (context) => MultiBlocProvider(providers: [
@@ -72,7 +73,7 @@ class AppRoute {
             builder: (context) => MultiBlocProvider(providers: [
                   BlocProvider<IssueBloc>(create: (context) => injector()),
                   BlocProvider<CheckInfoBloc>(create: (context) => injector()),
-                ], child: ConfirmCOntainerScreen()));
+                ], child: ConfirmContainerScreen()));
       //receipt
       case '/receipt_screen':
         return MaterialPageRoute(
@@ -91,16 +92,15 @@ class AppRoute {
                   BlocProvider<StockCardViewBloc>(
                       create: (context) => injector()),
                 ], child: ModifyInfoScreen()));
-       case '/scan_container_screen':
+      case '/scan_container_screen':
         return MaterialPageRoute(
             builder: (context) => MultiBlocProvider(providers: [
                   BlocProvider<ReceiptBloc>(create: (context) => injector()),
                 ], child: ScanContainerScreen()));
-      //  case '/qr_location_screen':
-      //   return MaterialPageRoute(
-      //       builder: (context) => MultiBlocProvider(providers: [
-      //             BlocProvider<ReceiptBloc>(create: (context) => injector()),
-      //           ], child: QRScannerLocationScreen()));
+      case '/qr_location_screen':
+         return MaterialPageRoute(
+            builder: (context) => BlocProvider<ReceiptBloc>(
+                create: (context) => injector(), child: QRScannerLocationScreen()));
 
       //
       case '/stockcard_screen':
@@ -110,12 +110,19 @@ class AppRoute {
       // iventory
       case '/qr_inventory_screen':
         return MaterialPageRoute(
-            builder: (context) => BlocProvider<CheckInfoBloc>(
+            builder: (context) => BlocProvider<EditPerBasketBloc>(
                 create: (context) => injector(), child: QRScreen()));
       case '/inventory_screen':
-        return MaterialPageRoute(
-            builder: (context) => BlocProvider<CheckInfoBloc>(
-                create: (context) => injector(), child: InventoryScreen()));
+        // return MaterialPageRoute(
+        //     builder: (context) => BlocProvider<CheckInfoBloc>(
+        //         create: (context) => injector(), child: InventoryScreen()));
+         return MaterialPageRoute(
+            builder: (context) => MultiBlocProvider(providers: [
+                
+              
+                  BlocProvider<EditPerBasketBloc>(
+                      create: (context) => injector()),
+                ], child: InventoryScreen()));
       default:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
     }

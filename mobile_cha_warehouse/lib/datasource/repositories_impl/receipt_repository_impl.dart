@@ -7,14 +7,14 @@ class ReceiptRepositoryImpl implements ReceiptsRepo {
   ReceiptRepositoryImpl(this.receiptService);
 
   @override
-  Future postNewReceiptRepo(List<GoodsReceiptEntryContainerData> goodsReceipt, String receiptId) {
+  Future<int> postNewReceiptRepo(List<GoodsReceiptEntryContainerData> goodsReceipt, String receiptId) {
     // TODO: implement postNewReceiptRepo
     final statusRequest = receiptService.postNewReceiptService(goodsReceipt, receiptId);
     return statusRequest;
   }
 
   @override
-  Future updateLocationRepo(
+  Future<int> updateLocationRepo(
       String containerId, String shelfId, int rowId, int id) {
     // TODO: implement updateLocationRepo
     final statusRequest =

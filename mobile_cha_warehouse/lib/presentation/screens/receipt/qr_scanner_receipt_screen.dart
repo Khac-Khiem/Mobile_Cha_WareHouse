@@ -5,12 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/function.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/blocs/check_info_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/receipt_bloc.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/blocs/stockcard_bloc.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/events/check_info_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/receipt_event.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/events/stockcard_event.dart';
 import 'package:mobile_cha_warehouse/presentation/dialog/dialog.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
 
@@ -50,8 +46,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
               icon: const Icon(Icons.west_outlined),
               onPressed: () {
                 if (scanQRReceiptresult != "-1") {
-               
-                   AlertDialogTwoBtnCustomized(
+                  AlertDialogTwoBtnCustomized(
                           context,
                           'Bạn có chắc',
                           'Khi nhấn trở lại, mọi dữ liệu sẽ không được lưu',
@@ -108,19 +103,50 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                         'Chưa có rổ được quét? Ấn tiếp tục để quét lại',
                                         'Tiếp tục',
                                         'Trở lại',
-                                        () async {},
-                                        () {
-                                            Navigator.pushNamed(
-                                    context, '/receipt_screen');
-                                        },
-                                        18,
-                                        22)
+                                        () async {}, () {
+                                  Navigator.pushNamed(
+                                      context, '/receipt_screen');
+                                }, 18, 22)
                                     .show();
-                                
                               }
-                            : () {
-                                Navigator.pushNamed(
-                                    context, '/modify_info_screen');
+                            : () async {
+                                for (int i = 0;
+                                    i <
+                                        goodsReceiptEntryConainerDataTemp
+                                            .length;
+                                    i++) {
+                                  if (goodsReceiptEntryConainerDataTemp[i]
+                                          .containerId ==
+                                      scanQRReceiptresult) {
+                                    AlertDialogTwoBtnCustomized(
+                                            context,
+                                            'Bạn có chắc',
+                                            'Rổ này đã được quét? Chọn tiếp tục để xóa rổ và nhập lại',
+                                            'Tiếp tục',
+                                            'Trở lại', () async {
+                                      scanQRReceiptresult =
+                                          goodsReceiptEntryConainerDataTemp[i]
+                                              .containerId;
+                                      goodsReceiptEntryConainerDataTemp
+                                          .removeAt(i);
+                                      Navigator.pushNamed(
+                                          context, '/modify_info_screen');
+                                    }, () {
+                                      Navigator.pushNamed(
+                                          context, '/receipt_screen');
+                                    }, 18, 22)
+                                        .show();
+                                  }else{
+                                     Navigator.pushNamed(
+                                      context, '/modify_info_screen');
+                                  }
+                                }
+                                if (goodsReceiptEntryConainerDataTemp.isEmpty) {
+                                  Navigator.pushNamed(
+                                      context, '/modify_info_screen');
+                                }
+                                // BlocProvider.of<ReceiptBloc>(context)
+                                //     .add(LoadAllDataEvent());
                               },
                         text: 'Xác nhận')
                   ]));

@@ -6,9 +6,9 @@ class Cell extends Equatable {
   String? shelfId;
   int? rowId;
   int? id;
-  int? capacity;
-  List<ContainerData>? containers;
-  Cell({this.shelfId, this.rowId, this.id, this.capacity, this.containers});
+  // int? capacity;
+  // List<ContainerData>? containers;
+  Cell({this.shelfId, this.rowId, this.id});
 
   @override
   // TODO: implement props

@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_cha_warehouse/domain/usecases/item_usecase.dart';
+import 'package:mobile_cha_warehouse/domain/usecases/production_employee_usecase.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/receipt_usecase.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/receipt_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/receipt_state.dart';
@@ -7,27 +9,51 @@ import '../../screens/receipt/receipt_params.dart';
 // lưu tạm và sẽ xóa khi hoàn thành tạo đơn để gửi lên server
 List<GoodsReceiptEntryContainerData> goodsReceiptEntryConainerDataTemp = [];
 //lưu trữ tất cả các rổ để add vị trí + gộp chung nhiều đơn vào 1 list
-List<GoodsReceiptEntryContainerData> goodsReceiptEntryConainerData = [];
+//List<GoodsReceiptEntryContainerData> goodsReceiptEntryConainerData = [];
 //lưu trữ vị trí các rổ để gửi lên server
 List<LocationServer> locationContainer = [];
+//
+List<String> listemployeeId = [];
+List<String> listitemId = [];
 
 class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
   ReceiptUseCase receiptUseCase;
+  ItemUseCase itemUseCase;
+  ProductionEmployeeUseCase productionEmployeeUseCase;
 
-  ReceiptBloc(this.receiptUseCase) : super(ReceiptInitialState()) {
+  ReceiptBloc(
+      this.receiptUseCase, this.itemUseCase, this.productionEmployeeUseCase)
+      : super(ReceiptInitialState()) {
+    on<LoadAllDataEvent>(_onLoadData);
+    on<RefershReceiptEvent>(_onRefresh);
+
     on<PostNewReceiptEvent>(_onPostReceipt);
     on<UpdateLocationReceiptEvent>(_onUpdateLocation);
   }
   Future<void> _onPostReceipt(
       ReceiptEvent event, Emitter<ReceiptState> emit) async {
     if (event is PostNewReceiptEvent) {
-      emit(ReceiptInitialState());
+      //  emit(ReceiptLoadingState(DateTime.now()));
       try {
-        final request = await receiptUseCase
-            .postNewReceipt(event.goodsReceiptEntryContainers, event.receiptId);
-        emit(PostReceiptStateSuccess(DateTime.now(), request));
+        final request = await receiptUseCase.postNewReceipt(
+            event.goodsReceiptEntryContainers, event.receiptId);
+        if (request == 200) {
+          print('success');
+
+          // thêm container từ đơn qua để cập nhật vị trí
+          for (var element in goodsReceiptEntryConainerDataTemp) {
+            locationContainer
+                .add(LocationServer(element.containerId, '', null, null));
+          }
+          goodsReceiptEntryConainerDataTemp.clear();
+
+          emit(PostReceiptStateSuccess(DateTime.now(), request));
+        } else {
+          emit(PostReceiptStateFailure(request.toString(), DateTime.now()));
+        }
       } catch (e) {
-        emit(PostReceiptStateFailure(DateTime.now()));
+        print(e);
+        emit(PostReceiptStateFailure(e.toString(), DateTime.now()));
         // state fail
       }
     }
@@ -35,16 +61,59 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
 
   Future<void> _onUpdateLocation(
       ReceiptEvent event, Emitter<ReceiptState> emit) async {
-    if (event is UpdateLocationReceiptEvent) {
-      emit(ReceiptInitialState());
-      try {
+    emit(ReceiptLoadingState(DateTime.now()));
+    try {
+      if (event is UpdateLocationReceiptEvent) {
         final request = await receiptUseCase.updateLocation(
             event.containerId, event.shelfid, event.rowId, event.id);
-        emit(UpdateLocationReceiptStateSuccess(DateTime.now()));
-      } catch (e) {
-        emit(UpdateLocationReceiptStateFailure(DateTime.now()));
-        // state fail
+
+        if (request == 200) {
+          print('success');
+          emit(UpdateLocationReceiptStateSuccess(DateTime.now()));
+        } else {
+          emit(UpdateLocationReceiptStateFailure(DateTime.now()));
+        }
       }
+    } catch (e) {
+      emit(UpdateLocationReceiptStateFailure(DateTime.now()));
+      // state fail
     }
+  }
+
+  Future<void> _onLoadData(
+      ReceiptEvent event, Emitter<ReceiptState> emit) async {
+    emit(ReceiptLoadingState(DateTime.now()));
+    try {
+      if (event is LoadAllDataEvent) {
+        listitemId = [];
+        listemployeeId = [];
+        final productOrErr = await itemUseCase.getAllItem();
+        final employees = await productionEmployeeUseCase.getAllEmployee();
+
+        if (productOrErr.isNotEmpty) {
+          for (int i = 0; i < productOrErr.length; i++) {
+            listitemId.add(productOrErr[i].itemId);
+          }
+        }
+        if (employees.isNotEmpty) {
+          for (int i = 0; i < employees.length; i++) {
+            listemployeeId.add(employees[i].employeeId);
+          }
+        }
+        print(listitemId);
+        print(listemployeeId);
+        emit(ReceiptInitialState());
+      }
+    } catch (e) {}
+  }
+
+  Future<void> _onRefresh(
+      ReceiptEvent event, Emitter<ReceiptState> emit) async {
+    emit(ReceiptLoadingState(DateTime.now()));
+    try {
+      if (event is RefershReceiptEvent) {
+        emit(RefershStateSuccess(DateTime.now()));
+      }
+    } catch (e) {}
   }
 }

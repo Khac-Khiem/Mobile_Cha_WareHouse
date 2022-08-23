@@ -35,7 +35,7 @@ class Constants {
   //static const String herokuServer =
   //    'https://hung-anh-storage-web-api.herokuapp.com';
   static const String herokuServer =
-      'https://storagewebapi20210714122113.azurewebsites.net/';
+      'https://chawarehousemicroserviceapi.azurewebsites.net/';
   static const String localServer = 'http://192.168.1.13:8081';
   static String baseUrl = herokuServer;
   //static const baseUrl = 'http://192.168.1.13:8081';

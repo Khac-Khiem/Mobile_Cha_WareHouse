@@ -51,46 +51,53 @@ class _IssueScreenState extends State<IssueScreen> {
               child: SingleChildScrollView(
                 child: Builder(builder: (BuildContext context) {
                   if (issueState is IssueStateLoadSuccess) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        issueState.listIssueId.isNotEmpty
-                            ? Column(
-                              children: [
-                                Column(
-                                    // danh sách các đơn
-                                    children: goodIssueIdsView
-                                        .map((item) => ListIssue(
-                                              item,
-                                            ))
-                                        .toList(),
-                                  ),
-                                    CustomizedButton(
-                                    text: 'Trở lại',
-                                    onPressed: () async {
-                                      Navigator.pushNamed(
-                                          context, '///');
-                                    }),
-                              ],
-                            )
+                    return issueState.listIssueId.isNotEmpty
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              
+                              Column(
 
-                            : ExceptionErrorState(
+                                // danh sách các đơn
+                                children: goodIssueIdsView
+                                    .map((item) => ListIssue(
+                                          item,
+                                        ))
+                                    .toList(),
+                              ),
+                              SizedBox(
+                                height: 100 * SizeConfig.ratioHeight,
+                              ),
+                              CustomizedButton(
+                                  text: 'Trở lại',
+                                  onPressed: () async {
+                                    Navigator.pushNamed(context, '///');
+                                  }),
+                              CustomizedButton(
+                                  text: 'Hoàn thành',
+                                  onPressed: () async {
+                                    // xóa dữ liệu các rổ đã xuất
+                                  }),
+                            ],
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ExceptionErrorState(
                                 height: 300,
                                 title: "Không tìm thấy đơn xuất kho",
-                                message:
-                                    "Vui lòng kiểm tra lại tài khoản.",
-                                imageDirectory: 'lib/assets/sad_face_search.png',
+                                message: "Vui lòng kiểm tra lại tài khoản.",
+                                imageDirectory:
+                                    'lib/assets/sad_face_search.png',
                                 imageHeight: 140,
                               ),
-                                CustomizedButton(
-                                    text: 'Trở lại',
-                                    onPressed: () async {
-                                      Navigator.pushNamed(
-                                          context, '///');
-                                    }),
-                      ],
-                    );
+                              CustomizedButton(
+                                  text: 'Trở lại',
+                                  onPressed: () async {
+                                    Navigator.pushNamed(context, '///');
+                                  }),
+                            ],
+                          );
                   } else if (issueState is IssueStateFailure) {
                     return ExceptionErrorState(
                       height: 300,
@@ -124,8 +131,8 @@ class ListIssue extends StatelessWidget {
             color: Colors.grey[400],
             borderRadius: BorderRadius.circular(20),
           ),
-          width: 380 * SizeConfig.ratioWidth,
-          height: 60 * SizeConfig.ratioHeight,
+          width: 360 * SizeConfig.ratioWidth,
+          height: 70 * SizeConfig.ratioHeight,
           child: Row(
             children: [
               Expanded(
@@ -142,8 +149,13 @@ class ListIssue extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
+                  selectedGoodIssueId = issueId;
                   BlocProvider.of<IssueBloc>(context)
                       .add(ChooseIssueEvent(DateTime.now(), issueId));
+                  Navigator.pushNamed(
+                    context,
+                    '/list_issue_screen',
+                  );
                 },
                 child: const Icon(
                   Icons.arrow_circle_right_outlined,

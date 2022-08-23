@@ -6,28 +6,28 @@ class CellDataModel extends Cell {
   String? shelfId;
   int? rowId;
   int? id;
-  int? capacity;
-  List<ContainerData>? containers;
+  // int? capacity;
+  // List<ContainerData>? containers;
   CellDataModel(
-      this.shelfId, this.rowId, this.id, this.capacity, this.containers)
+      this.shelfId, this.rowId, this.id, )
       : super(
             shelfId: shelfId,
             rowId: rowId,
             id: id,
-            capacity: capacity,
-            containers: containers);
+           );
 
   factory CellDataModel.fromJson(Map<String, dynamic> json) {
     return CellDataModel(
         json["shelfId"],
         json["rowId"],
         json["id"],
-        json["capacity"],
-        json["container"] == null
-            ? null
-            : (json["slices"] as List)
-                .map((e) => ContainerModel.fromJson(e))
-                .toList());
+        // json["capacity"],
+        // json["container"] == null
+        //     ? null
+        //     : (json["slices"] as List)
+        //         .map((e) => ContainerModel.fromJson(e))
+        //         .toList()
+        );
   }
 }
 

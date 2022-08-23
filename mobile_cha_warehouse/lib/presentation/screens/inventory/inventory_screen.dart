@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/check_info_bloc.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/blocs/edit_per_basket_bloc.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/events/edit_per_basket_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/check_info_state.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/states/edit_per_basket_state.dart';
+import 'package:mobile_cha_warehouse/presentation/dialog/dialog.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/exception_widget.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/text_input_widget.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
@@ -12,10 +16,10 @@ import '../../../function.dart';
 class InventoryScreen extends StatelessWidget {
   String containerId = '';
   String itemId = '';
-  String employeeId = '';
-  String location = '';
+  //String employeeId = '';
+  String note = '';
   double before = 0;
-  double after = 0;
+  String after = '';
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -34,11 +38,21 @@ class InventoryScreen extends StatelessWidget {
               style: TextStyle(fontSize: 22 * SizeConfig.ratioFont)),
         ),
         endDrawer: DrawerUser(),
-        body: BlocBuilder<CheckInfoBloc, CheckInfoState>(
+        body: BlocConsumer<EditPerBasketBloc, EditPerBasketState>(
+           listener: (context, checkInfoState) {
+            if(checkInfoState is EditPerBasketStateUploadSuccess){
+                AlertDialogOneBtnCustomized(context, "Thành công",
+                        "Rổ đã được báo cáo", "Trở lại", () {
+                  
+                  Navigator.pushNamed(context, '///');
+                }, 18, 22, () {})
+                    .show();
+            }
+           },
             builder: (context, checkInfoState) {
-          if (checkInfoState is CheckInfoStateLoading) {
+          if (checkInfoState is EditPerBasketStateUploadLoading) {
             return CircularLoading();
-          } else if (checkInfoState is CheckInfoStateFailure) {
+          } else if (checkInfoState is CheckInfoInventoryStateFailure) {
             //lỗi
             return Center(
               child: Column(
@@ -66,14 +80,14 @@ class InventoryScreen extends StatelessWidget {
           //state này là CheckInfoStateSuccess
           else {
             //dùng if nhưng mục đích là để ép kiểu, do không dùng as để ép được
-            if (checkInfoState is CheckInfoStateSuccess) {
+            if (checkInfoState is CheckInfoInventoryStateSuccess) {
               containerId = checkInfoState.basket.containerId;
-              employeeId = checkInfoState.basket.productionEmployee.employeeId;
-              itemId = checkInfoState.basket.item.itemId;
+            //  employeeId = checkInfoState.basket.item.;
+              itemId = checkInfoState.basket.item!.itemId;
               before = double.parse(checkInfoState.basket.quantity.toString());
-              location = checkInfoState.basket.location.shelfId.toString() +
-                  checkInfoState.basket.location.rowId.toString() +
-                  checkInfoState.basket.location.id.toString();
+              // location = checkInfoState.basket.location!.shelfId.toString() +
+              //     checkInfoState.basket.location!.rowId.toString() +
+              //     checkInfoState.basket.location!.id.toString();
             }
             return SingleChildScrollView(
               child: Container(
@@ -99,8 +113,8 @@ class InventoryScreen extends StatelessWidget {
                           Column(children: [
                             TextInput(containerId),
                             TextInput(itemId),
-                            TextInput(employeeId),
-                            TextInput(location),
+                           // TextInput(employeeId),
+                           // TextInput(location),
                             TextInput(before.toString()),
                             Container(
                                 padding: EdgeInsets.symmetric(
@@ -112,7 +126,38 @@ class InventoryScreen extends StatelessWidget {
                                 child: TextField(
                                   enabled: true,
                                   onChanged: (value) =>
-                                      {after = double.parse(value)},
+                                      {after = value},
+                                  //    readOnly: true,
+                                  controller: TextEditingController(),
+                                  textAlignVertical: TextAlignVertical.center,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 20 * SizeConfig.ratioFont),
+                                  decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal:
+                                            10 * SizeConfig.ratioHeight),
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1.0 * SizeConfig.ratioWidth,
+                                            color: Colors.black)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1.0 * SizeConfig.ratioWidth,
+                                            color: Colors.black)),
+                                  ),
+                                )),
+                                Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5 * SizeConfig.ratioHeight),
+                                alignment: Alignment.centerRight,
+                                width: 200 * SizeConfig.ratioWidth,
+                                height: 55 * SizeConfig.ratioHeight,
+                                //color: Colors.grey[200],
+                                child: TextField(
+                                  enabled: true,
+                                  onChanged: (value) =>
+                                      {note = value},
                                   //    readOnly: true,
                                   controller: TextEditingController(),
                                   textAlignVertical: TextAlignVertical.center,
@@ -149,9 +194,11 @@ class InventoryScreen extends StatelessWidget {
                           onPressed: () async {
                             // gửi thông tin lên server chờ xác nhận
                             // bloc event
+                             BlocProvider.of<EditPerBasketBloc>(context)
+                      .add(EditPerBasketEventEditClick(containerId, note, int.parse(after), DateTime.now()));
                             // nên hiển thị loading đến khi gửi request thành công
-                            Navigator.pushNamed(
-                                context, '/qr_inventory_screen');
+                            // Navigator.pushNamed(
+                            //     context, '/qr_inventory_screen');
                           },
                         ),
                       ],
@@ -168,10 +215,11 @@ class InventoryScreen extends StatelessWidget {
 List<String> labelTextList = [
   "Mã Rổ:",
   "Mã Sản phẩm:",
-  "Mã Nhân viên:",
-  "Vị trí:",
+ // "Mã Nhân viên:",
+ // "Vị trí:",
   "Sl/KL cũ:",
   "Sl/KL mới:",
+  "Ghi chú:"
 ];
 
 class LabelText extends StatelessWidget {

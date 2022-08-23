@@ -12,6 +12,8 @@ import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
 
 import '../../../constant.dart';
 
+String containerid = '';
+
 class ScanContainerScreen extends StatefulWidget {
   @override
   _QRScannerScreenState createState() => _QRScannerScreenState();
@@ -19,7 +21,7 @@ class ScanContainerScreen extends StatefulWidget {
 
 class _QRScannerScreenState extends State<ScanContainerScreen> {
   // lưu Id rổ để cập nhật vị trí
-  String containerId = '';
+//  String containerId = '';
   String scanContainerReceiptresult = "-1";
   Future<void> scanQR() async {
     String barcodeScanRes;
@@ -110,34 +112,30 @@ class _QRScannerScreenState extends State<ScanContainerScreen> {
                                     .show();
                               }
                             : () {
-                                for (var element
-                                    in goodsReceiptEntryConainerDataTemp) {
-                                  if (element.containerId ==
-                                      scanContainerReceiptresult) {
-                                    // containerId = scanContainerReceiptresult;
-                                    // Navigator.pushNamed(
-                                    //     context, '/qr_location_screen');
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            QRScannerLocationScreen(
-                                                containerId: containerId),
-                                      ),
-                                    );
-                                  } else {
-                                    AlertDialogTwoBtnCustomized(
-                                            context,
-                                            'Bạn có chắc',
-                                            'Rổ này chưa được nhập thông tin? Ấn tiếp tục để tiến hành điền thông tin',
-                                            'Tiếp tục',
-                                            'Trở lại', () async {
-                                      Navigator.pushNamed(
-                                          context, '/receipt_screen');
-                                    }, () {}, 18, 22)
-                                        .show();
-                                  }
-                                }
+                                  containerid = scanContainerReceiptresult;
+                                    Navigator.pushNamed(
+                                        context, '/qr_location_screen');
+                                // for (var element
+                                //     in locationContainer) {
+                                //   if (element.containerId ==
+                                //       scanContainerReceiptresult) {
+                                //      containerid = scanContainerReceiptresult;
+                                //     Navigator.pushNamed(
+                                //         context, '/qr_location_screen');
+                                   
+                                //   } else {
+                                //     AlertDialogTwoBtnCustomized(
+                                //             context,
+                                //             'Bạn có chắc',
+                                //             'Rổ này chưa được nhập thông tin? Ấn tiếp tục để tiến hành điền thông tin',
+                                //             'Tiếp tục',
+                                //             'Trở lại', () async {
+                                //       Navigator.pushNamed(
+                                //           context, '/receipt_screen');
+                                //     }, () {}, 18, 22)
+                                //         .show();
+                                //   }
+                                // }
                               },
                         text: 'Xác nhận')
                   ]));

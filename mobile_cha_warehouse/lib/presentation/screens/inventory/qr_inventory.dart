@@ -6,7 +6,9 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/function.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/check_info_bloc.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/blocs/edit_per_basket_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/check_info_event.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/events/edit_per_basket_event.dart';
 import 'package:mobile_cha_warehouse/presentation/dialog/dialog.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
 
@@ -87,8 +89,8 @@ class _QRScannerScreenState extends State<QRScreen> {
                           ? () {
                               print(scanQRInventoryresult);
                               // tra thong tin basket sau do hiển thị ở TextInput
-                              BlocProvider.of<CheckInfoBloc>(context).add(
-                                  CheckInfoEventRequested(
+                              BlocProvider.of<EditPerBasketBloc>(context).add(
+                                CheckInfoInventoryEvent(
                                       timeStamp: DateTime.now(),
                                       basketID: scanQRInventoryresult));
                               Navigator.of(context)

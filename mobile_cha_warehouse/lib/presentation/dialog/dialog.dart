@@ -182,10 +182,13 @@ class AlertDialogOneBtnCustomized {
                         color: Colors.white,
                         fontWeight: FontWeight.bold)),
                 onPressed: () {
-                  if (Navigator.canPop(context)) {
-                    Navigator.of(context).pop();
+                  // if (Navigator.canPop(context)) {
+                  //   Navigator.of(context).pop();
+                  // }
+                 Navigator.of(context).pop();
+                   if (onPressedBtn != null) {
+                    onPressedBtn();
                   }
-                
                 },
               ),
             ],

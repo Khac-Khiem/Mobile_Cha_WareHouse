@@ -47,6 +47,7 @@ dependencies:
   intl: ^0.17.0 
   get_it: ^7.2.0
   ditredi: ^1.0.3
+  flutter_typeahead: ^4.0.0
 
 
   

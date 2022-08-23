@@ -1,46 +1,47 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/domain/entities/good_issue.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/container_usecase.dart';
-import 'package:mobile_cha_warehouse/domain/usecases/inconsistency_container_usecase.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/issue_usecase.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/slot_usecase.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/issue_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/issue_state.dart';
-import 'package:mobile_cha_warehouse/presentation/screens/issue/list_issue_entry_screen.dart';
-
 import '../../screens/issue/issue_params.dart';
 
-//
+//tải các entry của một đơn từ server
 List<GoodsIssueEntry> goodsIssueEntryData = [];
-//
-List<GoodsIssueEntryContainer> goodsIssueEntryContainerData = [];
+//lưu trữ các container để gửi lên server
+List<ContainerIssueExportServer> goodsIssueEntryContainerData = [];
+//Good Issue được chọn
+String selectedGoodIssueId = '';
+//lưu mã sản phẩm entry
+String selectedItemId = '';
 //Lấy all goodIssueId mà nhân công đó có, để đưa vô Dropdown Picker
 List<String> goodIssueIdsView = [];
-//Good Issue mà dropdown chọn
-String selectedGoodIssueId = '';
 
 class IssueBloc extends Bloc<IssueEvent, IssueState> {
   IssueUseCase issueUseCase;
   ContainerUseCase containerUseCase;
-  InconsistencyContainerUseCase inconsistencyContainerUseCase;
   SlotUseCase slotUseCase;
-  IssueBloc(this.issueUseCase, this.containerUseCase, this.slotUseCase,
-      this.inconsistencyContainerUseCase)
-      : super(IssueStateInitial()) {
+  IssueBloc(
+    this.issueUseCase,
+    this.containerUseCase,
+    this.slotUseCase,
+  ) : super(IssueStateInitial()) {
     on<LoadIssueEvent>(_onLoadingIssue);
     on<ChooseIssueEvent>(_onChooseIssue);
+    // on<AddContainerExport>(_onAddContainer);
+    on<LoadContainerExportEvent>(_onLoadingContainer);
     on<ConFirmExportingContainer>(_onConfirm);
   }
+
   Future<void> _onLoadingIssue(
       IssueEvent event, Emitter<IssueState> emit) async {
     if (event is LoadIssueEvent) {
       emit(IssueStateInitial());
       try {
         selectedGoodIssueId = '';
-        goodsIssueEntryContainerData = [];
         goodIssueIdsView = [];
-        goodsIssueEntryData = [];
-        final allIssue = await issueUseCase.getAllIssues(event.startDate);
+        final allIssue = await issueUseCase.getAllIssues();
         if (allIssue.isNotEmpty) {
           for (int i = 0; i < allIssue.length; i++) {
             if (allIssue[i].isConfirmed == false) {
@@ -49,24 +50,23 @@ class IssueBloc extends Bloc<IssueEvent, IssueState> {
           }
           emit(IssueStateLoadSuccess(DateTime.now(), goodIssueIdsView));
         } else {
-          print('error');
+          print('no data');
           emit(IssueStateLoadSuccess(DateTime.now(), []));
         }
       } catch (e) {
+        print(e);
         emit(IssueStateFailure(DateTime.now()));
         // state fail
       }
     }
   }
 
-// pros goodsIssueEntryData đưa vào State IssueStateListloadSuccess
   Future<void> _onChooseIssue(
       IssueEvent event, Emitter<IssueState> emit) async {
     if (event is ChooseIssueEvent) {
       emit(IssueStateListLoading());
       try {
         goodsIssueEntryData.clear();
-        listBasketIdConfirm.clear();
         final issue = await issueUseCase.getIssueById(event.goodIssueId);
         for (int i = 0; i < issue.entries.length; i++) {
           goodsIssueEntryData.add(
@@ -81,66 +81,49 @@ class IssueBloc extends Bloc<IssueEvent, IssueState> {
     }
   }
 
-  // Future<void> _onClickContainerToggle(
+  // List<ContainerIssueExportServer> containers = [];
+  // Future<void> _onAddContainer(
   //     IssueEvent event, Emitter<IssueState> emit) async {
-  //   if (event is ToggleContainerIssueEvent) {
-  //     goodsIssueEntryContainerData[basketIssueIndex]
-  //             .goodsIssueEntryContainer
-  //             .isTaken =
-  //         !goodsIssueEntryContainerData[basketIssueIndex]
-  //             .goodsIssueEntryContainer
-  //             .isTaken;
-  //     emit(IssueStateListRefresh(
-  //         basketIssueIndex,
-  //         goodsIssueEntryContainerData[basketIssueIndex]
-  //             .goodsIssueEntryContainer
-  //             .isTaken,
-  //         DateTime.now()));
+  //   if (event is AddContainerExport) {
+  //     containers.add(event.containers);
+  //     emit(AddContainerExportSuccess(containers));
   //   }
   // }
-
-  // Future<void> _onLoadLocation(
-  //     IssueEvent event, Emitter<IssueState> emit) async {
-  //   if (event is FetchLocationIssueEvent) {
-  //     emit(LoadingLocationState());
-  //     try {
-  //       print('a');
-  //       //
-  //       final cell = await slotUseCase.getCellById(event.id);
-  //       xAxis = cell.slices!.length;
-  //       for (int i = 0; i < cell.slices!.length; i++) {
-  //         for (int j = 1; j < cell.slices![i].slots!.length; j++) {
-  //           if (cell.slices![i].slots![j].levelId! >
-  //               cell.slices![i].slots![j - 1].levelId!) {
-  //             yAxis = cell.slices![i].slots![j].levelId!;
-  //           }
-  //           if (cell.slices![i].slots![j].id! >
-  //               cell.slices![i].slots![j - 1].id!) {
-  //             zAxis = cell.slices![i].slots![j].id!;
-  //           }
-  //         }
-  //       }
-
-  //       locationContainer.clear();
-  //       final container = await containerUseCase.getContainerById(event.id);
-  //       locationContainer.add(container.storageSlot);
-  //       // print(
-  //       //     locationContainer[0].shelfId + locationContainer[0].id.toString());
-  //       emit(LoadLocationContainerSuccess(DateTime.now()));
-  //     } catch (e) {
-  //       print('b');
-  //       emit(LoadLocationFailState(DateTime.now()));
-  //     }
-  //   }
-  // }
+  List<ContainerIssueExportServer> container = [];
+  double total = 0;
+  Future<void> _onLoadingContainer(
+      IssueEvent event, Emitter<IssueState> emit) async {
+    if (event is LoadContainerExportEvent) {
+      container.clear();
+      total = 0;
+      if (goodsIssueEntryContainerData.isNotEmpty) {
+        for (int i = 0; i < goodsIssueEntryContainerData.length; i++) {
+          if (goodsIssueEntryContainerData[i].issueId == selectedGoodIssueId &&
+              goodsIssueEntryContainerData[i].itemId == selectedItemId) {
+            container.add(goodsIssueEntryContainerData[i]);
+            total = total + goodsIssueEntryContainerData[i].quanlity;
+          }
+        }
+        emit(LoadContainerExportStateSuccess(container, total, DateTime.now()));
+      } else {
+        emit(LoadContainerExportStateFail(DateTime.now()));
+      }
+    }
+  }
 
   Future<void> _onConfirm(IssueEvent event, Emitter<IssueState> emit) async {
     if (event is ConFirmExportingContainer) {
       emit(IssueStateConfirmLoading());
       try {
-        final confirm = issueUseCase.patchConfirmIssueEntry(
-            event.issueId, event.containerId);
-        emit(ConfirmSuccessIssueState(DateTime.now()));
+        final request = await
+            issueUseCase.addContainerIssue(event.issueId, event.containers);
+        final confirm = await issueUseCase.confirmGoodsIssue(event.issueId);
+        if (confirm == 200 && request == 200) {
+          print('success');
+          emit(ConfirmSuccessIssueState(DateTime.now()));
+        } else {
+          emit(ConfirmFailureIssueState(DateTime.now()));
+        }
       } catch (e) {
         print('fail');
         emit(ConfirmFailureIssueState(DateTime.now()));

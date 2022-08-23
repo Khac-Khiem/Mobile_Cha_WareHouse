@@ -2,22 +2,28 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:mobile_cha_warehouse/datasource/models/goods_issues_model.dart';
+import 'package:mobile_cha_warehouse/datasource/service/receipt_service.dart';
+import 'package:mobile_cha_warehouse/presentation/screens/issue/issue_params.dart';
+
+import '../../constant.dart';
 
 class IssueService {
-  Future<List<GoodsIssueModel>> getGoodsIssue(String startDate) async {
+  List bodyJson = [];
+  Future<List<GoodsIssueModel>> getGoodsIssue() async {
     final res = await http.get(
-        Uri.parse(
-            'https://cha-warehouse-management.azurewebsites.net/api/goodsissues/?Page=1&ItemsPerPage=1000&StartTime=$startDate&EndTime=2023-05-30'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Accept': '*/*',
-        });
+      Uri.parse(Constants.baseUrl+
+          'api/goodsissues/pending/all'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': '*/*',
+        'Authorization': 'Bearer $token',
+      },
+    );
+   
     if (res.statusCode == 200) {
-      dynamic body = jsonDecode(res.body);
+      List<dynamic> body = jsonDecode(res.body);
 
-      List<dynamic> bodyResponse = body['items'];
-      //  print(bodyResponse.toString());
-      List<GoodsIssueModel> allIssues = bodyResponse
+      List<GoodsIssueModel> allIssues = body
           .map(
             (dynamic item) => GoodsIssueModel.fromJson(item),
           )
@@ -30,8 +36,8 @@ class IssueService {
 
   Future<GoodsIssueModel> getGoodsIssueById(String id) async {
     final res = await http.get(
-        Uri.parse(
-            'https://cha-warehouse-management.azurewebsites.net/api/goodsissues/$id'),
+        Uri.parse(Constants.baseUrl+
+            'api/goodsissues/$id'),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Accept': '*/*',
@@ -46,20 +52,54 @@ class IssueService {
     }
   }
 
-  Future<void> confirmIssue(String issueId, List<String> containerId) async {
+  Future<int> addContainerIssue(
+      String issueId, List<ContainerIssueExportServer> containers) async {
+    for (int i = 0; i < containers.length; i++) {
+      Map<String, dynamic> containerJson = {
+        // "containerId": containers[i].containerId,
+        // "quantity": containers[i].quanlity
+         "containerId": "r1",
+        "quantity": 50
+      };
+      bodyJson.add(containerJson);
+    }
     final response = await http.patch(
-        Uri.parse(
-            'https://cha-warehouse-management.azurewebsites.net/api/goodsissues/$issueId/containers/confirmed'),
+        Uri.parse(Constants.baseUrl+
+            'api/goodsissues/g1/containers'),
         headers: <String, String>{
-          'Content-Type': 'application/json',
+           'Content-Type': 'application/json; charset=UTF-8',
           'Accept': '*/*',
+          'Authorization': 'Bearer $token',
         },
-        body: jsonEncode(containerId));
+        body:
+            jsonEncode(bodyJson));
+           
+    print(response.statusCode);
+    return response.statusCode;
 
-    if (response.statusCode == 200) {
-      print('success');
+    // if (response.statusCode == 200) {
+    //   print('success');
+    // } else {
+    //   print('fail');
+    // }
+  }
+
+  Future<int> confirmIssue(String issueId) async {
+    final response = await http.patch(
+      Uri.parse(Constants.baseUrl +
+          'api/goodsissues/$issueId/containers/confirmed'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': '*/*',
+        'Authorization': 'Bearer $token',
+      },
+    );
+   if (response.statusCode == 200) {
+      print('confirm success');
+      return response.statusCode;
     } else {
-      print('fail');
+      print('confirm fail');
+      return response.statusCode;
     }
   }
 }

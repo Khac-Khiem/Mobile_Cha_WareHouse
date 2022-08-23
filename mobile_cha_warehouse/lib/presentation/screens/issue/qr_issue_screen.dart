@@ -6,6 +6,7 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/function.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/check_info_bloc.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/events/check_info_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/check_info_state.dart';
 import 'package:mobile_cha_warehouse/presentation/dialog/dialog.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/issue/list_issue_entry_screen.dart';
@@ -88,6 +89,7 @@ class _QRScannerIssueScreenState extends State<QRScannerIssueScreen> {
                     ),
                     CustomizedButton(
                       onPressed: () {
+                        scanQRIssueresult = '-1';
                         scanQR();
                       },
                       text: "Quét mã QR",
@@ -96,36 +98,35 @@ class _QRScannerIssueScreenState extends State<QRScannerIssueScreen> {
                       height: 10 * SizeConfig.ratioHeight,
                     ),
                     CustomizedButton(
-                        onPressed: scanQRIssueresult == itemIdPerEntry
-                            ? () {
-                                AlertDialogTwoBtnCustomized(
-                                        context,
-                                        "Xác Nhận",
-                                        "Bạn đã lấy đúng mã sản phẩm, nhấn xác nhận để tiếp tục",
-                                        "Xác nhận",
-                                        "Trở lại", () async {
-                                  // add basket to confirm
-                                  listBasketIdConfirm.add(scanQRIssueresult);
-                                  Navigator.pushNamed(
-                                      context, '/confirm_container_screen');
-                               
-                                }, () {}, 18, 22)
-                                    .show();
-                              }
-                            : () {
-                                AlertDialogTwoBtnCustomized(
-                                        context,
-                                        "Xác Nhận",
-                                        "Rổ bạn đã lấy không chính xác, nhấn Tiếp tục để quét lại",
-                                        "Tiếp tục",
-                                        "Trở lại",
-                                        () {}, () {
-                                  //back to container screen
-                                  Navigator.pushNamed(
-                                      context, '/list_container_screen');
-                                }, 18, 22)
-                                    .show();
-                              },
+                        // bloc event kiểm tra thông tin rổ xem mã sp rổ có đúng mã sp đơn không?
+                        // => nghẽn luồng dữ liệu => dời event này qua trang modify
+                        onPressed: () {
+                          
+                          // AlertDialogTwoBtnCustomized(
+                          //         context,
+                          //         "Xác Nhận",
+                          //         "Bạn đã lấy đúng mã sản phẩm, nhấn xác nhận để tiếp tục",
+                          //         "Xác nhận",
+                          //         "Trở lại", () async {
+                          //   // add basket to confirm
+                          //   // listBasketIdConfirm.add(scanQRIssueresult);
+                          //   BlocProvider.of<CheckInfoBloc>(context).add(
+                          //       CheckInfoEventRequested(
+                          //           timeStamp: DateTime.now(),
+                          //           basketID: scanQRIssueresult));
+                          //   Navigator.pushNamed(
+                          //       context, '/confirm_container_screen');
+                          // }, () {}, 18, 22)
+                          //     .show();
+
+                          // dời thông báo qua trang sau
+                          BlocProvider.of<CheckInfoBloc>(context).add(
+                                CheckInfoEventRequested(
+                                    timeStamp: DateTime.now(),
+                                    basketID: scanQRIssueresult));
+                            Navigator.pushNamed(
+                                context, '/confirm_container_screen');
+                        },
                         text: 'Xác Nhận'),
                   ]));
         }));

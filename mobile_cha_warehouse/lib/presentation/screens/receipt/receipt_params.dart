@@ -5,7 +5,7 @@ class GoodsReceiptEntryContainerData {
   String itemId;
   int actualQuantity;
   String productionDate;
-  GoodsReceiptEntryContainerData(this.containerId, this.employeeId, this.itemId,
+  GoodsReceiptEntryContainerData( this.containerId, this.employeeId, this.itemId,
       this.actualQuantity, this.productionDate);
   Map<String, dynamic> toJson() => {
         "containerId": containerId,
@@ -19,8 +19,8 @@ class GoodsReceiptEntryContainerData {
 class LocationServer {
   String containerId;
   String shelfId;
-  int rowId;
-  int id;
+  int? rowId;
+  int? id;
   LocationServer(this.containerId, this.shelfId, this.rowId, this.id);
 }
 

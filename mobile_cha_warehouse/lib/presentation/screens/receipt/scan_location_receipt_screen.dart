@@ -7,17 +7,19 @@ import 'package:mobile_cha_warehouse/function.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/receipt_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/receipt_event.dart';
 import 'package:mobile_cha_warehouse/presentation/dialog/dialog.dart';
-import 'package:mobile_cha_warehouse/presentation/screens/receipt/receipt_params.dart';
+import 'package:mobile_cha_warehouse/presentation/screens/receipt/scan_container_receipt_screen.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
 import '../../../constant.dart';
+import '../../bloc/states/receipt_state.dart';
 
 String scanQRLocationresult = '-1'; //Scan QR ra
 
 //bb210505141725631
 class QRScannerLocationScreen extends StatefulWidget {
-  final String containerId;
-  const QRScannerLocationScreen({Key? key, required this.containerId})
-      : super(key: key);
+  //final String containerId;
+  const QRScannerLocationScreen({
+    Key? key,
+  }) : super(key: key);
   @override
   _QRScannerScreenState createState() => _QRScannerScreenState();
 }
@@ -68,7 +70,33 @@ class _QRScannerScreenState extends State<QRScannerLocationScreen> {
           ),
         ),
         endDrawer: DrawerUser(),
-        body: Builder(builder: (BuildContext context) {
+        body:
+            BlocConsumer<ReceiptBloc, ReceiptState>(listener: (context, state) {
+          if (state is UpdateLocationReceiptStateFailure) {
+            print('fail nè');
+            AlertDialogOneBtnCustomized(
+                    context,
+                    "Thất bại",
+                    "Error",
+                    "Trở lại", () {
+              // Navigator.pushNamed(context, '///');
+            }, 18, 22, () {})
+                .show();}
+           else if (state is UpdateLocationReceiptStateSuccess) {
+              print('success nè');
+              AlertDialogOneBtnCustomized(
+                      context,
+                      "Thành công",
+                      "Đã cập nhật vị trí thành công",
+                      "Tiếp tụcqa", () {
+                         Navigator.pushNamed(
+                                    context, '/scan_container_screen');
+             //   Navigator.pushNamed(context, '/scan_container_screen');
+              }, 18, 22, () {})
+                  .show();
+            }
+          
+        }, builder: (context, state) {
           return Container(
               alignment: Alignment.center,
               child: Column(
@@ -114,17 +142,21 @@ class _QRScannerScreenState extends State<QRScannerLocationScreen> {
                                 AlertDialogTwoBtnCustomized(
                                         context,
                                         'Bạn có chắc',
-                                        'Rổ vừa được đặt tại vị trí' +
+                                        'Rổ vừa được đặt tại vị trí ' +
                                             scanQRLocationresult +
                                             "?",
                                         'Xác nhận',
                                         'Trở lại', () async {
                                   // bloc event update location
-                                  BlocProvider.of<ReceiptBloc>(context).add(UpdateLocationReceiptEvent(widget.containerId, scanQRLocationresult[0],int.parse(scanQRLocationresult[1]) , int.parse(scanQRLocationresult[2]))
-                                          );
-                                  locationContainer.add(LocationServer(widget.containerId, scanQRLocationresult[0],int.parse(scanQRLocationresult[1]) , int.parse(scanQRLocationresult[2])));
-                                  Navigator.pushNamed(
-                                      context, '/receipt_screen');
+                                  BlocProvider.of<ReceiptBloc>(context).add(
+                                      UpdateLocationReceiptEvent(
+                                          containerid,
+                                          scanQRLocationresult[0],
+                                          int.parse(scanQRLocationresult[1]),
+                                          int.parse(scanQRLocationresult[2])));
+                                 
+                                  // Navigator.pushNamed(
+                                  //     context, '/receipt_screen');
                                 }, () {}, 18, 22)
                                     .show();
                               },

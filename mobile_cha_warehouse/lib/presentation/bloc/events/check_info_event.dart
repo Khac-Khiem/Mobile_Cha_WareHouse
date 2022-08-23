@@ -10,4 +10,9 @@ class CheckInfoEventRequested extends CheckInfoEvent {
   List<Object> get props =>
       [timeStamp, basketID]; //Với mỗi basket ID thì sẽ refresh lại
 }
+class SelectedTypePickContainer extends CheckInfoEvent{
+  @override
+  // TODO: implement props
+  List<Object?> get props => throw UnimplementedError();
 
+}
