@@ -1,10 +1,8 @@
-import 'dart:async';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_cha_warehouse/datasource/service/item_service.dart';
 import 'package:mobile_cha_warehouse/function.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/receipt_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/receipt_state.dart';
@@ -13,7 +11,6 @@ import 'package:mobile_cha_warehouse/presentation/screens/receipt/qr_scanner_rec
 import 'package:mobile_cha_warehouse/presentation/screens/receipt/receipt_params.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
 import '../../../constant.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 List<String> labelTextList = [
   "Mã QR:",
@@ -73,7 +70,18 @@ class ModifyInfoScreen extends StatelessWidget {
           ),
         ),
         endDrawer: DrawerUser(),
-        body: BlocBuilder<ReceiptBloc, ReceiptState>(
+        body: BlocConsumer<ReceiptBloc, ReceiptState>(
+          listener: (context, state) {
+            if (state is CheckContainerStateFail) {
+              AlertDialogOneBtnCustomized(
+                      context, "Cảnh báo", state.error, "Trở lại", () {
+                Navigator.pushNamed(context, '/qr_scanner_screen');
+              }, 18, 22, () {})
+                  .show();
+            } else if (state is ReceiptLoadingState) {
+              CircularLoading();
+            }
+          },
           builder: (context, state) {
             if (state is ReceiptLoadingState) {
               return CircularLoading();
@@ -136,14 +144,14 @@ class ModifyInfoScreen extends StatelessWidget {
                                               color: Colors.black)),
                                     ),
                                   )),
-                           
+
                               Container(
                                 width: 200 * SizeConfig.ratioWidth,
                                 height: 50 * SizeConfig.ratioHeight,
                                 padding: const EdgeInsets.all(0),
                                 decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 1, color: Colors.grey),
+                                  border:
+                                      Border.all(width: 1, color: Colors.grey),
                                   // borderRadius: const BorderRadius.all(
                                   //     const Radius.circular(10))
                                 ),
@@ -162,7 +170,6 @@ class ModifyInfoScreen extends StatelessWidget {
                                       hintStyle: TextStyle(
                                           fontSize: 16 * SizeConfig.ratioFont),
                                       border: const UnderlineInputBorder(
-                                        
                                           borderSide: BorderSide.none),
                                       fillColor: Colors.blue),
                                   showAsSuffixIcons: true,
@@ -313,7 +320,7 @@ class ModifyInfoScreen extends StatelessWidget {
                                     controller: TextEditingController(
                                         text: DateFormat('yyyy-MM-dd').format(
                                             DateTime.now()
-                                                .subtract(Duration(days: 1)))),
+                                                .subtract(const Duration(days: 1)))),
                                     textAlignVertical: TextAlignVertical.center,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
@@ -352,22 +359,20 @@ class ModifyInfoScreen extends StatelessWidget {
                                   itemId != '' &&
                                   employeeId != '') {
                                 // thêm rổ vừa điền thông tin vào danh sách
-                               
+
                                 goodsReceiptEntryConainerDataTemp.add(
                                   GoodsReceiptEntryContainerData(
-                                    
                                     scanQRReceiptresult,
                                     employeeId,
                                     itemId,
                                     int.parse(actual),
                                     DateFormat('yyyy-MM-dd')
                                         .format(DateTime.now()
-                                            .subtract(Duration(days: 1)))
+                                            .subtract(const Duration(days: 1)))
                                         .toString(),
                                   ),
                                 );
-                                
-                               
+
                                 Navigator.pushNamed(context, '/receipt_screen');
                               } else {
                                 AlertDialogOneBtnCustomized(

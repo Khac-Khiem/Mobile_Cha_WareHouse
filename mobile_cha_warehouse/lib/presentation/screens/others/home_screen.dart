@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
         actions: [
           Builder(
             builder: (context) => IconButton(
-              icon: Icon(Icons.menu),
+              icon: const Icon(Icons.menu),
               iconSize: 25 * SizeConfig.ratioRadius,
               onPressed: () => Scaffold.of(context).openEndDrawer(),
             ),
@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
       ),
       // endDrawer: DrawerUser(),
       body: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           height: 600 * SizeConfig.ratioHeight,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

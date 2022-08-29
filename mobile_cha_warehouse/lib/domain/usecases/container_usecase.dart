@@ -10,6 +10,10 @@ class ContainerUseCase {
     final container = await _updateContainRepo.getContainerById(id);
     return container;
   }
+  Future<List<ContainerData>> getExportingContainer() async {
+    final container = await _updateContainRepo.getExportingContainer();
+    return container;
+  }
 
   Future<ContainerData> updateActualQuantity(int actualQuantity) async {
     final container =

@@ -1,6 +1,4 @@
-import 'package:mobile_cha_warehouse/datasource/models/container_model.dart';
 import 'package:mobile_cha_warehouse/domain/entities/cell_data.dart';
-import 'package:mobile_cha_warehouse/domain/entities/container.dart';
 
 class CellDataModel extends Cell {
   String? shelfId;

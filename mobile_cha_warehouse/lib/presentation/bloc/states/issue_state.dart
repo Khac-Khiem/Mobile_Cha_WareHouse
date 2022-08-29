@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:mobile_cha_warehouse/domain/entities/container.dart';
 import 'package:mobile_cha_warehouse/domain/entities/good_issue.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/issue_bloc.dart';
 
@@ -25,6 +26,27 @@ class IssueStateLoadSuccess extends IssueState {
   IssueStateLoadSuccess(this.timestamp, this.listIssueId);
   @override
   List<Object> get props => [timestamp, listIssueId];
+}
+
+class CheckInfoIssueStateSuccess extends IssueState {
+  final DateTime timeStamp;
+  final ContainerData basket;
+  CheckInfoIssueStateSuccess(this.basket, this.timeStamp);
+  @override
+  List<Object> get props => [basket, timeStamp];
+}
+
+class CheckInfoStateLoading extends IssueState {
+  DateTime timestamp;
+  CheckInfoStateLoading(this.timestamp);
+  @override
+  List<Object> get props => [timestamp];
+}
+
+class CheckInfoStateFailure extends IssueState {
+  CheckInfoStateFailure();
+  @override
+  List<Object> get props => [];
 }
 
 class IssueStateListLoading extends IssueState {
@@ -55,13 +77,6 @@ class IssueStateConfirmLoading extends IssueState {
   List<Object> get props => [];
 }
 
-// class AddContainerExportSuccess extends IssueState {
-//   List<ContainerIssueExportServer> containers;
-//   AddContainerExportSuccess(this.containers);
-//   @override
-//   // TODO: implement props
-//   List<Object?> get props => throw UnimplementedError();
-// }
 
 class ConfirmSuccessIssueState extends IssueState {
   final DateTime timestamp;
@@ -80,9 +95,10 @@ class ConfirmFailureIssueState extends IssueState {
 
 class LoadContainerExportStateSuccess extends IssueState {
   DateTime timestamp;
-  List<ContainerIssueExportServer> containers;
+  List<GoodsIssueEntryContainer> containers;
   double totalQuatity;
-  LoadContainerExportStateSuccess(this.containers, this.totalQuatity, this.timestamp);
+  LoadContainerExportStateSuccess(
+      this.containers, this.totalQuatity, this.timestamp);
   @override
   // TODO: implement props
   List<Object?> get props => [timestamp];
@@ -95,25 +111,3 @@ class LoadContainerExportStateFail extends IssueState {
   // TODO: implement props
   List<Object?> get props => [timestamp];
 }
-
-// class LoadLocationContainerSuccess extends IssueState {
-//   DateTime timeStamp;
-//   LoadLocationContainerSuccess(this.timeStamp);
-//   @override
-//   // TODO: implement props
-//   List<Object?> get props => [timeStamp];
-// }
-
-// class LoadingLocationState extends IssueState {
-//   @override
-//   // TODO: implement props
-//   List<Object?> get props => throw UnimplementedError();
-// }
-
-// class LoadLocationFailState extends IssueState {
-//   DateTime timeStamp;
-//   LoadLocationFailState(this.timeStamp);
-//   @override
-//   // TODO: implement props
-//   List<Object?> get props => [timeStamp];
-// }

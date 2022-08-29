@@ -13,8 +13,8 @@ class ContainerType {
 // model du lieu cua mot ro
 class ContainerData extends Equatable {
   String containerId;
-  int quantity;
-  String productionDate;
+  int? quantity;
+  String? productionDate;
   bool isNotEmpty;
   Item? item;
   //ProductionEmployee? productionEmployee;

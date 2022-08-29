@@ -16,6 +16,7 @@ class IssueScreen extends StatefulWidget {
 }
 
 class _IssueScreenState extends State<IssueScreen> {
+   List<String> idListView = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,9 +40,10 @@ class _IssueScreenState extends State<IssueScreen> {
         endDrawer: DrawerUser(),
         body: BlocConsumer<IssueBloc, IssueState>(
             listener: (context, issueState) {
-          if (issueState is IssueStateListLoadSuccess) {
-            goodsIssueEntryData = issueState.goodsIssueEntryData;
-            print(goodsIssueEntryData);
+          if (issueState is IssueStateLoadSuccess) {
+            idListView = issueState.listIssueId;
+            // goodsIssueEntryDataTemp = issueState.goodsIssueEntryData;
+            // print(goodsIssueEntryDataTemp);
           }
         }, builder: (context, issueState) {
           if (issueState is IssueStateInitial) {
@@ -50,14 +52,12 @@ class _IssueScreenState extends State<IssueScreen> {
             return Center(
               child: SingleChildScrollView(
                 child: Builder(builder: (BuildContext context) {
-                  if (issueState is IssueStateLoadSuccess) {
+                  if (issueState is IssueStateLoadSuccess ) {
                     return issueState.listIssueId.isNotEmpty
                         ? Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              
                               Column(
-
                                 // danh sách các đơn
                                 children: goodIssueIdsView
                                     .map((item) => ListIssue(

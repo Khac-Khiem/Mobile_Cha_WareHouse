@@ -74,28 +74,22 @@ class _QRScannerScreenState extends State<QRScannerLocationScreen> {
             BlocConsumer<ReceiptBloc, ReceiptState>(listener: (context, state) {
           if (state is UpdateLocationReceiptStateFailure) {
             print('fail nè');
-            AlertDialogOneBtnCustomized(
-                    context,
-                    "Thất bại",
-                    "Error",
-                    "Trở lại", () {
+            AlertDialogOneBtnCustomized(context, "Thất bại", "Error", "Trở lại",
+                    () {
               // Navigator.pushNamed(context, '///');
             }, 18, 22, () {})
-                .show();}
-           else if (state is UpdateLocationReceiptStateSuccess) {
-              print('success nè');
-              AlertDialogOneBtnCustomized(
-                      context,
-                      "Thành công",
-                      "Đã cập nhật vị trí thành công",
-                      "Tiếp tụcqa", () {
-                         Navigator.pushNamed(
-                                    context, '/scan_container_screen');
-             //   Navigator.pushNamed(context, '/scan_container_screen');
-              }, 18, 22, () {})
-                  .show();
-            }
-          
+                .show();
+          } else if (state is UpdateLocationReceiptStateSuccess) {
+            print('success nè');
+            AlertDialogOneBtnCustomized(context, "Thành công",
+                    "Đã cập nhật vị trí thành công", "Tiếp tục", () {
+                        BlocProvider.of<ReceiptBloc>(context)
+                      .add(LoadAllContainerExporting(DateTime.now()));
+              Navigator.pushNamed(context, '/scan_container_screen');
+              //   Navigator.pushNamed(context, '/scan_container_screen');
+            }, 18, 22, () {})
+                .show();
+          }
         }, builder: (context, state) {
           return Container(
               alignment: Alignment.center,
@@ -139,6 +133,8 @@ class _QRScannerScreenState extends State<QRScannerLocationScreen> {
                                     .show();
                               }
                             : () {
+                                final splitted =
+                                    scanQRLocationresult.split('-');
                                 AlertDialogTwoBtnCustomized(
                                         context,
                                         'Bạn có chắc',
@@ -151,10 +147,10 @@ class _QRScannerScreenState extends State<QRScannerLocationScreen> {
                                   BlocProvider.of<ReceiptBloc>(context).add(
                                       UpdateLocationReceiptEvent(
                                           containerid,
-                                          scanQRLocationresult[0],
-                                          int.parse(scanQRLocationresult[1]),
-                                          int.parse(scanQRLocationresult[2])));
-                                 
+                                         splitted[0],
+                                       int.parse( splitted[1])  ,
+                                            int.parse( splitted[2])));
+
                                   // Navigator.pushNamed(
                                   //     context, '/receipt_screen');
                                 }, () {}, 18, 22)

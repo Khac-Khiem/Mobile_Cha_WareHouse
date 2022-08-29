@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:mobile_cha_warehouse/domain/entities/good_issue.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/issue/issue_params.dart';
 
 abstract class IssueEvent extends Equatable {}
@@ -13,6 +14,16 @@ class LoadIssueEvent extends IssueEvent {
   List<Object> get props => [timestamp];
 }
 
+class CheckInfoIssueEventRequested extends IssueEvent {
+  String basketID;
+  DateTime timeStamp; //Tạo timeStamp để lần nào click cũng khác nhau
+  CheckInfoIssueEventRequested(
+      {required this.timeStamp, required this.basketID});
+  @override
+  List<Object> get props =>
+      [timeStamp, basketID]; //Với mỗi basket ID thì sẽ refresh lại
+}
+
 //sự kiện khi chọn đơn xuất kho
 class ChooseIssueEvent extends IssueEvent {
   final String goodIssueId;
@@ -22,9 +33,19 @@ class ChooseIssueEvent extends IssueEvent {
   List<Object> get props => [timestamp, goodIssueId];
 }
 
+class ChooseIssueEntryEvent extends IssueEvent {
+  String goodsIssueId;
+  String itemId;
+  DateTime timestamp;
+  ChooseIssueEntryEvent(this.goodsIssueId, this.itemId, this.timestamp);
+  @override
+  // TODO: implement props
+  List<Object?> get props => [timestamp];
+}
+
 // nút nhấn hoàn thành xuất kho 1 đơn
 // gửi rổ lên server
-// confirm 
+// confirm
 class ConFirmExportingContainer extends IssueEvent {
   DateTime timestamp;
   String issueId;
@@ -36,21 +57,13 @@ class ConFirmExportingContainer extends IssueEvent {
   List<Object?> get props => [timestamp];
 }
 
-// class AddContainerExport extends IssueEvent {
-//   ContainerIssueExportServer containers;
-//   AddContainerExport(this.containers);
+// sự kiện load các rổ đã được xuất ứng với từng đơn
+// class LoadContainerExportEvent extends IssueEvent {
+//   DateTime timestamp;
+//   String issueId;
+//   String itemId;
+//   LoadContainerExportEvent(this.timestamp, this.issueId, this.itemId);
 //   @override
 //   // TODO: implement props
-//   List<Object?> get props => [containers];
-// }
-
-// sự kiện load các rổ đã được xuất ứng với từng đơn
-class LoadContainerExportEvent extends IssueEvent {
-  DateTime timestamp;
-  String issueId;
-  String itemId;
-  LoadContainerExportEvent(this.timestamp, this.issueId, this.itemId);
-  @override
-  // TODO: implement props
-  List<Object?> get props => [timestamp];
-}
+//   List<Object?> get props => [timestamp];
+//}

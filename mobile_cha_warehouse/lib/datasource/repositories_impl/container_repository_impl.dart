@@ -8,7 +8,7 @@ class ContainerRepoImpl implements ContainRepo {
   ContainerRepoImpl(this.containerService);
   @override
   Future getContainerById(String id) {
-    final container = containerService.getContainerLocation(id);
+    final container = containerService.getContainerById(id);
     return container;
   }
 
@@ -34,5 +34,12 @@ class ContainerRepoImpl implements ContainRepo {
   Future<ContainerData> updateShelfUnit(String shelfUnitId) {
     // TODO: implement updateShelfUnit
     throw UnimplementedError();
+  }
+
+  @override
+  Future getExportingContainer() {
+    // TODO: implement getExportingContainer
+    final container = containerService.getExportContainer();
+    return container;
   }
 }

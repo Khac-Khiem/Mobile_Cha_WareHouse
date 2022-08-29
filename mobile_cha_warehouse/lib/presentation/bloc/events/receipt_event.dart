@@ -35,9 +35,24 @@ class UpdateLocationReceiptEvent extends ReceiptEvent {
   List<Object> get props => [containerId];
 }
 
+class CheckContainerAvailableEvent extends ReceiptEvent {
+  String containerId;
+  DateTime timestamp;
+  CheckContainerAvailableEvent(this.containerId, this.timestamp);
+  @override
+  List<Object> get props => [containerId, timestamp];
+}
+
+class LoadAllContainerExporting extends ReceiptEvent {
+  DateTime timestamp;
+  LoadAllContainerExporting(this.timestamp);
+   @override
+  List<Object> get props => [ timestamp];
+}
+
 class RefershReceiptEvent extends ReceiptEvent {
   DateTime timestamp;
   RefershReceiptEvent(this.timestamp);
-   @override
+  @override
   List<Object> get props => [timestamp];
 }

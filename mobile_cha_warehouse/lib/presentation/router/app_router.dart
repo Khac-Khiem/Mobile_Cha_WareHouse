@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/injector.dart';
@@ -78,11 +77,11 @@ class AppRoute {
       case '/receipt_screen':
         return MaterialPageRoute(
             builder: (context) => BlocProvider<ReceiptBloc>(
-                create: (context) => injector(), child: ReceiptScreen()));
+                create: (context) => injector(), child: const ReceiptScreen()));
 
       case '/qr_scanner_screen':
         return MaterialPageRoute(
-            builder: (context) => BlocProvider<StockCardViewBloc>(
+            builder: (context) => BlocProvider<ReceiptBloc>(
                 create: (context) => injector(), child: QRScannerScreen()));
       case '/modify_info_screen':
         return MaterialPageRoute(
@@ -100,7 +99,7 @@ class AppRoute {
       case '/qr_location_screen':
          return MaterialPageRoute(
             builder: (context) => BlocProvider<ReceiptBloc>(
-                create: (context) => injector(), child: QRScannerLocationScreen()));
+                create: (context) => injector(), child: const QRScannerLocationScreen()));
 
       //
       case '/stockcard_screen':
@@ -111,7 +110,7 @@ class AppRoute {
       case '/qr_inventory_screen':
         return MaterialPageRoute(
             builder: (context) => BlocProvider<EditPerBasketBloc>(
-                create: (context) => injector(), child: QRScreen()));
+                create: (context) => injector(), child: const QRScreen()));
       case '/inventory_screen':
         // return MaterialPageRoute(
         //     builder: (context) => BlocProvider<CheckInfoBloc>(

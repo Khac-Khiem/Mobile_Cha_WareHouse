@@ -47,7 +47,12 @@ dependencies:
   intl: ^0.17.0 
   get_it: ^7.2.0
   ditredi: ^1.0.3
-  flutter_typeahead: ^4.0.0
+  oauth2: ^2.0.0
+  uni_links: ^0.5.1
+  webview_flutter: ^3.0.4
+  url_launcher: ^6.1.5
+
+
 
 
   

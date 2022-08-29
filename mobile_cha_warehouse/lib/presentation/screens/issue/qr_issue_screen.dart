@@ -5,11 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/function.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/blocs/check_info_bloc.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/events/check_info_event.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/states/check_info_state.dart';
-import 'package:mobile_cha_warehouse/presentation/dialog/dialog.dart';
-import 'package:mobile_cha_warehouse/presentation/screens/issue/list_issue_entry_screen.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/blocs/issue_bloc.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/events/issue_event.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/states/issue_state.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
 
 import '../../../constant.dart';
@@ -46,20 +44,7 @@ class _QRScannerIssueScreenState extends State<QRScannerIssueScreen> {
           leading: IconButton(
               icon: const Icon(Icons.west_outlined),
               onPressed: () {
-                if (scanQRIssueresult != "-1") {
-                  // AlertDialogTwoBtnCustomized(
-                  //         context: context,
-                  //         title: "Bạn có chắc?",
-                  //         desc:
-                  //             "Khi nhấn nút Trở về, mọi dữ liệu sẽ không được lưu",
-                  //         onPressedBtn1: () {
-                  //           Navigator.pop(context);
-                  //         },
-                  //         onPressedBtn2: () {})
-                  //     .show();
-                } else {
-                  Navigator.of(context).pop();
-                }
+                Navigator.of(context).pop();
               }),
           backgroundColor: Constants.mainColor,
           title: Text(
@@ -68,7 +53,7 @@ class _QRScannerIssueScreenState extends State<QRScannerIssueScreen> {
           ),
         ),
         endDrawer: DrawerUser(),
-        body: BlocBuilder<CheckInfoBloc, CheckInfoState>(
+        body: BlocBuilder<IssueBloc, IssueState>(
             builder: (context, checkInfoState) {
           return Container(
               alignment: Alignment.center,
@@ -101,7 +86,6 @@ class _QRScannerIssueScreenState extends State<QRScannerIssueScreen> {
                         // bloc event kiểm tra thông tin rổ xem mã sp rổ có đúng mã sp đơn không?
                         // => nghẽn luồng dữ liệu => dời event này qua trang modify
                         onPressed: () {
-                          
                           // AlertDialogTwoBtnCustomized(
                           //         context,
                           //         "Xác Nhận",
@@ -120,12 +104,12 @@ class _QRScannerIssueScreenState extends State<QRScannerIssueScreen> {
                           //     .show();
 
                           // dời thông báo qua trang sau
-                          BlocProvider.of<CheckInfoBloc>(context).add(
-                                CheckInfoEventRequested(
-                                    timeStamp: DateTime.now(),
-                                    basketID: scanQRIssueresult));
-                            Navigator.pushNamed(
-                                context, '/confirm_container_screen');
+                          BlocProvider.of<IssueBloc>(context).add(
+                              CheckInfoIssueEventRequested(
+                                  timeStamp: DateTime.now(),
+                                  basketID: scanQRIssueresult));
+                          Navigator.pushNamed(
+                              context, '/confirm_container_screen');
                         },
                         text: 'Xác Nhận'),
                   ]));

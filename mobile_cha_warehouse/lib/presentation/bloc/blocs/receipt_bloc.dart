@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_cha_warehouse/domain/usecases/container_usecase.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/item_usecase.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/production_employee_usecase.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/receipt_usecase.dart';
@@ -17,16 +18,19 @@ List<String> listemployeeId = [];
 List<String> listitemId = [];
 
 class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
+  ContainerUseCase containerUseCase;
+
   ReceiptUseCase receiptUseCase;
   ItemUseCase itemUseCase;
   ProductionEmployeeUseCase productionEmployeeUseCase;
 
-  ReceiptBloc(
-      this.receiptUseCase, this.itemUseCase, this.productionEmployeeUseCase)
+  ReceiptBloc(this.receiptUseCase, this.itemUseCase,
+      this.productionEmployeeUseCase, this.containerUseCase)
       : super(ReceiptInitialState()) {
     on<LoadAllDataEvent>(_onLoadData);
     on<RefershReceiptEvent>(_onRefresh);
-
+    on<CheckContainerAvailableEvent>(_onCheck);
+    on<LoadAllContainerExporting>(_onLoading);
     on<PostNewReceiptEvent>(_onPostReceipt);
     on<UpdateLocationReceiptEvent>(_onUpdateLocation);
   }
@@ -105,6 +109,40 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
         emit(ReceiptInitialState());
       }
     } catch (e) {}
+  }
+
+  Future<void> _onCheck(ReceiptEvent event, Emitter<ReceiptState> emit) async {
+    emit(ReceiptLoadingState(DateTime.now()));
+    try {
+      if (event is CheckContainerAvailableEvent) {
+        final basketOrErr =
+            await containerUseCase.getContainerById(event.containerId);
+        if (basketOrErr.location != null && basketOrErr.item != null) {
+          emit(CheckContainerStateFail(DateTime.now(), 'Rổ đã được nhập kho'));
+        } else {
+          emit(CheckContainerStateSuccess(DateTime.now()));
+        }
+      }
+    } catch (e) {
+      emit(CheckContainerStateFail(DateTime.now(), 'Rổ không xác định'));
+    }
+  }
+
+  Future<void> _onLoading(
+      ReceiptEvent event, Emitter<ReceiptState> emit) async {
+    emit(ReceiptLoadingState(DateTime.now()));
+    try {
+      if (event is LoadAllContainerExporting) {
+        final basketOrErr = await containerUseCase.getExportingContainer();
+        if (basketOrErr.isEmpty) {
+          emit(LoadContainerExportingStateSuccess(DateTime.now(), []));
+        } else {
+          emit(LoadContainerExportingStateSuccess(DateTime.now(), basketOrErr));
+        }
+      }
+    } catch (e) {
+      emit(LoadContainerExportingStateFail(DateTime.now()));
+    }
   }
 
   Future<void> _onRefresh(

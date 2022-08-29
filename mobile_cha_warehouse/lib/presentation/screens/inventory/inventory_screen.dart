@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/blocs/check_info_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/edit_per_basket_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/edit_per_basket_event.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/states/check_info_state.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/edit_per_basket_state.dart';
 import 'package:mobile_cha_warehouse/presentation/dialog/dialog.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/exception_widget.dart';
@@ -33,7 +31,7 @@ class InventoryScreen extends StatelessWidget {
                 Icons.west,
                 color: Colors.white,
               )),
-          backgroundColor: Color(0xff001D37),
+          backgroundColor: const Color(0xff001D37),
           title: Text('Kiểm kê',
               style: TextStyle(fontSize: 22 * SizeConfig.ratioFont)),
         ),
@@ -97,7 +95,7 @@ class InventoryScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
+                    SizedBox(
                       width: 350 * SizeConfig.ratioWidth,
                       child: Row(
                         children: [

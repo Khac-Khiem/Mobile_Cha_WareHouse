@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/constant.dart';
+import 'package:mobile_cha_warehouse/domain/entities/container.dart';
 import 'package:mobile_cha_warehouse/function.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/receipt_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/receipt_event.dart';
@@ -21,14 +22,14 @@ class ReceiptScreen extends StatefulWidget {
 class _ReceiptScreenState extends State<ReceiptScreen> {
   DateTime selectedDate = DateTime.now();
   String receiptId = '';
+  List<ContainerData> containers = [];
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
         length: 2,
         child: Scaffold(
-            resizeToAvoidBottomInset: false, 
-
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(
               bottom: TabBar(
                 //  unselectedLabelColor: Colors.blueGrey,
@@ -37,8 +38,8 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                   color: Constants.secondaryColor,
                 ),
                 tabs: [
-                  Tab(text: "Tạo đơn"),
-                  Tab(text: "Cập nhật vị trí"),
+                  const Tab(text: "Tạo đơn"),
+                  const Tab(text: "Cập nhật vị trí"),
                 ],
               ),
 
@@ -82,10 +83,13 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                 CircularLoading();
               } else if (receiptState is PostReceiptStateFailure) {
                 AlertDialogOneBtnCustomized(context, "Thất bại",
-                        "Mã đơn có thể đã tồn tại", "Trở lại", () {
-                  Navigator.pushNamed(context, '///');
+                        "Mã đơn có thể đã tồn tại", "Nhập lại", () {
+                  Navigator.pushNamed(context, '/receipt_screen');
+                  // Navigator.pushNamed(context, '///');
                 }, 18, 22, () {})
                     .show();
+              } else if (receiptState is LoadContainerExportingStateSuccess) {
+                containers = receiptState.containers;
               }
             }, builder: (context, receiptState) {
               //  if (receiptState is ReceiptInitialState) {
@@ -116,7 +120,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                     enabled: true,
                                     //  readOnly: true,
                                     onChanged: (value) => {receiptId = value},
-            
+
                                     controller: TextEditingController(),
                                     textAlignVertical: TextAlignVertical.center,
                                     textAlign: TextAlign.center,
@@ -198,6 +202,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                       imageHeight: 140,
                                     )
                                   : SingleChildScrollView(
+                                      scrollDirection: Axis.vertical,
                                       child:
                                           // Column(
                                           //   children:
@@ -206,150 +211,155 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                           //               RowContainer(item))
                                           //           .toList(),
                                           // ),
-                                          Container(
-                                      height: 300 * SizeConfig.ratioHeight,
-                                      child: ListView.builder(
-                                          padding: const EdgeInsets.all(8),
-                                          itemCount:
-                                              goodsReceiptEntryConainerDataTemp
-                                                  .length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return Padding(
-                                              padding: const EdgeInsets.all(10),
-                                              child: SizedBox(
-                                                width:
-                                                    380 * SizeConfig.ratioWidth,
-                                                height:
-                                                    80 * SizeConfig.ratioHeight,
-                                                child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    primary: Colors.grey[300],
-                                                    shape: const RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    8))),
-                                                    //   padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
-            
-                                                    // primary: bgColor,
-                                                    // padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                                                  ),
-                                                  // padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      SizedBox(
+                                          SizedBox(
+                                        height: 300 * SizeConfig.ratioHeight,
+                                        child: ListView.builder(
+                                            padding: const EdgeInsets.all(8),
+                                            itemCount:
+                                                goodsReceiptEntryConainerDataTemp
+                                                    .length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(10),
+                                                child: SizedBox(
+                                                  width: 380 *
+                                                      SizeConfig.ratioWidth,
+                                                  height: 80 *
+                                                      SizeConfig.ratioHeight,
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      primary: Colors.grey[300],
+                                                      shape: const RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          8))),
+                                                      //   padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+
+                                                      // primary: bgColor,
+                                                      // padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                                                    ),
+                                                    // padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        SizedBox(
+                                                            width: 80 *
+                                                                SizeConfig
+                                                                    .ratioWidth,
+                                                            child: Text(
+                                                              goodsReceiptEntryConainerDataTemp[
+                                                                      index]
+                                                                  .employeeId,
+                                                              style: TextStyle(
+                                                                  fontSize: 21 *
+                                                                      SizeConfig
+                                                                          .ratioFont,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: Constants
+                                                                      .mainColor),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            )),
+                                                        SizedBox(
                                                           width: 80 *
                                                               SizeConfig
                                                                   .ratioWidth,
                                                           child: Text(
-                                                            goodsReceiptEntryConainerDataTemp[
-                                                                    index]
-                                                                .employeeId,
-                                                            style: TextStyle(
-                                                                fontSize: 21 *
-                                                                    SizeConfig
-                                                                        .ratioFont,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Constants
-                                                                    .mainColor),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                          )),
-                                                      SizedBox(
-                                                        width: 80 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        child: Text(
-                                                            goodsReceiptEntryConainerDataTemp[index]
-                                                                .itemId,
-                                                            style: TextStyle(
-                                                                fontSize: 21 *
-                                                                    SizeConfig
-                                                                        .ratioFont,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Constants
-                                                                    .mainColor),
-                                                            textAlign: TextAlign
-                                                                .center),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 80 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        child: Text(
-                                                            goodsReceiptEntryConainerDataTemp[index]
-                                                                .actualQuantity
-                                                                .toString(),
-                                                            style: TextStyle(
-                                                                fontSize: 21 *
-                                                                    SizeConfig
-                                                                        .ratioFont,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color: Constants
-                                                                    .mainColor),
-                                                            textAlign: TextAlign
-                                                                .center),
-                                                      ),
-                                                      IconButton(
-                                                          onPressed: () {
-                                                            AlertDialogTwoBtnCustomized(
+                                                              goodsReceiptEntryConainerDataTemp[index]
+                                                                  .itemId,
+                                                              style: TextStyle(
+                                                                  fontSize: 21 *
+                                                                      SizeConfig
+                                                                          .ratioFont,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: Constants
+                                                                      .mainColor),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 80 *
+                                                              SizeConfig
+                                                                  .ratioWidth,
+                                                          child: Text(
+                                                              goodsReceiptEntryConainerDataTemp[index]
+                                                                  .actualQuantity
+                                                                  .toString(),
+                                                              style: TextStyle(
+                                                                  fontSize: 21 *
+                                                                      SizeConfig
+                                                                          .ratioFont,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  color: Constants
+                                                                      .mainColor),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center),
+                                                        ),
+                                                        IconButton(
+                                                            onPressed: () {
+                                                              AlertDialogTwoBtnCustomized(
+                                                                      context,
+                                                                      'Bạn có chắc?',
+                                                                      'Chọn Cập nhật hoặc Xóa rổ để tiếp tục',
+                                                                      'Cập nhật',
+                                                                      'Xóa rổ',
+                                                                      () {
+                                                                // xóa thông tin rổ đó và điền lại rổ đó
+                                                                scanQRReceiptresult =
+                                                                    goodsReceiptEntryConainerDataTemp[
+                                                                            index]
+                                                                        .containerId;
+                                                                goodsReceiptEntryConainerDataTemp
+                                                                    .removeAt(
+                                                                        index);
+                                                                Navigator.pushNamed(
                                                                     context,
-                                                                    'Bạn có chắc?',
-                                                                    'Chọn Cập nhật hoặc Xóa rổ để tiếp tục',
-                                                                    'Cập nhật',
-                                                                    'Xóa rổ',
-                                                                    () {
-                                                              // xóa thông tin rổ đó và điền lại rổ đó
-                                                              scanQRReceiptresult =
-                                                                  goodsReceiptEntryConainerDataTemp[
-                                                                          index]
-                                                                      .containerId;
-                                                              goodsReceiptEntryConainerDataTemp
-                                                                  .removeAt(
-                                                                      index);
-                                                              Navigator.pushNamed(
-                                                                  context,
-                                                                  '/modify_info_screen');
-                                                            }, () {
-                                                              //bloc event xóa rổ
-                                                              goodsReceiptEntryConainerDataTemp
-                                                                  .removeAt(
-                                                                      index);
-                                                              BlocProvider.of<
-                                                                          ReceiptBloc>(
-                                                                      context)
-                                                                  .add(RefershReceiptEvent(
-                                                                      DateTime
-                                                                          .now()));
-                                                            }, 18, 22)
-                                                                .show();
-                                                          },
-                                                          icon: const Icon(Icons
-                                                              .mode_edit_rounded))
-                                                    ],
+                                                                    '/modify_info_screen');
+                                                              }, () {
+                                                                //bloc event xóa rổ
+                                                                goodsReceiptEntryConainerDataTemp
+                                                                    .removeAt(
+                                                                        index);
+                                                                BlocProvider.of<
+                                                                            ReceiptBloc>(
+                                                                        context)
+                                                                    .add(RefershReceiptEvent(
+                                                                        DateTime
+                                                                            .now()));
+                                                              }, 18, 22)
+                                                                  .show();
+                                                            },
+                                                            icon: const Icon(Icons
+                                                                .mode_edit_rounded))
+                                                      ],
+                                                    ),
+                                                    onPressed: () async {
+                                                      //   Navigator.pushNamed(context, '/qr_scanner_screen');
+                                                    },
                                                   ),
-                                                  onPressed: () async {
-                                                    //   Navigator.pushNamed(context, '/qr_scanner_screen');
-                                                  },
                                                 ),
-                                              ),
-                                            );
-                                          }),
-                                    ));
+                                              );
+                                            }),
+                                      ));
                             }
                           }),
                         ],
@@ -362,14 +372,14 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                 // nhảy đến trang quét QR điền thông tin
                                 BlocProvider.of<ReceiptBloc>(context)
                                     .add(LoadAllDataEvent());
-            
+
                                 Navigator.pushNamed(
                                     context, '/qr_scanner_screen');
-            
+
                                 // test tính năng
                                 // BlocProvider.of<ReceiptBloc>(context)
                                 //     .add(LoadAllDataEvent());
-            
+
                                 // Navigator.pushNamed(
                                 //     context, '/modify_info_screen');
                               }),
@@ -422,7 +432,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                       )
                     ],
                   ),
-            
+
                   //Tab cập nhật vị trí
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -455,20 +465,148 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                               ),
                             ],
                           ),
-                          locationContainer.isEmpty
-                              ? ExceptionErrorState(
-                                  height: 300,
-                                  title: "Chưa có rổ được nhập",
-                                  message: "Quét mã để tiến hành nhập kho",
-                                  imageDirectory:
-                                      'lib/assets/sad_face_search.png',
-                                  imageHeight: 140,
-                                )
-                              : Column(
-                                  children: locationContainer
-                                      .map((item) => RowContainerLocation(item))
-                                      .toList(),
-                                ),
+                          Builder(builder: (BuildContext context) {
+                            if (receiptState is ReceiptLoadingState) {
+                              return CircularLoading();
+                            } else if (receiptState
+                                is LoadContainerExportingStateSuccess) {
+                              return containers.isEmpty
+                                  ? ExceptionErrorState(
+                                      height: 300,
+                                      title: "Chưa có rổ được nhập",
+                                      message: "Quét mã để tiến hành nhập kho",
+                                      imageDirectory:
+                                          'lib/assets/sad_face_search.png',
+                                      imageHeight: 140,
+                                    )
+                                  : SingleChildScrollView(
+                                      scrollDirection: Axis.vertical,
+                                      child: SizedBox(
+                                          height: 380 * SizeConfig.ratioHeight,
+                                          child: ListView.builder(
+                                              padding: const EdgeInsets.all(8),
+                                              itemCount: containers.length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  child: SizedBox(
+                                                    width: 380 *
+                                                        SizeConfig.ratioWidth,
+                                                    height: 80 *
+                                                        SizeConfig.ratioHeight,
+                                                    child: GestureDetector(
+                                                      // ignore: deprecated_member_use
+                                                      child: ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                          primary:
+                                                              Colors.grey[300],
+                                                          shape: const RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius
+                                                                  .all(Radius
+                                                                      .circular(
+                                                                          8))),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  5, 10, 5, 10),
+
+                                                          // primary: bgColor,
+                                                          // padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                                                        ),
+                                                        // padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            SizedBox(
+                                                              width: 160 *
+                                                                  SizeConfig
+                                                                      .ratioWidth,
+                                                              child: Text(
+                                                                  containers[
+                                                                          index]
+                                                                      .containerId,
+                                                                  style: TextStyle(
+                                                                      fontSize: 21 *
+                                                                          SizeConfig
+                                                                              .ratioFont,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Constants
+                                                                          .mainColor),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 160 *
+                                                                  SizeConfig
+                                                                      .ratioWidth,
+                                                              child: Text('',
+                                                                  style: TextStyle(
+                                                                      fontSize: 21 *
+                                                                          SizeConfig
+                                                                              .ratioFont,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      color: Constants
+                                                                          .mainColor),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        onPressed: () async {
+                                                          //     Navigator.pushNamed(context, '/qr_scanner_screen');
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              })
+                                          // Column(
+                                          //     children: containers
+                                          //         .map((item) =>
+                                          //             RowContainerLocation(item))
+                                          //         .toList()),
+                                          ),
+                                    );
+                            } else {
+                              return ExceptionErrorState(
+                                height: 300,
+                                title: "Hệ thống xảy ra lỗi",
+                                message: "Vui lòng thử lại sau",
+                                imageDirectory:
+                                    'lib/assets/sad_face_search.png',
+                                imageHeight: 140,
+                              );
+                            }
+                          }
+                              // locationContainer.isEmpty
+                              //     ? ExceptionErrorState(
+                              //         height: 300,
+                              //         title: "Chưa có rổ được nhập",
+                              //         message: "Quét mã để tiến hành nhập kho",
+                              //         imageDirectory:
+                              //             'lib/assets/sad_face_search.png',
+                              //         imageHeight: 140,
+                              //       )
+                              //     : Column(
+                              //         children: locationContainer
+                              //             .map((item) => RowContainerLocation(item))
+                              //             .toList(),
+                              ),
                         ],
                       ),
                       Column(
@@ -480,7 +618,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
                                 scanQRReceiptresult = "-1";
                                 Navigator.pushNamed(
                                     context, '/scan_container_screen');
-            
+
                                 // test tính năng
                                 // BlocProvider.of<ReceiptBloc>(context).add(
                                 //     UpdateLocationReceiptEvent(
@@ -611,7 +749,7 @@ class _ReceiptScreenState extends State<ReceiptScreen> {
 // }
 
 class RowContainerLocation extends StatelessWidget {
-  LocationServer locationContainer;
+  ContainerData locationContainer;
   RowContainerLocation(this.locationContainer);
   @override
   Widget build(BuildContext context) {
@@ -648,22 +786,12 @@ class RowContainerLocation extends StatelessWidget {
                 ),
                 SizedBox(
                   width: 160 * SizeConfig.ratioWidth,
-                  child: locationContainer.id == null
-                      ? Text("",
-                          style: TextStyle(
-                              fontSize: 21 * SizeConfig.ratioFont,
-                              fontWeight: FontWeight.bold,
-                              color: Constants.mainColor),
-                          textAlign: TextAlign.center)
-                      : Text(
-                          locationContainer.shelfId +
-                              locationContainer.rowId.toString() +
-                              locationContainer.id.toString(),
-                          style: TextStyle(
-                              fontSize: 21 * SizeConfig.ratioFont,
-                              fontWeight: FontWeight.bold,
-                              color: Constants.mainColor),
-                          textAlign: TextAlign.center),
+                  child: Text('',
+                      style: TextStyle(
+                          fontSize: 21 * SizeConfig.ratioFont,
+                          fontWeight: FontWeight.bold,
+                          color: Constants.mainColor),
+                      textAlign: TextAlign.center),
                 ),
               ],
             ),

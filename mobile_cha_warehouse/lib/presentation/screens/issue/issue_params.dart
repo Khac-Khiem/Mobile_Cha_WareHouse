@@ -1,9 +1,9 @@
 class ContainerIssueExportServer {
   String issueId;
- // String employeeId;
+  // String employeeId;
   String itemId;
   String containerId;
-  double quanlity;
+  double quantity;
   ContainerIssueExportServer(
-      this.issueId, this.itemId, this.containerId, this.quanlity);
+      this.issueId, this.itemId, this.containerId, this.quantity);
 }

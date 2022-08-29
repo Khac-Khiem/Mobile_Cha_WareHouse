@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:mobile_cha_warehouse/function.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/blocs/receipt_bloc.dart';
-
 import 'package:mobile_cha_warehouse/presentation/dialog/dialog.dart';
-import 'package:mobile_cha_warehouse/presentation/screens/receipt/scan_location_receipt_screen.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
 
 import '../../../constant.dart';

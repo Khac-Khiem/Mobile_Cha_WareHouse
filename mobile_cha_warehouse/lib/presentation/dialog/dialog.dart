@@ -211,10 +211,10 @@ class LoadingDialog {
       {required this.buildContext,
       required this.dismissable,
       required this.progressDialog}) {
-    print("Hello");
+   // print("Hello");
     progressDialog = ProgressDialog(
       buildContext,
-      title: SizedBox(
+      title: const SizedBox(
         width: 0,
         height: 0,
       ),

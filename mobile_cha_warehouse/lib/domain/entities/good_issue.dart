@@ -5,13 +5,13 @@ import 'package:mobile_cha_warehouse/domain/entities/warehouse_employee.dart';
 
 // model lưu trữ từng rổ của một dòng trong đơn xuất kho
 class GoodsIssueEntryContainer extends Equatable {
-  int goodsIssueEntryId;
-  double quantity;
-  DateTime productionDate;
+  //int goodsIssueEntryId;
+  int quantity;
+  String productionDate;
   String containerId;
   //bool isTaken;
-  ProductionEmployee productionEmployee;
-  GoodsIssueEntryContainer(this.goodsIssueEntryId, this.quantity,
+  ProductionEmployee? productionEmployee;
+  GoodsIssueEntryContainer( this.quantity,
       this.productionDate, this.containerId, this.productionEmployee);
   @override
   // TODO: implement props
@@ -26,7 +26,7 @@ class GoodsIssueEntry extends Equatable {
   int plannedQuantity;
  // WarehouseEmployee employee;
   Item item;
-  List<dynamic> container;
+  List<GoodsIssueEntryContainer>? container;
   //List<dynamic> container;
   GoodsIssueEntry(this.plannedQuantity,
       this.item, this.container);

@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:mobile_cha_warehouse/domain/entities/good_issue.dart';
 import 'package:mobile_cha_warehouse/function.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/issue_bloc.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/events/issue_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/issue_state.dart';
-import 'package:mobile_cha_warehouse/presentation/dialog/dialog.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/inventory/inventory_screen.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/issue/issue_params.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
@@ -36,7 +33,7 @@ class ListContainerScreen extends StatelessWidget {
               //   Navigator.pushNamed(context, '/list_issue_screen');
               // }, () {}, 18, 22)
               //     .show();
-               Navigator.pushNamed(context, '/list_issue_screen');
+              Navigator.pushNamed(context, '/list_issue_screen');
             },
           ),
           backgroundColor: const Color(0xff001D37), //màu xanh dương đậm
@@ -48,19 +45,15 @@ class ListContainerScreen extends StatelessWidget {
         endDrawer: DrawerUser(),
         body: BlocConsumer<IssueBloc, IssueState>(
             listener: (context, issueState) {
-          if (issueState is ConfirmSuccessIssueState) {
-            AlertDialogOneBtnCustomized(context, "Thành công",
-                    "Đã hoàn thành đơn xuất kho", "Tiếp tục", () {
-              Navigator.pushNamed(context, '///');
-            }, 18, 22, () {})
-                .show();
-          }else if(issueState is ConfirmFailureIssueState){
-             AlertDialogOneBtnCustomized(context, "Thất bại",
-                    "Không thể hoàn thành đơn xuất kho", "Trở lại", () {
-             // Navigator.pushNamed(context, '///');
-            }, 18, 22, () {})
-                .show();
-          }
+          // if (issueState is IssueStateListLoading) {
+          // }
+          //else if(issueState is ConfirmFailureIssueState){
+          //    AlertDialogOneBtnCustomized(context, "Thất bại",
+          //           "Không thể hoàn thành đơn xuất kho", "Trở lại", () {
+          //    // Navigator.pushNamed(context, '///');
+          //   }, 18, 22, () {})
+          //       .show();
+          // }
         }, builder: (context, issueState) {
           return Column(
             children: [
@@ -75,7 +68,7 @@ class ListContainerScreen extends StatelessWidget {
                       SizedBox(
                           width: 140 * SizeConfig.ratioWidth,
                           child: Text(
-                            "Mã SP",
+                            "Mã Rổ",
                             style: TextStyle(
                                 fontSize: 21 * SizeConfig.ratioFont,
                                 fontWeight: FontWeight.bold),
@@ -109,12 +102,20 @@ class ListContainerScreen extends StatelessWidget {
                       scrollDirection: Axis.vertical,
                       child: Builder(builder: (BuildContext context) {
                         if (issueState is LoadContainerExportStateSuccess) {
-                          return issueState.containers.isNotEmpty
+                          //return (goodsIssueEntryContainerData.isNotEmpty)
+                          return (issueState.containers.isNotEmpty)
                               ? Column(
                                   children: [
+                                    // Column(
+                                    //   children: containerExported!
+                                    //       .map((item) =>
+                                    //           RowContainerExported(item))
+                                    //       .toList(),
+                                    // ),
                                     Column(
                                       children: issueState.containers
-                                          .map((item) => RowContainer(item))
+                                          .map((item) =>
+                                              RowContainerExported(item))
                                           .toList(),
                                     ),
                                     Divider(
@@ -135,7 +136,7 @@ class ListContainerScreen extends StatelessWidget {
                                         ),
                                         Column(
                                           children: [
-                                            LabelText(''),
+                                            LabelText(planned.toString()),
                                             LabelText(issueState.totalQuatity
                                                 .toString())
                                           ],
@@ -152,55 +153,20 @@ class ListContainerScreen extends StatelessWidget {
                                       'lib/assets/sad_face_search.png',
                                   imageHeight: 140,
                                 );
-                        } else {
+                        } else if (issueState is LoadContainerExportStateFail) {
                           return ExceptionErrorState(
                             height: 300,
-                            title: "Chưa có rổ được xuất",
+                            title: "Không truy xuất được",
                             message: "Quét mã để tiến hành xuất kho",
                             imageDirectory: 'lib/assets/sad_face_search.png',
                             imageHeight: 140,
                           );
+                        } else {
+                          return Center(
+                            child: CircularLoading(),
+                          );
                         }
                       }))),
-              // goodsIssueEntryContainerData.isEmpty
-
-              // ? ExceptionErrorState(
-              //     height: 300,
-              //     title: "Chưa có rổ được xuất",
-              //     message: "Quét mã để tiến hành xuất kho",
-              //     imageDirectory: 'lib/assets/sad_face_search.png',
-              //     imageHeight: 140,
-              //   )
-              // : Column(
-              //     children: [
-              //       Column(
-              //         children: goodsIssueEntryContainerData
-              //             .map((item) => RowContainer(item))
-              //             .toList(),
-              //       ),
-              //       Divider(
-              //         indent: 50,
-              //         endIndent: 50,
-              //         thickness: 1,
-              //         color: Colors.grey[400],
-              //       ),
-              //       Row(
-              //         children: [
-              //           Column(
-              //             children: [
-              //               LabelText("Nhu cầu"),
-              //               LabelText('Tổng đã xuất')
-              //             ],
-              //           ),
-              //           Column(
-              //             children: [LabelText(''), LabelText('')],
-              //           )
-              //         ],
-              //       )
-              //     ],
-              //   ),
-              //  ),
-              // ),
               CustomizedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/qr_scanner_issue_screen');
@@ -209,9 +175,9 @@ class ListContainerScreen extends StatelessWidget {
               CustomizedButton(
                   text: 'XÁC NHẬN',
                   onPressed: () async {
-                    BlocProvider.of<IssueBloc>(context).add(
-                        ConFirmExportingContainer(selectedGoodIssueId,
-                            goodsIssueEntryContainerData, DateTime.now()));
+                    // BlocProvider.of<IssueBloc>(context).add(
+                    //     ConFirmExportingContainer(selectedGoodIssueId,
+                    //         goodsIssueEntryContainerData, DateTime.now()));
                     Navigator.pushNamed(context, '/list_issue_screen');
                   })
             ],
@@ -269,7 +235,80 @@ class RowContainer extends StatelessWidget {
                     // ),
                     SizedBox(
                       width: 150 * SizeConfig.ratioWidth,
-                      child: Text(goodsIssueEntryContainer.quanlity.toString(),
+                      child: Text(goodsIssueEntryContainer.quantity.toString(),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 21 * SizeConfig.ratioFont,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center),
+                    ),
+                  ],
+                ),
+                // color: goodsIssueEntryContainer.goodsIssueEntryContainer.isTaken
+                //     ? Colors.grey[700]
+                //     : Colors.grey[300],
+                // shape: const RoundedRectangleBorder(
+                //     borderRadius: BorderRadius.all(Radius.circular(8))),
+                onPressed: () {}
+                //Sau này sẽ cho phép xuất lại để điều chỉnh thông tin nếu có sai sót
+
+                )),
+      ),
+    );
+  }
+}
+
+class RowContainerExported extends StatelessWidget {
+  GoodsIssueEntryContainer goodsIssueEntryContainer;
+  RowContainerExported(this.goodsIssueEntryContainer);
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: SizedBox(
+        width: 380 * SizeConfig.ratioWidth,
+        height: 80 * SizeConfig.ratioHeight,
+        child: GestureDetector(
+            // ignore: deprecated_member_use
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                  ),
+                  primary: Colors.grey[300],
+                  //   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                ),
+                // padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                        width: 150 * SizeConfig.ratioWidth,
+                        child: Text(
+                          goodsIssueEntryContainer.containerId,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 21 * SizeConfig.ratioFont,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        )),
+                    // SizedBox(
+                    //   width: 60 * SizeConfig.ratioWidth,
+                    //   child: Text(goodsIssueEntryContainer.employeeId,
+                    //       style: TextStyle(
+                    //         color: Colors.black,
+                    //         fontSize: 21 * SizeConfig.ratioFont,
+                    //         fontWeight: FontWeight.bold,
+                    //       ),
+                    //       textAlign: TextAlign.center),
+                    // ),
+                    SizedBox(
+                      width: 150 * SizeConfig.ratioWidth,
+                      child: Text(goodsIssueEntryContainer.quantity.toString(),
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 21 * SizeConfig.ratioFont,

@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:mobile_cha_warehouse/domain/entities/token.dart';
 
-
 abstract class LoginState extends Equatable {}
 
 class LoginStateFormatChecking extends LoginState {
@@ -34,7 +33,8 @@ class LoginStateInitial extends LoginState {
 
 class LoginStateLoadingRequest extends LoginState {
   DateTime timestamp;
-  LoginStateLoadingRequest(this.timestamp);
+  String author;
+  LoginStateLoadingRequest(this.timestamp, this.author);
   @override
   List<Object> get props => [timestamp];
 }

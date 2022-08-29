@@ -20,12 +20,12 @@ class ContainerTypeModel extends ContainerType {
 class ContainerModel extends ContainerData {
   ContainerModel(
       String containerId,
-      int quantity,
-      String productionDate,
+      int? quantity,
+      String? productionDate,
       bool isNotEmpty,
-      Item item,
+      Item? item,
     //  ProductionEmployee productionEmployee,
-      Cell location,
+      Cell? location,
       ContainerType containerType)
       : super(containerId, quantity, productionDate, isNotEmpty, item, location,
              containerType);
@@ -35,12 +35,12 @@ class ContainerModel extends ContainerData {
       json["quantity"],
       json["productionDate"],
       json["consistent"],
-      json["item"] == null ? null! : ItemModel.fromJson(json["item"]),
+      json["item"] == null ? null : ItemModel.fromJson(json["item"]),
       // json["productionEmployee"] == null
       //     ? null!
       //     : ProductionEmployeeModel.fromJson(json["productionEmployee"]),
       json["location"] == null
-          ? null!
+          ? null
           : CellDataModel.fromJson(json["location"]),
       json["containerType"] == null
           ? null!

@@ -136,12 +136,18 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                           context, '/receipt_screen');
                                     }, 18, 22)
                                         .show();
-                                  }else{
-                                     Navigator.pushNamed(
-                                      context, '/modify_info_screen');
+                                  } else {
+                                    // kiểm tra rổ
+                                    BlocProvider.of<ReceiptBloc>(context).add(
+                                        CheckContainerAvailableEvent(scanQRReceiptresult, DateTime.now()));
+                                    Navigator.pushNamed(
+                                        context, '/modify_info_screen');
                                   }
                                 }
                                 if (goodsReceiptEntryConainerDataTemp.isEmpty) {
+                                  // kiểm tra rổ
+                                  BlocProvider.of<ReceiptBloc>(context)
+                                      .add(CheckContainerAvailableEvent(scanQRReceiptresult, DateTime.now()));
                                   Navigator.pushNamed(
                                       context, '/modify_info_screen');
                                 }

@@ -4,7 +4,6 @@ import 'package:mobile_cha_warehouse/datasource/models/warehouse_product_model.d
 import 'package:mobile_cha_warehouse/domain/entities/good_issue.dart';
 import 'package:mobile_cha_warehouse/domain/entities/item.dart';
 import 'package:mobile_cha_warehouse/domain/entities/production_employee.dart';
-import 'package:mobile_cha_warehouse/domain/entities/warehouse_employee.dart';
 
 // class GoodsIssueEntryContainerModel extends GoodsIssueEntryContainer {
 //   GoodsIssueEntryContainerModel(int quantity, String productionDate,
@@ -22,21 +21,21 @@ import 'package:mobile_cha_warehouse/domain/entities/warehouse_employee.dart';
 // model 1 container entry
 class GoodsIssueEntryContainerModel extends GoodsIssueEntryContainer {
   GoodsIssueEntryContainerModel(
-      int goodsIssueEntryId,
-      double quantity,
-      DateTime productionDate,
+    //  int goodsIssueEntryId,
+      int quantity,
+      String productionDate,
       String containerId,
-      ProductionEmployee productionEmployee)
-      : super(goodsIssueEntryId, quantity, productionDate, containerId,
+      ProductionEmployee? productionEmployee)
+      : super( quantity, productionDate, containerId,
             productionEmployee);
   factory GoodsIssueEntryContainerModel.fromJson(Map<String, dynamic> json) {
     return GoodsIssueEntryContainerModel(
-      json["goodsIssueEntryId"],
+     // json["goodsIssueEntryId"],
       json["quantity"],
       json["productionDate"],
       json["containerId"],
       json["productionEmployee"] == null
-          ? null!
+          ? null
           : ProductionEmployeeModel.fromJson(json["productionEmployee"]),
     );
   }
@@ -50,7 +49,7 @@ class GoodsIssueEntryModel extends GoodsIssueEntry {
    //   int goodsIssueId,
       Item item,
    //   WarehouseEmployee employee,
-      List<dynamic> container)
+      List<GoodsIssueEntryContainerModel>? container)
       : super(plannedQuantity, item,
             container);
   factory GoodsIssueEntryModel.fromJson(Map<String, dynamic> json) {

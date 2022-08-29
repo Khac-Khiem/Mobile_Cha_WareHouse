@@ -21,8 +21,8 @@ class IssueUseCase {
     return confirm;
   }
 
-  Future confirmGoodsIssue(String issueId) async {
-    final goodsissues = await _issuesRepo.confirmGoodsIssue(issueId);
-    return goodsissues;
-  }
+  // Future confirmGoodsIssue(String issueId) async {
+  //   final goodsissues = await _issuesRepo.confirmGoodsIssue(issueId);
+  //   return goodsissues;
+  // }
 }

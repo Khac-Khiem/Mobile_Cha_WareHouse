@@ -105,12 +105,14 @@ class EditPerBasketBloc extends Bloc<EditPerBasketEvent, EditPerBasketState> {
 
   Future<void> _onEditClick(
       EditPerBasketEvent event, Emitter<EditPerBasketState> emit) async {
-    if (event is EditPerBasketEventEditClick) {
-      emit(EditPerBasketStateUploadLoading());
-      try {
+    emit(EditPerBasketStateUploadLoading());
+
+    try {
+      if (event is EditPerBasketEventEditClick) {
         final request = await inconsistencyContainerUseCase.reportInconsistency(
             event.containerId, event.note, event.newQuantity, event.timeStamp);
         emit(EditPerBasketStateUploadSuccess(DateTime.now()));
+        print(request);
         // if (request == 200) {
         //   print('success');
         //   emit(EditPerBasketStateUploadSuccess(DateTime.now()));
@@ -119,11 +121,11 @@ class EditPerBasketBloc extends Bloc<EditPerBasketEvent, EditPerBasketState> {
         //   emit(EditPerBasketStateUploadFailed(
         //       ErrorPackage("Something went wrong", '', "")));
         // }
-      } catch (e) {
-        emit(EditPerBasketStateUploadFailed(
-            ErrorPackage("Something went wrong", '', "")));
-        // state fail
       }
+    } catch (e) {
+      emit(EditPerBasketStateUploadFailed(
+          ErrorPackage("Something went wrong", '', "")));
+      // state fail
     }
   }
 }

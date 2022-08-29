@@ -88,7 +88,7 @@ Future<void> initializeDependencies() async {
   injector.registerSingleton<IssueBloc>(IssueBloc(injector(), injector(),injector()));
 
   //injector.registerFactory<ReceiptBloc>(() => ReceiptBloc(injector()));
-  injector.registerSingleton<ReceiptBloc>(ReceiptBloc(injector(), injector(), injector()));
+  injector.registerSingleton<ReceiptBloc>(ReceiptBloc(injector(), injector(), injector(), injector()));
 
   injector.registerSingleton<CheckInfoBloc>(CheckInfoBloc(injector(), injector()));
  // injector.registerFactory<CheckInfoBloc>(() => CheckInfoBloc(injector()));

@@ -6,5 +6,5 @@ abstract class IssuesRepo {
   Future<GoodsIssue> getGoodsIssueById(String goodsIssueId);
   Future<int> addContainerIssue(
       String issueId, List<ContainerIssueExportServer> containers);
-  Future<int> confirmGoodsIssue(String issueid);
+ // Future<int> confirmGoodsIssue(String issueid);
 }

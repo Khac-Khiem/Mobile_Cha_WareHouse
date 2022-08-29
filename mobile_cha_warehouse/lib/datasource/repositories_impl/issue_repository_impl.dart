@@ -29,10 +29,10 @@ class IssueRepoImpl implements IssuesRepo {
     return confirm;
   }
 
-  @override
-  Future<int> confirmGoodsIssue(String issueid) {
-    // TODO: implement confirmGoodsIssue
-    final status = issueService.confirmIssue(issueid);
-    return status;
-  }
+  // @override
+  // Future<int> confirmGoodsIssue(String issueid) {
+  //   // TODO: implement confirmGoodsIssue
+  //   final status = issueService.confirmIssue(issueid);
+  //   return status;
+  // }
 }

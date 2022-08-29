@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/function.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/issue_bloc.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/blocs/receipt_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/stockcard_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/receipt_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/stockcard_event.dart';
@@ -12,7 +13,6 @@ import 'package:mobile_cha_warehouse/presentation/widget/main_app_name.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
 
 import '../../../constant.dart';
-import '../../bloc/blocs/receipt_bloc.dart';
 import '../../bloc/events/issue_event.dart';
 
 class MainScreen extends StatelessWidget {
@@ -63,8 +63,8 @@ class MainScreen extends StatelessWidget {
               CustomizedButton(
                 text: "Nhập kho",
                 onPressed: () async {
-                  // BlocProvider.of<ReceiptBloc>(context)
-                  //     .add(LoadAllDataEvent(DateTime.now()));
+                  BlocProvider.of<ReceiptBloc>(context)
+                      .add(LoadAllContainerExporting(DateTime.now()));
 
                   Navigator.pushNamed(context, '/receipt_screen');
                   scanQRReceiptresult = "-1";

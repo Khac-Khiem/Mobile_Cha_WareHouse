@@ -268,7 +268,7 @@ class StockCardScreen extends StatelessWidget {
                     color: Constants.mainColor,
                     thickness: 1,
                   ),
-                  Container(
+                  SizedBox(
                     height: 280 * SizeConfig.ratioHeight,
                     child: BlocBuilder<StockCardViewBloc, StockCardViewState>(
                         builder: (context, stockCardState) {
@@ -282,12 +282,12 @@ class StockCardScreen extends StatelessWidget {
                           is StockCardViewStateLoadSuccess) {
                         List<StockCardEntry> stockcards =
                             stockCardState.stockCard;
-                        TextStyle _textContentInTable =
-                            TextStyle(fontSize: 14 * SizeConfig.ratioFont);
+                        // TextStyle _textContentInTable =
+                        //     TextStyle(fontSize: 14 * SizeConfig.ratioFont);
                         TextStyle _textHeaderInTable = TextStyle(
                             fontSize: 15 * SizeConfig.ratioFont,
                             color: Colors.white);
-                        return Container(
+                        return SizedBox(
                           height: 280 * SizeConfig.ratioHeight,
                           child: SingleChildScrollView(
                             scrollDirection: Axis.vertical,
@@ -364,9 +364,7 @@ class StockCardScreen extends StatelessWidget {
                         );
                       } else if (stockCardState
                           is StockCardViewStateLoadFailed) {
-                        return Container(
-                          child: Text('fail'),
-                        );
+                        return const Text('fail');
                       } else {
                         return Center(
                           child: ExceptionErrorState(
@@ -397,7 +395,7 @@ class StockCardScreen extends StatelessWidget {
                                           DateTime.now(),
                                           _productId,
                                           _startDate,
-                                          _endDate.add(Duration(days: 1))));
+                                          _endDate.add(const Duration(days: 1))));
                                 }))
                 ],
               ),
