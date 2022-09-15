@@ -27,8 +27,10 @@ class LoginEventLoginClicked extends LoginEvent {
 
 class LoginEventFetchToken extends LoginEvent {
   DateTime timestamp;
-  Uri responseUrl;
-  LoginEventFetchToken(this.responseUrl, this.timestamp);
+  String userName;
+  String password;
+  // Uri responseUrl;
+  LoginEventFetchToken( this.userName,this.password, this.timestamp);
   @override
   // TODO: implement props
   List<Object?> get props => [timestamp];

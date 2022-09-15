@@ -6,6 +6,7 @@ import 'package:mobile_cha_warehouse/presentation/bloc/blocs/issue_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/issue_state.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/inventory/inventory_screen.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/issue/issue_params.dart';
+import 'package:mobile_cha_warehouse/presentation/screens/issue/qr_issue_screen.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
 import '../../widget/exception_widget.dart';
 
@@ -169,6 +170,7 @@ class ListContainerScreen extends StatelessWidget {
                       }))),
               CustomizedButton(
                   onPressed: () {
+                    scanQRIssueresult = "-1";
                     Navigator.pushNamed(context, '/qr_scanner_issue_screen');
                   },
                   text: 'QUÉT MÃ'),

@@ -33,16 +33,15 @@ class LoginStateInitial extends LoginState {
 
 class LoginStateLoadingRequest extends LoginState {
   DateTime timestamp;
-  String author;
-  LoginStateLoadingRequest(this.timestamp, this.author);
+  LoginStateLoadingRequest(this.timestamp,);
   @override
   List<Object> get props => [timestamp];
 }
 
 class LoginStateLoginSuccessful extends LoginState {
   DateTime timestamp;
-  LoginData loginData;
-  LoginStateLoginSuccessful(this.timestamp, this.loginData);
+ // LoginData loginData;
+  LoginStateLoginSuccessful(this.timestamp);
   @override
   List<Object> get props => [timestamp];
 }

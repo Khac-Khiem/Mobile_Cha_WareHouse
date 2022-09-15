@@ -144,7 +144,7 @@ class ListIssue extends StatelessWidget {
                   ),
                   child: Center(
                       child: Text(issueId,
-                          style: TextStyle(color: Colors.white, fontSize: 30))),
+                          style: TextStyle(color: Colors.white, fontSize: 20))),
                 ),
               ),
               GestureDetector(

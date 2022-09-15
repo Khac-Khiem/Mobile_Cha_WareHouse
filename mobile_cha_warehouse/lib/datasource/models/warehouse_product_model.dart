@@ -5,9 +5,9 @@ class ItemModel extends Item {
   ItemModel(
       String id,
       String name,
-      int piecesPerKilogram,
-      int minimumStockLevel,
-      int maximumStockLevel,
+      var piecesPerKilogram,
+     var minimumStockLevel,
+      var maximumStockLevel,
       int unit,
     // WarehouseEmployeeModel manager
     dynamic manager 

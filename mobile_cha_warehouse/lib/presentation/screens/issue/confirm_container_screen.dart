@@ -42,6 +42,7 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
 
   bool isFull = false;
 
+  int itemType = 0;
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -72,6 +73,7 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
             //     checkInfoState.basket.productionEmployee.employeeId;
             itemId = issueState.basket.item!.itemId;
             productionDate = issueState.basket.productionDate.toString();
+            itemType = issueState.basket.item!.unit;
             print(issueState.basket);
             if (itemId != selectedItemId) {
               AlertDialogOneBtnCustomized(
@@ -80,11 +82,13 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                   "Bạn đã chọn rổ sai mã sản phẩm",
                   "Trở lại",
                   () {
+                    scanQRIssueresult = "-1";
                     Navigator.pushNamed(context, '/qr_scanner_issue_screen');
                   },
                   18,
                   22,
                   () {
+                    scanQRIssueresult = "-1";
                     Navigator.pushNamed(context, '/qr_scanner_issue_screen');
                   }).show();
             }
@@ -271,33 +275,39 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                                 width: 200 * SizeConfig.ratioWidth,
                                 height: 55 * SizeConfig.ratioHeight,
                                 //color: Colors.grey[200],
-                                child: TextField(
-                                  enabled: true,
-                                  onChanged: (value) => {quanlity = value},
-                                  readOnly: isFull,
-                                  controller: isFull == true
-                                      ? TextEditingController(
-                                          text: checkInfoState.basket.quantity
-                                              .toString())
-                                      : TextEditingController(
-                                          text: quanlity.toString()),
-                                  textAlignVertical: TextAlignVertical.center,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 20 * SizeConfig.ratioFont),
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal:
-                                            10 * SizeConfig.ratioHeight),
-                                    border: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 1.0 * SizeConfig.ratioWidth,
-                                            color: Colors.black)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            width: 1.0 * SizeConfig.ratioWidth,
-                                            color: Colors.black)),
-                                  ),
+                                child: Row(
+                                  children: [
+                                    TextField(
+                                      enabled: true,
+                                      onChanged: (value) => {quanlity = value},
+                                      readOnly: isFull,
+                                      controller: isFull == true
+                                          ? TextEditingController(
+                                              text: checkInfoState.basket.quantity
+                                                  .toString())
+                                          : TextEditingController(
+                                              text: quanlity.toString()),
+                                      textAlignVertical: TextAlignVertical.center,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 20 * SizeConfig.ratioFont),
+                                      decoration: InputDecoration(
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal:
+                                                10 * SizeConfig.ratioHeight),
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1.0 * SizeConfig.ratioWidth,
+                                                color: Colors.black)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1.0 * SizeConfig.ratioWidth,
+                                                color: Colors.black)),
+                                      ),
+                                    ),
+                                    itemType == 1 ?
+                                    const Text("kg"): const Text("cái"),
+                                  ],
                                 )),
                             Container(
                                 padding: EdgeInsets.symmetric(

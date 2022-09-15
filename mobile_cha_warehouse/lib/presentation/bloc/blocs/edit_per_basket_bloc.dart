@@ -92,11 +92,9 @@ class EditPerBasketBloc extends Bloc<EditPerBasketEvent, EditPerBasketState> {
       try {
         final basketOrErr =
             await containerUseCase.getContainerById(event.basketID);
-        print(basketOrErr);
         //Trả về view nguyên cái basket, view tự tách ra mà dùng
         emit(CheckInfoInventoryStateSuccess(basketOrErr, DateTime.now()));
       } catch (e) {
-        print(e);
         emit(
             CheckInfoInventoryStateFailure()); // Viết vậy để truyền String vô thôi
       }
@@ -112,7 +110,6 @@ class EditPerBasketBloc extends Bloc<EditPerBasketEvent, EditPerBasketState> {
         final request = await inconsistencyContainerUseCase.reportInconsistency(
             event.containerId, event.note, event.newQuantity, event.timeStamp);
         emit(EditPerBasketStateUploadSuccess(DateTime.now()));
-        print(request);
         // if (request == 200) {
         //   print('success');
         //   emit(EditPerBasketStateUploadSuccess(DateTime.now()));

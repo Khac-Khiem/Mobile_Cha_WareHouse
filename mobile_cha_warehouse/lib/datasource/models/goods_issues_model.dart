@@ -22,7 +22,7 @@ import 'package:mobile_cha_warehouse/domain/entities/production_employee.dart';
 class GoodsIssueEntryContainerModel extends GoodsIssueEntryContainer {
   GoodsIssueEntryContainerModel(
     //  int goodsIssueEntryId,
-      int quantity,
+      dynamic quantity,
       String productionDate,
       String containerId,
       ProductionEmployee? productionEmployee)
@@ -43,7 +43,7 @@ class GoodsIssueEntryContainerModel extends GoodsIssueEntryContainer {
 
 class GoodsIssueEntryModel extends GoodsIssueEntry {
   GoodsIssueEntryModel(
-      int plannedQuantity,
+      dynamic plannedQuantity,
    //   int id,
     //  int itemId,
    //   int goodsIssueId,

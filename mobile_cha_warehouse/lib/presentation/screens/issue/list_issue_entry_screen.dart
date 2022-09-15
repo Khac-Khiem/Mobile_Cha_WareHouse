@@ -119,7 +119,7 @@ class _ListIssueScreenState extends State<ListIssueScreen> {
                                 SingleChildScrollView(
                                   scrollDirection: Axis.vertical,
                                   child: SizedBox(
-                                    height: 300 * SizeConfig.ratioHeight,
+                                    height: 380 * SizeConfig.ratioHeight,
                                     child: ListView.builder(
                                         itemCount:
                                             goodsIssueEntryDataTemp.length,
@@ -157,7 +157,7 @@ class _ListIssueScreenState extends State<ListIssueScreen> {
                                                             .center,
                                                     children: [
                                                       SizedBox(
-                                                          width: 100 *
+                                                          width: 150 *
                                                               SizeConfig
                                                                   .ratioWidth,
                                                           child: Text(
@@ -180,7 +180,7 @@ class _ListIssueScreenState extends State<ListIssueScreen> {
                                                                 .center,
                                                           )),
                                                       SizedBox(
-                                                        width: 100 *
+                                                        width: 150 *
                                                             SizeConfig
                                                                 .ratioWidth,
                                                         child: Text(
@@ -201,26 +201,26 @@ class _ListIssueScreenState extends State<ListIssueScreen> {
                                                             textAlign: TextAlign
                                                                 .center),
                                                       ),
-                                                      SizedBox(
-                                                        width: 100 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        // giá trị actual
-                                                        child: Text('',
-                                                            //totalExportedList[index].toString(),
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontSize: 21 *
-                                                                  SizeConfig
-                                                                      .ratioFont,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
-                                                            textAlign: TextAlign
-                                                                .center),
-                                                      ),
+                                                      // SizedBox(
+                                                      //   width: 100 *
+                                                      //       SizeConfig
+                                                      //           .ratioWidth,
+                                                      //   // giá trị actual
+                                                      //   child: Text('',
+                                                      //       //totalExportedList[index].toString(),
+                                                      //       style: TextStyle(
+                                                      //         color:
+                                                      //             Colors.black,
+                                                      //         fontSize: 21 *
+                                                      //             SizeConfig
+                                                      //                 .ratioFont,
+                                                      //         fontWeight:
+                                                      //             FontWeight
+                                                      //                 .bold,
+                                                      //       ),
+                                                      //       textAlign: TextAlign
+                                                      //           .center),
+                                                      // ),
                                                     ],
                                                   ),
                                                   onPressed: () async {
@@ -397,7 +397,7 @@ class ColumnHeaderIssue extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                  width: 100 * SizeConfig.ratioWidth,
+                  width: 150 * SizeConfig.ratioWidth,
                   child: Text(
                     "Mã SP",
                     style: TextStyle(
@@ -406,7 +406,7 @@ class ColumnHeaderIssue extends StatelessWidget {
                     textAlign: TextAlign.center,
                   )),
               SizedBox(
-                width: 100 * SizeConfig.ratioWidth,
+                width: 150 * SizeConfig.ratioWidth,
                 child: Text(
                   "Nhu cầu",
                   style: TextStyle(
@@ -415,16 +415,16 @@ class ColumnHeaderIssue extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
-              SizedBox(
-                width: 100 * SizeConfig.ratioWidth,
-                child: Text(
-                  "Thực tế",
-                  style: TextStyle(
-                      fontSize: 21 * SizeConfig.ratioFont,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+              // SizedBox(
+              //   width: 100 * SizeConfig.ratioWidth,
+              //   child: Text(
+              //     "Thực tế",
+              //     style: TextStyle(
+              //         fontSize: 21 * SizeConfig.ratioFont,
+              //         fontWeight: FontWeight.bold),
+              //     textAlign: TextAlign.center,
+              //   ),
+              // ),
             ],
           )),
     );

@@ -6,8 +6,9 @@ class LoginRepoImpl implements LoginRepository {
   LoginService loginService;
   LoginRepoImpl(this.loginService);
   @override
-  Future<LoginData> loginRequest(String userName, String password) {
+  Future<String> loginRequest(String userName, String password) {
     // TODO: implement loginRequest
-    throw UnimplementedError();
+    final token = loginService.login(userName, password);
+    return token;
   }
 }

@@ -38,6 +38,7 @@ class AppRoute {
       case '///':
         return MaterialPageRoute(
             builder: (context) => MultiBlocProvider(providers: [
+                  BlocProvider<LoginBloc>(create: (context) => injector()),
                   BlocProvider<ReceiptBloc>(create: (context) => injector()),
                   BlocProvider<IssueBloc>(create: (context) => injector()),
                   BlocProvider<StockCardViewBloc>(
@@ -97,9 +98,10 @@ class AppRoute {
                   BlocProvider<ReceiptBloc>(create: (context) => injector()),
                 ], child: ScanContainerScreen()));
       case '/qr_location_screen':
-         return MaterialPageRoute(
+        return MaterialPageRoute(
             builder: (context) => BlocProvider<ReceiptBloc>(
-                create: (context) => injector(), child: const QRScannerLocationScreen()));
+                create: (context) => injector(),
+                child: const QRScannerLocationScreen()));
 
       //
       case '/stockcard_screen':
@@ -115,10 +117,8 @@ class AppRoute {
         // return MaterialPageRoute(
         //     builder: (context) => BlocProvider<CheckInfoBloc>(
         //         create: (context) => injector(), child: InventoryScreen()));
-         return MaterialPageRoute(
+        return MaterialPageRoute(
             builder: (context) => MultiBlocProvider(providers: [
-                
-              
                   BlocProvider<EditPerBasketBloc>(
                       create: (context) => injector()),
                 ], child: InventoryScreen()));

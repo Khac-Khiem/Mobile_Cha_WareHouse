@@ -6,7 +6,7 @@ import 'package:mobile_cha_warehouse/domain/entities/warehouse_employee.dart';
 // model lưu trữ từng rổ của một dòng trong đơn xuất kho
 class GoodsIssueEntryContainer extends Equatable {
   //int goodsIssueEntryId;
-  int quantity;
+  dynamic quantity;
   String productionDate;
   String containerId;
   //bool isTaken;
@@ -23,7 +23,7 @@ class GoodsIssueEntry extends Equatable {
  // int id;
  // int goodsIssueId;
  // int itemId;
-  int plannedQuantity;
+  dynamic plannedQuantity;
  // WarehouseEmployee employee;
   Item item;
   List<GoodsIssueEntryContainer>? container;

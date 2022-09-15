@@ -77,7 +77,6 @@ class IssueBloc extends Bloc<IssueEvent, IssueState> {
             await containerUseCase.getContainerById(event.basketID);
         emit(CheckInfoIssueStateSuccess(basketOrErr, DateTime.now()));
       } catch (e) {
-        print(e);
         emit(CheckInfoStateFailure());
       }
     }

@@ -53,7 +53,7 @@ Future<void> initializeDependencies() async {
   injector.registerSingleton<ItemService>(ItemService());
   injector.registerSingleton<LoginService>(LoginService());
   injector.registerSingleton<SlotService>(SlotService());
-   injector.registerSingleton<ProductionService>(ProductionService());
+  injector.registerSingleton<ProductionService>(ProductionService());
   injector.registerSingleton<InconsistencyContainerService>(
       InconsistencyContainerService());
   //register repo
@@ -64,7 +64,8 @@ Future<void> initializeDependencies() async {
       InconsistencyContainerRepoImpl(injector()));
   injector.registerSingleton<ItemRepository>(ItemRepositoryimpl(injector()));
   injector.registerSingleton<SlotRepository>(SlotRepositoryImpl(injector()));
-    injector.registerSingleton<ProductionEmployeeRepository>(ProductionEmployeeRepoImpl(injector()));
+  injector.registerSingleton<ProductionEmployeeRepository>(
+      ProductionEmployeeRepoImpl(injector()));
   injector
       .registerSingleton<StockCardRepo>(StockCardRepositoryImpl(injector()));
   injector.registerSingleton<LoginRepository>(LoginRepoImpl(injector()));
@@ -72,7 +73,8 @@ Future<void> initializeDependencies() async {
   injector.registerSingleton<ContainerUseCase>(ContainerUseCase(injector()));
   injector.registerSingleton<ReceiptUseCase>(ReceiptUseCase(injector()));
   injector.registerSingleton<IssueUseCase>(IssueUseCase(injector()));
-    injector.registerSingleton<ProductionEmployeeUseCase>(ProductionEmployeeUseCase(injector()));
+  injector.registerSingleton<ProductionEmployeeUseCase>(
+      ProductionEmployeeUseCase(injector()));
 
   injector.registerSingleton<InconsistencyContainerUseCase>(
       InconsistencyContainerUseCase(injector()));
@@ -81,22 +83,26 @@ Future<void> initializeDependencies() async {
   injector.registerSingleton<StockCardsUseCase>(StockCardsUseCase(injector()));
   injector.registerSingleton<LoginUsecase>(LoginUsecase(injector()));
   //register bloc
-  
-  injector.registerFactory<LoginBloc>(() => LoginBloc());
+
+  //injector.registerFactory<LoginBloc>(() => LoginBloc());
+  injector.registerSingleton<LoginBloc>(LoginBloc(injector()));
 
   // injector.registerFactory<IssueBloc>(() => IssueBloc(injector()));
-  injector.registerSingleton<IssueBloc>(IssueBloc(injector(), injector(),injector()));
+  injector.registerSingleton<IssueBloc>(
+      IssueBloc(injector(), injector(), injector()));
 
   //injector.registerFactory<ReceiptBloc>(() => ReceiptBloc(injector()));
-  injector.registerSingleton<ReceiptBloc>(ReceiptBloc(injector(), injector(), injector(), injector()));
+  injector.registerSingleton<ReceiptBloc>(
+      ReceiptBloc(injector(), injector(), injector(), injector()));
 
-  injector.registerSingleton<CheckInfoBloc>(CheckInfoBloc(injector(), injector()));
- // injector.registerFactory<CheckInfoBloc>(() => CheckInfoBloc(injector()));
+  injector
+      .registerSingleton<CheckInfoBloc>(CheckInfoBloc(injector(), injector()));
+  // injector.registerFactory<CheckInfoBloc>(() => CheckInfoBloc(injector()));
 
   injector.registerSingleton<StockCardViewBloc>(
       StockCardViewBloc(injector(), injector()));
   // injector.registerFactory<StockCardViewBloc>(
   //     () => StockCardViewBloc(injector(), injector()));
-   injector.registerSingleton<EditPerBasketBloc>(
+  injector.registerSingleton<EditPerBasketBloc>(
       EditPerBasketBloc(injector(), injector()));
 }

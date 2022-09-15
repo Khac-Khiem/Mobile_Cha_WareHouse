@@ -7,9 +7,9 @@ enum EItemSource { internal, external }
 class Item extends Equatable {
   String itemId;
   String name;
-  int piecesPerKilogram;
-  int minimumStockLevel;
-  int maximumStockLevel;
+  dynamic piecesPerKilogram;
+  dynamic minimumStockLevel;
+  dynamic maximumStockLevel;
   int unit;
   // WarehouseEmployee manager;
   dynamic manager;

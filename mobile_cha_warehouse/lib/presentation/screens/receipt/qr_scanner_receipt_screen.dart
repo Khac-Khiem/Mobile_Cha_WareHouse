@@ -86,7 +86,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                     ),
                     CustomizedButton(
                       onPressed: () {
-                        scanQRReceiptresult = '1';
+                        scanQRReceiptresult = '-1';
                         scanQR();
                       },
                       text: "Quét mã QR",
