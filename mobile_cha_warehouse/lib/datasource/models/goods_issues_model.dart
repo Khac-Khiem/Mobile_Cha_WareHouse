@@ -22,21 +22,22 @@ import 'package:mobile_cha_warehouse/domain/entities/production_employee.dart';
 class GoodsIssueEntryContainerModel extends GoodsIssueEntryContainer {
   GoodsIssueEntryContainerModel(
     //  int goodsIssueEntryId,
-      dynamic quantity,
+      int quantity,
       String productionDate,
       String containerId,
-      ProductionEmployee? productionEmployee)
+     // ProductionEmployee? productionEmployee
+      )
       : super( quantity, productionDate, containerId,
-            productionEmployee);
+            );
   factory GoodsIssueEntryContainerModel.fromJson(Map<String, dynamic> json) {
     return GoodsIssueEntryContainerModel(
      // json["goodsIssueEntryId"],
       json["quantity"],
-      json["productionDate"],
-      json["containerId"],
-      json["productionEmployee"] == null
-          ? null
-          : ProductionEmployeeModel.fromJson(json["productionEmployee"]),
+      json["date"],
+      json["lotId"],
+      // json["productionEmployee"] == null
+      //     ? null
+      //     : ProductionEmployeeModel.fromJson(json["productionEmployee"]),
     );
   }
 }
@@ -62,9 +63,9 @@ class GoodsIssueEntryModel extends GoodsIssueEntry {
         // json["employee"] == null
         //     ? null!
         //     : WarehouseEmployeeModel.fromJson(json["employee"]),
-        json["containers"] == null
+        json["lots"] == null
             ? []
-            : (json["containers"] as List)
+            : (json["lots"] as List)
                 .map((e) => GoodsIssueEntryContainerModel.fromJson(e))
                 .toList());
   }

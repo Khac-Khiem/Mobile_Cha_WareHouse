@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:mobile_cha_warehouse/domain/entities/good_issue.dart';
+import 'package:mobile_cha_warehouse/domain/entities/lots_data.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/issue/issue_params.dart';
 
 abstract class IssueEvent extends Equatable {}
@@ -14,6 +14,7 @@ class LoadIssueEvent extends IssueEvent {
   List<Object> get props => [timestamp];
 }
 
+// kiểm tra thông tin rổ
 class CheckInfoIssueEventRequested extends IssueEvent {
   String basketID;
   DateTime timeStamp; //Tạo timeStamp để lần nào click cũng khác nhau
@@ -33,6 +34,7 @@ class ChooseIssueEvent extends IssueEvent {
   List<Object> get props => [timestamp, goodIssueId];
 }
 
+// chọn từng dòng trong đơn xuát kho
 class ChooseIssueEntryEvent extends IssueEvent {
   String goodsIssueId;
   String itemId;
@@ -49,14 +51,23 @@ class ChooseIssueEntryEvent extends IssueEvent {
 class ConFirmExportingContainer extends IssueEvent {
   DateTime timestamp;
   String issueId;
-  List<ContainerIssueExportServer> containers;
-  ConFirmExportingContainer(this.issueId, this.containers, this.timestamp);
+  //List<LotIssueExportServer> containers;
+  List<Lots> lots;
+  ConFirmExportingContainer(this.issueId, this.lots, this.timestamp);
   @override
 
   // TODO: implement props
   List<Object?> get props => [timestamp];
 }
 
+class AddLotFromSuggestToExpected extends IssueEvent {
+  DateTime timestamp;
+  Lots lot;
+  AddLotFromSuggestToExpected(this.timestamp, this.lot);
+  @override
+  // TODO: implement props
+  List<Object?> get props => [timestamp];
+}
 // sự kiện load các rổ đã được xuất ứng với từng đơn
 // class LoadContainerExportEvent extends IssueEvent {
 //   DateTime timestamp;

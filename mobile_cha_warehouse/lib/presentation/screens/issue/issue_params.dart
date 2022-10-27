@@ -1,9 +1,21 @@
-class ContainerIssueExportServer {
+class LotIssueExportServer {
   String issueId;
-  // String employeeId;
   String itemId;
-  String containerId;
+  String lotId;
   double quantity;
-  ContainerIssueExportServer(
-      this.issueId, this.itemId, this.containerId, this.quantity);
+  LotIssueExportServer(this.issueId, this.itemId, this.lotId, this.quantity);
+}
+
+class LotIssueExport {
+  String issueId;
+  String lotId;
+  dynamic quantity;
+  LotIssueExport(this.issueId, this.lotId, this.quantity);
+}
+
+class GoodsIssueEntryView {
+  String itemId;
+  int planQuantity;
+  int actualQuantity;
+  GoodsIssueEntryView(this.itemId, this.planQuantity, this.actualQuantity);
 }

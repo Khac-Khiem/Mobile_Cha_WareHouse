@@ -17,8 +17,8 @@ class CellDataModel extends Cell {
   factory CellDataModel.fromJson(Map<String, dynamic> json) {
     return CellDataModel(
         json["shelfId"],
-        json["rowId"],
-        json["id"],
+        json["row"],
+        json["column"],
         // json["capacity"],
         // json["container"] == null
         //     ? null

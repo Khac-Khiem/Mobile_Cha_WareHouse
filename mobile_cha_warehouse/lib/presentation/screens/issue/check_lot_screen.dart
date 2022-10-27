@@ -2,35 +2,35 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_cha_warehouse/function.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/blocs/issue_bloc.dart';
-import 'package:mobile_cha_warehouse/presentation/bloc/states/issue_state.dart';
-import 'package:mobile_cha_warehouse/presentation/screens/issue/issue_params.dart';
-import 'package:mobile_cha_warehouse/presentation/screens/issue/qr_issue_screen.dart';
-import 'package:mobile_cha_warehouse/presentation/screens/receipt/modify_info_receipt_screen.dart';
-import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
-
+import 'package:mobile_cha_warehouse/presentation/bloc/events/issue_event.dart';
 import '../../../constant.dart';
-import '../../bloc/events/issue_event.dart';
-import '../../dialog/dialog.dart';
-import '../../widget/exception_widget.dart';
+import '../../../domain/entities/lots_data.dart';
+import '../../../function.dart';
+import '../../bloc/blocs/issue_bloc.dart';
+import '../../bloc/states/issue_state.dart';
 
-// tương tự trang modify nhưng khác sự kiện xác nhận
-List<String> labelTextList = [
-  "Mã QR:",
+import '../../widget/widget.dart';
+import '../inventory/inventory_screen.dart';
+
+//
+List<Lots> checkLot = [];
+List<String> labelTextCheckList = [
+  "Mã lô",
   "Mã sản phẩm:",
-  //"Mã nhân viên:",
   "Lấy hết rổ:",
   "SL thực tế:",
   "Ngày SX:",
 ];
 
-class ConfirmContainerScreen extends StatefulWidget {
+class CheckLotScreen extends StatefulWidget {
+  // final Lots lot;
+  const CheckLotScreen();
+
   @override
-  State<ConfirmContainerScreen> createState() => _ConfirmContainerScreenState();
+  State<CheckLotScreen> createState() => _CheckLotScreenState();
 }
 
-class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
+class _CheckLotScreenState extends State<CheckLotScreen> {
   String selectedFormat = '';
 
 //  String employeeId = '';
@@ -45,85 +45,56 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
   int itemType = 0;
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(
-              Icons.west, //mũi tên back
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            }, //sự kiện mũi tên back
-          ),
-          backgroundColor: const Color(0xff001D37), //màu xanh dương đậm
-          //nút bên phải
-          title: const Text(
-            'Nhập kho',
-            style: TextStyle(fontSize: 22), //chuẩn
-          ),
-        ),
-        endDrawer: DrawerUser(),
-        body: BlocConsumer<IssueBloc, IssueState>(
-            listener: (context, issueState) {
-          if (issueState is CheckInfoIssueStateSuccess) {
-            // goodsIssueEntryData = issueState.goodsIssueEntryData;
-            // String employeeId =
-            //     checkInfoState.basket.productionEmployee.employeeId;
-            itemId = issueState.basket.item!.itemId;
-            productionDate = issueState.basket.productionDate.toString();
-            itemType = issueState.basket.item!.unit;
-            print(issueState.basket);
-            if (itemId != selectedItemId) {
-              AlertDialogOneBtnCustomized(
-                  context,
-                  "Cảnh báo",
-                  "Bạn đã chọn rổ sai mã sản phẩm",
-                  "Trở lại",
-                  () {
-                    scanQRIssueresult = "-1";
-                    Navigator.pushNamed(context, '/qr_scanner_issue_screen');
+    return WillPopScope(
+      onWillPop:  () async{
+            final shouldPop = await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Do you want to go back?'),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actions: [
+                TextButton(
+                  onPressed: () {
+                     Navigator.pushNamed(context, '/list_container_screen');
+                    // Navigator.pop(context, true);
                   },
-                  18,
-                  22,
-                  () {
-                    scanQRIssueresult = "-1";
-                    Navigator.pushNamed(context, '/qr_scanner_issue_screen');
-                  }).show();
-            }
-          } else if (issueState is IssueStateListLoadSuccess) {
-            goodsIssueEntryDataTemp = issueState.goodsIssueEntryData;
-            print(goodsIssueEntryDataTemp);
-          } else if (issueState is ConfirmSuccessIssueState) {
-            AlertDialogOneBtnCustomized(
-                    context, "Thành công", "Đã hoàn thành xuất kho", "Tiếp tục",
-                    () {
-              BlocProvider.of<IssueBloc>(context).add(ChooseIssueEntryEvent(
-                  selectedGoodIssueId, selectedItemId, DateTime.now()));
-              Navigator.pushNamed(
-                context,
-                '/list_container_screen',
-              );
-            }, 18, 22, () {})
-                .show();
-          } else if (issueState is ConfirmFailureIssueState) {
-            AlertDialogOneBtnCustomized(context, "Thất bại",
-                    "Không thể hoàn thành đơn xuất kho", "Trở lại", () {
-              // Navigator.pushNamed(context, '///');
-            }, 18, 22, () {})
-                .show();
-          } else if (issueState is IssueStateConfirmLoading) {
-            CircularLoading();
-          }
-        }, builder: (context, checkInfoState) {
-          if (checkInfoState is CheckInfoStateLoading) {
-            return CircularLoading();
-          } else if (checkInfoState is IssueStateConfirmLoading) {
-            return CircularLoading();
-          } else if (checkInfoState is CheckInfoIssueStateSuccess) {
+                  child: const Text('Yes'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  child: const Text('No'),
+                ),
+              ],
+            );
+          },
+        );
+        return shouldPop!;
+        },
+      child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(
+                Icons.west, //mũi tên back
+                color: Colors.white,
+              ),
+              onPressed: () {
+               Navigator.pushNamed(context, '/list_container_screen');
+              }, //sự kiện mũi tên back
+            ),
+            backgroundColor: const Color(0xff001D37), //màu xanh dương đậm
+            //nút bên phải
+            title: const Text(
+              'Nhập kho',
+              style: TextStyle(fontSize: 22), //chuẩn
+            ),
+          ),
+          endDrawer: DrawerUser(),
+          body: BlocBuilder<IssueBloc, IssueState>(
+              builder: (context, checkInfoState) {
             return SingleChildScrollView(
-              //   child: Text('haha'),
               child: Container(
                 alignment: Alignment.center,
                 padding: EdgeInsets.all(10 * SizeConfig.ratioHeight),
@@ -133,18 +104,18 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                   children: [
                     SizedBox(
                       width: 350 * SizeConfig.ratioWidth,
-                      child: Row(
-                        children: [
-                          Column(
-                              children: labelTextList
-                                  .map((text) => LabelText(
-                                        text,
-                                      ))
-                                  .toList()),
-                          SizedBox(
-                            width: 15 * SizeConfig.ratioWidth,
-                          ),
-                          Column(children: [
+                      child: Row(children: [
+                        Column(
+                            children: labelTextCheckList
+                                .map((text) => LabelText(
+                                      text,
+                                    ))
+                                .toList()),
+                        SizedBox(
+                          width: 15 * SizeConfig.ratioWidth,
+                        ),
+                        Column(
+                          children: [
                             Container(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 5 * SizeConfig.ratioHeight),
@@ -156,7 +127,7 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                                   enabled: true,
                                   readOnly: true,
                                   controller: TextEditingController(
-                                      text: scanQRIssueresult),
+                                      text: checkLot[0].lotId),
                                   textAlignVertical: TextAlignVertical.center,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
@@ -165,9 +136,8 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                                     // filled: true,
                                     // fillColor: Colors.grey[300],
                                     contentPadding: EdgeInsets.symmetric(
-                                        horizontal:
-                                            10 * SizeConfig.ratioHeight),
-
+                                        horizontal: 10 * SizeConfig.ratioHeight),
+            
                                     border: OutlineInputBorder(
                                         borderSide: BorderSide(
                                             width: 1.0 * SizeConfig.ratioWidth,
@@ -188,16 +158,18 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                                 child: TextField(
                                   enabled: true,
                                   readOnly: true,
-                                  controller:
-                                      TextEditingController(text: itemId),
+                                  controller: TextEditingController(
+                                      text: checkLot[0].item!.itemId.toString()),
                                   textAlignVertical: TextAlignVertical.center,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontSize: 20 * SizeConfig.ratioFont),
                                   decoration: InputDecoration(
+                                    // filled: true,
+                                    // fillColor: Colors.grey[300],
                                     contentPadding: EdgeInsets.symmetric(
-                                        horizontal:
-                                            10 * SizeConfig.ratioHeight),
+                                        horizontal: 10 * SizeConfig.ratioHeight),
+            
                                     border: OutlineInputBorder(
                                         borderSide: BorderSide(
                                             width: 1.0 * SizeConfig.ratioWidth,
@@ -255,8 +227,7 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                                   if (selectedFormat == "Có") {
                                     setState(() {
                                       isFull = true;
-                                      quanlity = checkInfoState.basket.quantity
-                                          .toString();
+                                      quanlity = checkLot[0].quantity.toString();
                                     });
                                   } else {
                                     setState(() {
@@ -275,39 +246,31 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                                 width: 200 * SizeConfig.ratioWidth,
                                 height: 55 * SizeConfig.ratioHeight,
                                 //color: Colors.grey[200],
-                                child: Row(
-                                  children: [
-                                    TextField(
-                                      enabled: true,
-                                      onChanged: (value) => {quanlity = value},
-                                      readOnly: isFull,
-                                      controller: isFull == true
-                                          ? TextEditingController(
-                                              text: checkInfoState.basket.quantity
-                                                  .toString())
-                                          : TextEditingController(
-                                              text: quanlity.toString()),
-                                      textAlignVertical: TextAlignVertical.center,
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 20 * SizeConfig.ratioFont),
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal:
-                                                10 * SizeConfig.ratioHeight),
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1.0 * SizeConfig.ratioWidth,
-                                                color: Colors.black)),
-                                        focusedBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1.0 * SizeConfig.ratioWidth,
-                                                color: Colors.black)),
-                                      ),
-                                    ),
-                                    itemType == 1 ?
-                                    const Text("kg"): const Text("cái"),
-                                  ],
+                                child: TextField(
+                                  enabled: true,
+                                  onChanged: (value) => {quanlity = value},
+                                  readOnly: isFull,
+                                  controller: isFull == true
+                                      ? TextEditingController(
+                                          text: checkLot[0].quantity.toString())
+                                      : TextEditingController(
+                                          text: quanlity.toString()),
+                                  textAlignVertical: TextAlignVertical.center,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 20 * SizeConfig.ratioFont),
+                                  decoration: InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 10 * SizeConfig.ratioHeight),
+                                    border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1.0 * SizeConfig.ratioWidth,
+                                            color: Colors.black)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            width: 1.0 * SizeConfig.ratioWidth,
+                                            color: Colors.black)),
+                                  ),
                                 )),
                             Container(
                                 padding: EdgeInsets.symmetric(
@@ -329,8 +292,7 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                                       fontSize: 20 * SizeConfig.ratioFont),
                                   decoration: InputDecoration(
                                     contentPadding: EdgeInsets.symmetric(
-                                        horizontal:
-                                            10 * SizeConfig.ratioHeight),
+                                        horizontal: 10 * SizeConfig.ratioHeight),
                                     border: OutlineInputBorder(
                                         borderSide: BorderSide(
                                             width: 1.0 * SizeConfig.ratioWidth,
@@ -341,63 +303,38 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                                             color: Colors.black)),
                                   ),
                                 )),
-                          ])
-                        ],
-                      ),
+                          ],
+                        )
+                      ]),
                     ),
-                    SizedBox(
-                      height: 20 * SizeConfig.ratioHeight,
+                    CustomizedButton(
+                      text: "Xác nhận",
+                      bgColor: Constants.mainColor,
+                      fgColor: Colors.white,
+                      onPressed: () async {
+                        // goodsIssueEntryContainerData.clear();
+                        // goodsIssueEntryContainerData.add(
+                        //     ContainerIssueExportServer(
+                        //         selectedGoodIssueId,
+                        //         itemId,
+                        //         scanQRIssueresult,
+                        //         double.parse(quanlity)));
+                        // print(goodsIssueEntryContainerData);
+                        BlocProvider.of<IssueBloc>(context).add(
+                            AddLotFromSuggestToExpected(
+                                DateTime.now(), Lots(checkLot[0].lotId, checkLot[0].cell, int.parse(quanlity), checkLot[0].date, checkLot[0].item)));
+            
+                        Navigator.pushNamed(
+                          context,
+                          '/list_container_screen',
+                        );
+                      },
                     ),
-                    Column(
-                      children: [
-                        CustomizedButton(
-                          text: "Xác nhận",
-                          bgColor: Constants.mainColor,
-                          fgColor: Colors.white,
-                          onPressed: () async {
-                            // goodsIssueEntryContainerData.clear();
-                            // goodsIssueEntryContainerData.add(
-                            //     ContainerIssueExportServer(
-                            //         selectedGoodIssueId,
-                            //         itemId,
-                            //         scanQRIssueresult,
-                            //         double.parse(quanlity)));
-                            // print(goodsIssueEntryContainerData);
-                            // BlocProvider.of<IssueBloc>(context).add(
-                            //     ConFirmExportingContainer(
-                            //         selectedGoodIssueId,
-                            //         goodsIssueEntryContainerData,
-                            //         DateTime.now()));
-
-                            // BlocProvider.of<IssueBloc>(context).add(
-                            //     ChooseIssueEntryEvent(selectedGoodIssueId,
-                            //         selectedItemId, DateTime.now()));
-                            // BlocProvider.of<IssueBloc>(context).add(
-                            //     LoadContainerExportEvent(DateTime.now(),
-                            //         selectedGoodIssueId, selectedItemId));
-                            // Navigator.pushNamed(
-                            //   context,
-                            //   '/list_container_screen',
-                            // );
-                          },
-                        ),
-                      ],
-                    )
                   ],
                 ),
               ),
             );
-          } else {
-            return Center(
-              child: ExceptionErrorState(
-                height: 300,
-                title: "Không tìm thấy dữ liệu rổ",
-                message: "Vui lòng kiểm tra lại.",
-                imageDirectory: 'lib/assets/sad_face_search.png',
-                imageHeight: 140,
-              ),
-            );
-          }
-        }));
+          })),
+    );
   }
 }

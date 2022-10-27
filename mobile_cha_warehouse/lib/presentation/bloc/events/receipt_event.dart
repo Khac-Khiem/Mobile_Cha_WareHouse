@@ -8,18 +8,17 @@ class ReceiptEvent extends Equatable {
 }
 
 class LoadAllDataEvent extends ReceiptEvent {
-  //DateTime timestamp;
-  LoadAllDataEvent();
+  DateTime timestamp;
+  LoadAllDataEvent(this.timestamp);
   @override
-  List<Object> get props => [];
+  List<Object> get props => [timestamp];
 }
 
 class PostNewReceiptEvent extends ReceiptEvent {
   DateTime timestamp;
-  List<GoodsReceiptEntryContainerData> goodsReceiptEntryContainers;
+  List<GoodsReceiptEntryContainerData> lots;
   String receiptId;
-  PostNewReceiptEvent(
-      this.goodsReceiptEntryContainers, this.timestamp, this.receiptId);
+  PostNewReceiptEvent(this.lots, this.timestamp, this.receiptId);
   @override
   List<Object> get props => [timestamp];
 }
@@ -46,8 +45,8 @@ class CheckContainerAvailableEvent extends ReceiptEvent {
 class LoadAllContainerExporting extends ReceiptEvent {
   DateTime timestamp;
   LoadAllContainerExporting(this.timestamp);
-   @override
-  List<Object> get props => [ timestamp];
+  @override
+  List<Object> get props => [timestamp];
 }
 
 class RefershReceiptEvent extends ReceiptEvent {

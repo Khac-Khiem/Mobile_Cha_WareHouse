@@ -116,7 +116,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                             .length;
                                     i++) {
                                   if (goodsReceiptEntryConainerDataTemp[i]
-                                          .containerId ==
+                                          .lotId ==
                                       scanQRReceiptresult) {
                                     AlertDialogTwoBtnCustomized(
                                             context,
@@ -126,7 +126,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                             'Trở lại', () async {
                                       scanQRReceiptresult =
                                           goodsReceiptEntryConainerDataTemp[i]
-                                              .containerId;
+                                              .lotId;
                                       goodsReceiptEntryConainerDataTemp
                                           .removeAt(i);
                                       Navigator.pushNamed(
@@ -139,15 +139,18 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                                   } else {
                                     // kiểm tra rổ
                                     BlocProvider.of<ReceiptBloc>(context).add(
-                                        CheckContainerAvailableEvent(scanQRReceiptresult, DateTime.now()));
+                                        CheckContainerAvailableEvent(
+                                            scanQRReceiptresult,
+                                            DateTime.now()));
                                     Navigator.pushNamed(
                                         context, '/modify_info_screen');
                                   }
                                 }
                                 if (goodsReceiptEntryConainerDataTemp.isEmpty) {
                                   // kiểm tra rổ
-                                  BlocProvider.of<ReceiptBloc>(context)
-                                      .add(CheckContainerAvailableEvent(scanQRReceiptresult, DateTime.now()));
+                                  BlocProvider.of<ReceiptBloc>(context).add(
+                                      CheckContainerAvailableEvent(
+                                          scanQRReceiptresult, DateTime.now()));
                                   Navigator.pushNamed(
                                       context, '/modify_info_screen');
                                 }

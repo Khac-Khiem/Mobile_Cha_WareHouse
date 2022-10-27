@@ -1,6 +1,9 @@
+import 'package:mobile_cha_warehouse/domain/entities/error_package.dart';
 import 'package:mobile_cha_warehouse/domain/entities/good_issue.dart';
 import 'package:mobile_cha_warehouse/domain/repositories/issue_repository.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/issue/issue_params.dart';
+
+import '../entities/lots_data.dart';
 
 class IssueUseCase {
   final IssuesRepo _issuesRepo;
@@ -15,14 +18,14 @@ class IssueUseCase {
     return goodsIssue;
   }
 
-  Future addContainerIssue(
-      String issueId, List<ContainerIssueExportServer> containers) async {
-    final confirm = _issuesRepo.addContainerIssue(issueId, containers);
+  Future<ErrorPackage> addContainerIssue(
+      String issueId, List<Lots> lots) async {
+    final confirm = _issuesRepo.addContainerIssue(issueId, lots);
     return confirm;
   }
 
-  // Future confirmGoodsIssue(String issueId) async {
-  //   final goodsissues = await _issuesRepo.confirmGoodsIssue(issueId);
-  //   return goodsissues;
-  // }
+  Future getLotByItemId(String itemId) async {
+    final confirm = _issuesRepo.getLotByItemId(itemId);
+    return confirm;
+  }
 }

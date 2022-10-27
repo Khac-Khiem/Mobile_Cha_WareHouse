@@ -9,12 +9,14 @@ import 'package:mobile_cha_warehouse/presentation/widget/text_input_widget.dart'
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
 
 import '../../../constant.dart';
+import '../../../domain/entities/lots_data.dart';
 import '../../../function.dart';
 
+List<Lots> lotInventory = [];
+
 class InventoryScreen extends StatelessWidget {
-  String containerId = '';
+  String lotId = '';
   String itemId = '';
-  //String employeeId = '';
   String note = '';
   double before = 0;
   String after = '';
@@ -37,56 +39,62 @@ class InventoryScreen extends StatelessWidget {
         ),
         endDrawer: DrawerUser(),
         body: BlocConsumer<EditPerBasketBloc, EditPerBasketState>(
-           listener: (context, checkInfoState) {
-            if(checkInfoState is EditPerBasketStateUploadSuccess){
-                AlertDialogOneBtnCustomized(context, "Thành công",
-                        "Rổ đã được báo cáo", "Trở lại", () {
-                  
-                  Navigator.pushNamed(context, '///');
-                }, 18, 22, () {})
-                    .show();
-            }
-           },
-            builder: (context, checkInfoState) {
+            listener: (context, checkInfoState) {
+          if (checkInfoState is EditPerBasketStateUploadSuccess) {
+            AlertDialogOneBtnCustomized(
+                    context, "Thành công", "Rổ đã được báo cáo", "Trở lại", () {
+              Navigator.pushNamed(context, '///');
+            }, 18, 22, () {})
+                .show();
+          } else if(checkInfoState is EditPerBasketStateUploadFailed){
+             AlertDialogOneBtnCustomized(
+                    context, "Thất bại", "Không thể báo cáo", "Trở lại", () {
+            
+            }, 18, 22, () {})
+                .show();
+          }
+        }, builder: (context, checkInfoState) {
           if (checkInfoState is EditPerBasketStateUploadLoading) {
             return CircularLoading();
-          } else if (checkInfoState is CheckInfoInventoryStateFailure) {
-            //lỗi
-            return Center(
-              child: Column(
-                children: [
-                  ExceptionErrorState(
-                    height: 300,
-                    title: "Không tìm thấy dữ liệu",
-                    message:
-                        "Rổ này có thể \nđã được lấy ra khỏi kho, \nvui lòng kiểm tra lại.",
-                    imageDirectory: 'lib/assets/sad_commander.png',
-                    imageHeight: 100,
-                  ),
-                  CustomizedButton(
-                    text: "Quét lại",
-                    bgColor: Constants.mainColor,
-                    fgColor: Colors.white,
-                    onPressed: () async {
-                      Navigator.pushNamed(context, '/qr_inventory_screen');
-                    },
-                  ),
-                ],
-              ),
-            );
           }
-          //state này là CheckInfoStateSuccess
+          // else if (checkInfoState is CheckInfoInventoryStateFailure) {
+          //   //lỗi
+          //   return Center(
+          //     child: Column(
+          //       children: [
+          //         ExceptionErrorState(
+          //           height: 300,
+          //           title: "Không tìm thấy dữ liệu",
+          //           message:
+          //               "Rổ này có thể \nđã được lấy ra khỏi kho, \nvui lòng kiểm tra lại.",
+          //           imageDirectory: 'lib/assets/sad_commander.png',
+          //           imageHeight: 100,
+          //         ),
+          //         CustomizedButton(
+          //           text: "Quét lại",
+          //           bgColor: Constants.mainColor,
+          //           fgColor: Colors.white,
+          //           onPressed: () async {
+          //             Navigator.pushNamed(context, '/qr_inventory_screen');
+          //           },
+          //         ),
+          //       ],
+          //     ),
+          //   );
+          // }
+          // //state này là CheckInfoStateSuccess
+          // else {
+          //   //dùng if nhưng mục đích là để ép kiểu, do không dùng as để ép được
+          //   if (checkInfoState is CheckInfoInventoryStateSuccess) {
+          //     containerId = checkInfoState.basket.containerId;
+          //   //  employeeId = checkInfoState.basket.item.;
+          //     itemId = checkInfoState.basket.item!.itemId;
+          //     before = double.parse(checkInfoState.basket.quantity.toString());
+          //     // location = checkInfoState.basket.location!.shelfId.toString() +
+          //     //     checkInfoState.basket.location!.rowId.toString() +
+          //     //     checkInfoState.basket.location!.id.toString();
+          //   }
           else {
-            //dùng if nhưng mục đích là để ép kiểu, do không dùng as để ép được
-            if (checkInfoState is CheckInfoInventoryStateSuccess) {
-              containerId = checkInfoState.basket.containerId;
-            //  employeeId = checkInfoState.basket.item.;
-              itemId = checkInfoState.basket.item!.itemId;
-              before = double.parse(checkInfoState.basket.quantity.toString());
-              // location = checkInfoState.basket.location!.shelfId.toString() +
-              //     checkInfoState.basket.location!.rowId.toString() +
-              //     checkInfoState.basket.location!.id.toString();
-            }
             return SingleChildScrollView(
               child: Container(
                 alignment: Alignment.center,
@@ -109,11 +117,11 @@ class InventoryScreen extends StatelessWidget {
                             width: 15 * SizeConfig.ratioWidth,
                           ),
                           Column(children: [
-                            TextInput(containerId),
-                            TextInput(itemId),
-                           // TextInput(employeeId),
-                           // TextInput(location),
-                            TextInput(before.toString()),
+                            TextInput(lotInventory[0].lotId),
+                            TextInput(lotInventory[0].item!.itemId),
+                            // TextInput(employeeId),
+                            // TextInput(location),
+                            TextInput(lotInventory[0].quantity.toString()),
                             Container(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 5 * SizeConfig.ratioHeight),
@@ -123,10 +131,9 @@ class InventoryScreen extends StatelessWidget {
                                 //color: Colors.grey[200],
                                 child: TextField(
                                   enabled: true,
-                                  onChanged: (value) =>
-                                      {after = value},
+                                  onChanged: (value) => {after = value},
                                   //    readOnly: true,
-                                  controller: TextEditingController(),
+                                  controller: TextEditingController(text: after),
                                   textAlignVertical: TextAlignVertical.center,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
@@ -145,7 +152,7 @@ class InventoryScreen extends StatelessWidget {
                                             color: Colors.black)),
                                   ),
                                 )),
-                                Container(
+                            Container(
                                 padding: EdgeInsets.symmetric(
                                     vertical: 5 * SizeConfig.ratioHeight),
                                 alignment: Alignment.centerRight,
@@ -154,10 +161,9 @@ class InventoryScreen extends StatelessWidget {
                                 //color: Colors.grey[200],
                                 child: TextField(
                                   enabled: true,
-                                  onChanged: (value) =>
-                                      {note = value},
+                                  onChanged: (value) => {note = value},
                                   //    readOnly: true,
-                                  controller: TextEditingController(),
+                                  controller: TextEditingController(text: note),
                                   textAlignVertical: TextAlignVertical.center,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
@@ -192,11 +198,11 @@ class InventoryScreen extends StatelessWidget {
                           onPressed: () async {
                             // gửi thông tin lên server chờ xác nhận
                             // bloc event
-                             BlocProvider.of<EditPerBasketBloc>(context)
-                      .add(EditPerBasketEventEditClick(containerId, note, int.parse(after), DateTime.now()));
+                            BlocProvider.of<EditPerBasketBloc>(context).add(
+                                EditPerBasketEventEditClick(lotInventory[0].lotId, note,
+                                    int.parse(after), DateTime.now()));
                             // nên hiển thị loading đến khi gửi request thành công
-                            // Navigator.pushNamed(
-                            //     context, '/qr_inventory_screen');
+                           
                           },
                         ),
                       ],
@@ -211,10 +217,8 @@ class InventoryScreen extends StatelessWidget {
 }
 
 List<String> labelTextList = [
-  "Mã Rổ:",
+  "Mã Lô:",
   "Mã Sản phẩm:",
- // "Mã Nhân viên:",
- // "Vị trí:",
   "Sl/KL cũ:",
   "Sl/KL mới:",
   "Ghi chú:"

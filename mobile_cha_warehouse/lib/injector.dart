@@ -98,11 +98,11 @@ Future<void> initializeDependencies() async {
   injector
       .registerSingleton<CheckInfoBloc>(CheckInfoBloc(injector(), injector()));
   // injector.registerFactory<CheckInfoBloc>(() => CheckInfoBloc(injector()));
-
+ injector.registerSingleton<EditPerBasketBloc>(
+      EditPerBasketBloc(injector(), injector(), injector(), injector()));
   injector.registerSingleton<StockCardViewBloc>(
       StockCardViewBloc(injector(), injector()));
   // injector.registerFactory<StockCardViewBloc>(
   //     () => StockCardViewBloc(injector(), injector()));
-  injector.registerSingleton<EditPerBasketBloc>(
-      EditPerBasketBloc(injector(), injector()));
+  
 }

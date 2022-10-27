@@ -5,6 +5,7 @@ import 'package:mobile_cha_warehouse/presentation/bloc/events/login_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  
   LoginUsecase loginUsecase;
   LoginBloc(this.loginUsecase) : super(LoginStateInitial(false, false, true)) {
     on((LoginEventChecking event, emit) => LoginStateFormatChecking(
@@ -12,9 +13,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         event.userName.length < Constants.minLengthUserName));
     // on<LoginEventLoginClicked>(_onLogin);
     on<LoginEventFetchToken>(_onFetch);
-
+  on((LoginRefreshEvent event, emit) =>
+       emit( LoginStateInitial(false, false, true)));
     on((LoginEventToggleShow event, emit) =>
-        LoginStateToggleShow(!event.isShow));
+       emit( LoginStateToggleShow( !event.isShow)));
   }
   // var authorizationUrl;
   // var grant;
@@ -80,7 +82,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   //   // return await grant.handleAuthorizationResponse(responseUrl.queryParameters);
   // }
 
-  Future _onFetch(LoginEvent event, Emitter<LoginState> emit) async {
+  Future<void> _onFetch(LoginEvent event, Emitter<LoginState> emit) async {
     if (event is LoginEventFetchToken) {
       emit(LoginStateLoadingRequest(DateTime.now()));
       try {

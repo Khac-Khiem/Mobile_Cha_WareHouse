@@ -1,3 +1,4 @@
+import 'package:mobile_cha_warehouse/domain/entities/error_package.dart';
 import 'package:mobile_cha_warehouse/domain/entities/goods_receipt.dart';
 import 'package:mobile_cha_warehouse/domain/repositories/receipt_repository.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/receipt/receipt_params.dart';
@@ -5,7 +6,7 @@ import 'package:mobile_cha_warehouse/presentation/screens/receipt/receipt_params
 class ReceiptUseCase {
   final ReceiptsRepo _receiptsRepo;
   ReceiptUseCase(this._receiptsRepo);
-  Future postNewReceipt(
+  Future<ErrorPackage> postNewReceipt(
   List<GoodsReceiptEntryContainerData> goodsReceipt, String receiptId) async {
     final statusRequest = await _receiptsRepo.postNewReceiptRepo(goodsReceipt, receiptId);
     return statusRequest;

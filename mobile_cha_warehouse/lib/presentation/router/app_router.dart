@@ -7,8 +7,10 @@ import 'package:mobile_cha_warehouse/presentation/bloc/blocs/issue_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/login_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/receipt_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/stockcard_bloc.dart';
+import 'package:mobile_cha_warehouse/presentation/screens/inventory/choose_lot_screen.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/inventory/inventory_screen.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/inventory/qr_inventory.dart';
+import 'package:mobile_cha_warehouse/presentation/screens/issue/check_lot_screen.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/issue/confirm_container_screen.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/issue/list_container_screen.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/issue/list_issue_entry_screen.dart';
@@ -38,6 +40,8 @@ class AppRoute {
       case '///':
         return MaterialPageRoute(
             builder: (context) => MultiBlocProvider(providers: [
+                 BlocProvider<EditPerBasketBloc>(
+                      create: (context) => injector()),
                   BlocProvider<LoginBloc>(create: (context) => injector()),
                   BlocProvider<ReceiptBloc>(create: (context) => injector()),
                   BlocProvider<IssueBloc>(create: (context) => injector()),
@@ -74,6 +78,12 @@ class AppRoute {
                   BlocProvider<IssueBloc>(create: (context) => injector()),
                   BlocProvider<CheckInfoBloc>(create: (context) => injector()),
                 ], child: ConfirmContainerScreen()));
+      case '/check_lot_screen':
+        return MaterialPageRoute(
+            builder: (context) => MultiBlocProvider(providers: [
+                  BlocProvider<IssueBloc>(create: (context) => injector()),
+                  BlocProvider<CheckInfoBloc>(create: (context) => injector()),
+                ], child: CheckLotScreen()));
       //receipt
       case '/receipt_screen':
         return MaterialPageRoute(
@@ -109,6 +119,13 @@ class AppRoute {
             builder: (context) => BlocProvider<StockCardViewBloc>(
                 create: (context) => injector(), child: StockCardScreen()));
       // iventory
+      case '/choose_lot_screen':
+        return MaterialPageRoute(
+            builder: (context) => MultiBlocProvider(providers: [
+                 
+                  BlocProvider<EditPerBasketBloc>(
+                      create: (context) => injector()),
+                ], child: ChooseLotScreen()));
       case '/qr_inventory_screen':
         return MaterialPageRoute(
             builder: (context) => BlocProvider<EditPerBasketBloc>(

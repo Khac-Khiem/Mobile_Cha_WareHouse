@@ -1,22 +1,23 @@
+import 'dart:math';
+
+import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_cha_warehouse/datasource/models/goods_issues_model.dart';
-import 'package:mobile_cha_warehouse/domain/entities/good_issue.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/container_usecase.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/issue_usecase.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/slot_usecase.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/issue_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/issue_state.dart';
+import '../../../domain/entities/lots_data.dart';
 import '../../screens/issue/issue_params.dart';
 
 //tải các entry của một đơn từ server
-List<GoodsIssueEntry> goodsIssueEntryDataTemp = [];
-// tải các rổ đã xuất trong một đơn từ server
-//List<GoodsIssueEntryContainer>? containerExported = [];
+List<GoodsIssueEntryView> goodsIssueEntryDataTemp = [];
 //lưu trữ các container để gửi lên server
-List<ContainerIssueExportServer> goodsIssueEntryContainerData = [];
+//List<LotIssueExportServer> listLotExport = [];
+List<Lots> listLotExportServer = [];
+List<Lots> listLotSuggest = [];
 //
 int planned = 0;
-//
 //Good Issue được chọn
 String selectedGoodIssueId = '';
 //lưu mã sản phẩm entry
@@ -37,6 +38,7 @@ class IssueBloc extends Bloc<IssueEvent, IssueState> {
     on<ChooseIssueEvent>(_onChooseIssue);
     on<CheckInfoIssueEventRequested>(_onLoadingInfo);
     on<ChooseIssueEntryEvent>(_onChooseEntry);
+    on<AddLotFromSuggestToExpected>(_onChanged);
     //on<LoadContainerExportEvent>(_onLoadingContainer);
     on<ConFirmExportingContainer>(_onConfirm);
   }
@@ -84,15 +86,24 @@ class IssueBloc extends Bloc<IssueEvent, IssueState> {
 
   Future<void> _onChooseIssue(
       IssueEvent event, Emitter<IssueState> emit) async {
+    num quantity = 0;
     if (event is ChooseIssueEvent) {
       emit(IssueStateListLoading());
       try {
         goodsIssueEntryDataTemp.clear();
         final issue = await issueUseCase.getIssueById(event.goodIssueId);
         for (int i = 0; i < issue.entries.length; i++) {
-          goodsIssueEntryDataTemp.add(
-            issue.entries[i],
-          );
+          quantity = 0;
+          if (issue.entries[i].container != []) {
+            issue.entries[i].container!.forEach((element) {
+              quantity += element.quantity;
+            });
+          }
+
+          goodsIssueEntryDataTemp.add(GoodsIssueEntryView(
+              issue.entries[i].item.itemId,
+              issue.entries[i].plannedQuantity,
+              int.parse(quantity.toString())));
         }
         emit(
             IssueStateListLoadSuccess(DateTime.now(), goodsIssueEntryDataTemp));
@@ -104,32 +115,67 @@ class IssueBloc extends Bloc<IssueEvent, IssueState> {
 
   Future<void> _onChooseEntry(
       IssueEvent event, Emitter<IssueState> emit) async {
-    emit(IssueStateListLoading());
-    try {
-      if (event is ChooseIssueEntryEvent) {
-       double total = 0;
-        final goodsIssue = await issueUseCase.getIssueById(selectedGoodIssueId);
-        for (var element in goodsIssue.entries) {
-          if (element.item.itemId == selectedItemId) {
-            if (element.container != []) {
-              container = element.container!;
-              for (var item in element.container!) {
-                total = total + item.quantity;
-              }
-            } else {
-              container = [];
-            }
-          }
-        }
-
-        emit(LoadContainerExportStateSuccess(container, total, DateTime.now()));
+    if (event is ChooseIssueEntryEvent) {
+      emit(IssueStateListLoading());
+      try {
+        final lots = await issueUseCase.getLotByItemId(event.itemId);
+        listLotSuggest = lots;
+        emit(LoadLotSuccess(DateTime.now(), lots, []));
+      } catch (e) {
+        emit(IssueStateFailure(DateTime.now()));
       }
-    } catch (e) {
-      emit(IssueStateFailure(DateTime.now()));
     }
   }
 
-  List<GoodsIssueEntryContainer> container = [];
+  Future<void> _onChanged(IssueEvent event, Emitter<IssueState> emit) async {
+    List<Lots> lots = [];
+    List<Lots> listLotTemp = listLotExportServer;
+    bool check = true;
+
+    if (event is AddLotFromSuggestToExpected) {
+      emit(IssueStateListLoading());
+      try {
+        for (var element in listLotSuggest) {
+          if (element.lotId == event.lot.lotId) {
+            element.quantity = element.quantity - event.lot.quantity;
+          }
+        }
+        lots = listLotSuggest..removeWhere((element) => element.quantity == 0);
+        print(lots);
+
+        if (listLotExportServer.isNotEmpty) {
+          for (var element in listLotExportServer) {
+            if (element.lotId == event.lot.lotId) {
+              element.quantity = element.quantity + event.lot.quantity;
+              check = false;
+            }
+            // else {
+            //   listLotTemp.clear();
+            //   // thay dổi kích thước list trong for => error
+            //   listLotTemp.add(event.lot);
+            // }
+          }
+        
+       check
+              ? listLotExportServer.add(event.lot)
+              : {};
+          // listLotTemp == listLotExportServer ?{}:
+          // listLotExportServer.add(listLotTemp[0]);
+        } else {
+          listLotExportServer.add(event.lot);
+        }
+
+        //listLotExportServer.add(event.lot);
+        emit(LoadLotSuccess(DateTime.now(), lots, listLotExportServer));
+      } catch (e) {
+        print(e);
+        //emit(LoadLotSuccess(DateTime.now(), lots, listLotExportServer));
+        emit(IssueStateFailure(DateTime.now()));
+      }
+    }
+  }
+
+  // List<GoodsIssueEntryContainer> container = [];
   // Future<void> _onLoadingContainer(
   //     IssueEvent event, Emitter<IssueState> emit) async {
   //   emit(IssueStateListLoading());
@@ -165,10 +211,10 @@ class IssueBloc extends Bloc<IssueEvent, IssueState> {
     if (event is ConFirmExportingContainer) {
       emit(IssueStateConfirmLoading());
       try {
-        final request = await issueUseCase.addContainerIssue(
-            event.issueId, event.containers);
+        final request =
+            await issueUseCase.addContainerIssue(event.issueId, event.lots);
         // final confirm = await issueUseCase.confirmGoodsIssue(event.issueId);
-        if (request == 200) {
+        if (request.errorMessage == "success") {
           print('success');
           emit(ConfirmSuccessIssueState(DateTime.now()));
         } else {

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mobile_cha_warehouse/datasource/service/receipt_service.dart';
 import 'package:mobile_cha_warehouse/global.dart';
 
 class SizeConfig {
@@ -20,10 +21,10 @@ class SizeConfig {
   static double screenHeightSample = 737.45454545454545454;
 
   ///Tỉ lệ chiều ngang của điện thoại chạy ứng dụng/điện thoại tham chiếu Pixel 3
-  static double ratioWidth =0;
+  static double ratioWidth = 0;
 
   ///Tỉ lệ chiều dọc của điện thoại chạy ứng dụng/điện thoại tham chiếu Pixel 3
-  static double ratioHeight=0;
+  static double ratioHeight = 0;
 
   static double ratioFont = 0;
   static double ratioRadius = 0;
@@ -52,5 +53,7 @@ class SizeConfig {
 void logout(BuildContext context) {
   employeeIdOverall = ""; //clear tên khi đăng xuất
   token = ""; //clear token khi đăng xuất
-  Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+  tokenId = "";
+    Navigator.pushNamed(context, '/');
+  //Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
 }

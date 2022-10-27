@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:mobile_cha_warehouse/datasource/models/goods_issues_model.dart';
 import 'package:mobile_cha_warehouse/datasource/service/receipt_service.dart';
 
 import '../../constant.dart';
@@ -11,19 +10,17 @@ class InconsistencyContainerService {
   Future<int> reportInconsistencyContainer(String containerId, int newQuantity,
       String note, DateTime timestamp) async {
     final res = await http.post(
-        Uri.parse(Constants.baseUrl+
-            'api/containerinconsistencies/'),
+        Uri.parse(Constants.baseUrl + '/api/lotinconsistencies/'),
         headers: {
           'Content-Type': 'application/json',
-          //  'Accept': '*/*',
-          'Authorization': 'Bearer $token',
+          'Authorization': 'Bearer $tokenId',
         },
         body: jsonEncode(
           <String, dynamic>{
             "timestamp": DateFormat('yyyy-MM-ddThh:mm:ss')
                 .format(DateTime.now())
                 .toString(),
-            "containerId": containerId,
+            "lotId": containerId,
             "newQuantity": newQuantity,
             // "note": note
             // "timestamp": "2022-08-18T15:00:01",
@@ -32,7 +29,7 @@ class InconsistencyContainerService {
             "note": note
           },
         ));
-    print(res.statusCode.toString() + "sos");
+    print(res.statusCode.toString());
     return res.statusCode;
   }
 }

@@ -1,27 +1,19 @@
 // dùng để add container lên server
 class GoodsReceiptEntryContainerData {
-  String containerId;
-  String employeeId;
+  String lotId;
   String itemId;
-  int actualQuantity;
+  double actualQuantity;
   String productionDate;
-  GoodsReceiptEntryContainerData( this.containerId, this.employeeId, this.itemId,
-      this.actualQuantity, this.productionDate);
-  Map<String, dynamic> toJson() => {
-        "containerId": containerId,
-        "itemId": itemId,
-        "employeeId": employeeId,
-        "actualQuantity": actualQuantity,
-        "productionDate": productionDate
-      };
+  LocationServer location;
+  GoodsReceiptEntryContainerData(this.lotId, this.itemId,
+      this.actualQuantity, this.productionDate, this.location);
 }
 
 class LocationServer {
-  String containerId;
   String shelfId;
   int? rowId;
   int? id;
-  LocationServer(this.containerId, this.shelfId, this.rowId, this.id);
+  LocationServer(this.shelfId, this.rowId, this.id);
 }
 
 // class GoodsReceiptServer {

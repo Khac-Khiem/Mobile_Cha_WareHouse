@@ -9,7 +9,10 @@ class InconsistencyContainerUseCase {
   //   return containerInconsistency;
   // }
 
-  Future reportInconsistency(String containerId,String note, int newQuantity, DateTime timeStamp) async {
-    inconsistencyContainerRepository.reportInconsistency(containerId, newQuantity,note, timeStamp );
+  Future<int> reportInconsistency(String containerId, String note,
+      int newQuantity, DateTime timeStamp) async {
+    final report = inconsistencyContainerRepository.reportInconsistency(
+        containerId, newQuantity, note, timeStamp);
+    return report;
   }
 }

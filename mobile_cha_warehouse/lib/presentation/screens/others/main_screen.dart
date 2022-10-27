@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/function.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/blocs/edit_per_basket_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/issue_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/login_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/receipt_bloc.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/blocs/stockcard_bloc.dart';
+import 'package:mobile_cha_warehouse/presentation/bloc/events/edit_per_basket_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/receipt_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/stockcard_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/login_state.dart';
@@ -89,8 +91,7 @@ class MainScreen extends StatelessWidget {
                         BlocProvider.of<IssueBloc>(context)
                             .add(LoadIssueEvent(DateTime.now(), "2021-03-01"));
                         Navigator.pushNamed(context, '/issue_screen');
-                        //  BlocProvider.of<IssueBloc>(context).add(
-                        //               ConFirmExportingContainer("g1", [], DateTime.now()));
+                    
                       },
                     ),
                     SizedBox(
@@ -109,31 +110,37 @@ class MainScreen extends StatelessWidget {
                     ),
                     CustomizedButton(
                       text: "Kiểm kê",
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/qr_inventory_screen');
+                      onPressed: () async {
+                           BlocProvider.of<EditPerBasketBloc>(context).add(
+                            LoadAllItemIInventoryEvent(DateTime.now()));
+                        Navigator.pushNamed(context, '/choose_lot_screen');
                       },
                     ),
                   ],
                 ),
               );
             } else if (state is LoginStateLoginFailure) {
-              return Column(
-                children: [
-                  ExceptionErrorState(
-                    height: 300,
-                    title: "Đăng nhập thất bại",
-                    message: "Vui lòng kiểm tra lại thông tin",
-                    imageDirectory: 'lib/assets/sad_face_search.png',
-                    imageHeight: 140,
-                  ),
-                    CustomizedButton(
-                  text: "Đăng nhập",
-                  onPressed: () {
-                    
-                    Navigator.pushNamed(context, '//');
-                  },
-                )
-                ],
+              return Center(
+                child: Column(
+                  mainAxisAlignment:  MainAxisAlignment.center,
+                  crossAxisAlignment:  CrossAxisAlignment.center,
+                  children: [
+                    ExceptionErrorState(
+                      height: 300,
+                      title: "Đăng nhập thất bại",
+                      message: "Vui lòng kiểm tra lại thông tin",
+                      imageDirectory: 'lib/assets/sad_face_search.png',
+                      imageHeight: 140,
+                    ),
+                      CustomizedButton(
+                    text: "Đăng nhập",
+                    onPressed: () {
+                      
+                      Navigator.pushNamed(context, '//');
+                    },
+                  )
+                  ],
+                ),
               );
             } else {
               return CircularLoading();

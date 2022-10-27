@@ -2,6 +2,14 @@ import 'package:equatable/equatable.dart';
 
 abstract class LoginEvent extends Equatable {}
 
+class LoginRefreshEvent extends LoginEvent {
+  DateTime timestamp;
+  LoginRefreshEvent(this.timestamp);
+  @override
+  // TODO: implement props
+  List<Object?> get props => [timestamp];
+}
+
 class LoginEventChecking extends LoginEvent {
   String userName;
   String passWord;
@@ -30,7 +38,7 @@ class LoginEventFetchToken extends LoginEvent {
   String userName;
   String password;
   // Uri responseUrl;
-  LoginEventFetchToken( this.userName,this.password, this.timestamp);
+  LoginEventFetchToken(this.userName, this.password, this.timestamp);
   @override
   // TODO: implement props
   List<Object?> get props => [timestamp];

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:mobile_cha_warehouse/datasource/models/container_model.dart';
 import 'package:mobile_cha_warehouse/domain/entities/container.dart';
+import 'package:mobile_cha_warehouse/domain/entities/error_package.dart';
 
 abstract class ReceiptState extends Equatable {}
 
@@ -19,7 +20,7 @@ class ReceiptLoadingState extends ReceiptState {
 
 //
 class PostReceiptStateSuccess extends ReceiptState {
-  int statusRequest;
+  ErrorPackage statusRequest;
   DateTime timestamp;
   PostReceiptStateSuccess(this.timestamp, this.statusRequest);
   @override

@@ -19,101 +19,132 @@ class _IssueScreenState extends State<IssueScreen> {
    List<String> idListView = [];
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(
-              Icons.west, //mũi tên back
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pushNamed(context, '///');
-            }, //sự kiện mũi tên back
-          ),
-          backgroundColor: Color(0xff001D37), //màu xanh dương đậm
-          //nút bên phải
-          title: const Text(
-            'Xuất kho',
-            style: TextStyle(fontSize: 22), //chuẩn
-          ),
-        ),
-        endDrawer: DrawerUser(),
-        body: BlocConsumer<IssueBloc, IssueState>(
-            listener: (context, issueState) {
-          if (issueState is IssueStateLoadSuccess) {
-            idListView = issueState.listIssueId;
-            // goodsIssueEntryDataTemp = issueState.goodsIssueEntryData;
-            // print(goodsIssueEntryDataTemp);
-          }
-        }, builder: (context, issueState) {
-          if (issueState is IssueStateInitial) {
-            return CircularLoading();
-          } else {
-            return Center(
-              child: SingleChildScrollView(
-                child: Builder(builder: (BuildContext context) {
-                  if (issueState is IssueStateLoadSuccess ) {
-                    return issueState.listIssueId.isNotEmpty
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Column(
-                                // danh sách các đơn
-                                children: goodIssueIdsView
-                                    .map((item) => ListIssue(
-                                          item,
-                                        ))
-                                    .toList(),
-                              ),
-                              SizedBox(
-                                height: 100 * SizeConfig.ratioHeight,
-                              ),
-                              CustomizedButton(
-                                  text: 'Trở lại',
-                                  onPressed: () async {
-                                    Navigator.pushNamed(context, '///');
-                                  }),
-                              CustomizedButton(
-                                  text: 'Hoàn thành',
-                                  onPressed: () async {
-                                    // xóa dữ liệu các rổ đã xuất
-                                  }),
-                            ],
-                          )
-                        : Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              ExceptionErrorState(
-                                height: 300,
-                                title: "Không tìm thấy đơn xuất kho",
-                                message: "Vui lòng kiểm tra lại tài khoản.",
-                                imageDirectory:
-                                    'lib/assets/sad_face_search.png',
-                                imageHeight: 140,
-                              ),
-                              CustomizedButton(
-                                  text: 'Trở lại',
-                                  onPressed: () async {
-                                    Navigator.pushNamed(context, '///');
-                                  }),
-                            ],
-                          );
-                  } else if (issueState is IssueStateFailure) {
-                    return ExceptionErrorState(
-                      height: 300,
-                      title: "Không tìm thấy dữ liệu",
-                      message: "Đã có lỗi trong quá trình truy cập.",
-                      imageDirectory: 'lib/assets/sad_face_search.png',
-                      imageHeight: 140,
-                    );
-                  } else {
-                    return CircularLoading();
-                  }
-                }),
-              ),
+    return WillPopScope(
+      onWillPop: () async {
+          final shouldPop = await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Do you want to go back?'),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actions: [
+                TextButton(
+                  onPressed: () {
+                     Navigator.pushNamed(context, '///');
+                    // Navigator.pop(context, true);
+                  },
+                  child: const Text('Yes'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  child: const Text('No'),
+                ),
+              ],
             );
-          }
-        }));
+          },
+        );
+        return shouldPop!;
+        },
+      child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(
+                Icons.west, //mũi tên back
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '///');
+              }, //sự kiện mũi tên back
+            ),
+            backgroundColor: Color(0xff001D37), //màu xanh dương đậm
+            //nút bên phải
+            title: const Text(
+              'Xuất kho',
+              style: TextStyle(fontSize: 22), //chuẩn
+            ),
+          ),
+          endDrawer: DrawerUser(),
+          body: BlocConsumer<IssueBloc, IssueState>(
+              listener: (context, issueState) {
+            if (issueState is IssueStateLoadSuccess) {
+              idListView = issueState.listIssueId;
+              // goodsIssueEntryDataTemp = issueState.goodsIssueEntryData;
+              // print(goodsIssueEntryDataTemp);
+            }
+          }, builder: (context, issueState) {
+            if (issueState is IssueStateInitial) {
+              return CircularLoading();
+            } else {
+              return Center(
+                child: SingleChildScrollView(
+                  child: Builder(builder: (BuildContext context) {
+                   
+                    if (issueState is IssueStateLoadSuccess ) {
+                      return issueState.listIssueId.isNotEmpty
+                          ? Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Column(
+                                  // danh sách các đơn
+                                  children: issueState.listIssueId
+                                      .map((item) => ListIssue(
+                                            item,
+                                          ))
+                                      .toList(),
+                                ),
+                                SizedBox(
+                                  height: 100 * SizeConfig.ratioHeight,
+                                ),
+                                CustomizedButton(
+                                    text: 'Trở lại',
+                                    onPressed: () async {
+                                      Navigator.pushNamed(context, '///');
+                                    }),
+                                // CustomizedButton(
+                                //     text: 'Hoàn thành',
+                                //     onPressed: () async {
+                                //       // xóa dữ liệu các rổ đã xuất
+                                //     }),
+                              ],
+                            )
+                          : Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ExceptionErrorState(
+                                  height: 300,
+                                  title: "Không tìm thấy đơn xuất kho",
+                                  message: "Vui lòng kiểm tra lại tài khoản.",
+                                  imageDirectory:
+                                      'lib/assets/sad_face_search.png',
+                                  imageHeight: 140,
+                                ),
+                                CustomizedButton(
+                                    text: 'Trở lại',
+                                    onPressed: () async {
+                                      Navigator.pushNamed(context, '///');
+                                    }),
+                              ],
+                            );
+                    } else if (issueState is IssueStateFailure) {
+                      return ExceptionErrorState(
+                        height: 300,
+                        title: "Không tìm thấy dữ liệu",
+                        message: "Đã có lỗi trong quá trình truy cập.",
+                        imageDirectory: 'lib/assets/sad_face_search.png',
+                        imageHeight: 140,
+                      );
+                    } else {
+                      print(issueState);
+                      return CircularLoading();
+                    }
+                  }),
+                ),
+              );
+            }
+          })),
+    );
   }
 }
 

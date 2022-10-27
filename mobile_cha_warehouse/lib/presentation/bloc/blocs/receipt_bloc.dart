@@ -5,6 +5,7 @@ import 'package:mobile_cha_warehouse/domain/usecases/production_employee_usecase
 import 'package:mobile_cha_warehouse/domain/usecases/receipt_usecase.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/receipt_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/receipt_state.dart';
+import '../../../domain/entities/item.dart';
 import '../../screens/receipt/receipt_params.dart';
 
 // lưu tạm và sẽ xóa khi hoàn thành tạo đơn để gửi lên server
@@ -16,6 +17,7 @@ List<LocationServer> locationContainer = [];
 //
 List<String> listemployeeId = [];
 List<String> listitemId = [];
+List<Item> listItem = [];
 
 class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
   ContainerUseCase containerUseCase;
@@ -37,23 +39,23 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
   Future<void> _onPostReceipt(
       ReceiptEvent event, Emitter<ReceiptState> emit) async {
     if (event is PostNewReceiptEvent) {
-      //  emit(ReceiptLoadingState(DateTime.now()));
+        emit(ReceiptLoadingState(DateTime.now()));
       try {
-        final request = await receiptUseCase.postNewReceipt(
-            event.goodsReceiptEntryContainers, event.receiptId);
-        if (request == 200) {
+        final request =
+            await receiptUseCase.postNewReceipt(event.lots, event.receiptId);
+        if (request.errorCode == "success") {
           print('success');
 
           // thêm container từ đơn qua để cập nhật vị trí
-          for (var element in goodsReceiptEntryConainerDataTemp) {
-            locationContainer
-                .add(LocationServer(element.containerId, '', null, null));
-          }
+          // for (var element in goodsReceiptEntryConainerDataTemp) {
+          //   locationContainer
+          //       .add(LocationServer(element.lotId, '', null, null));
+          // }
           goodsReceiptEntryConainerDataTemp.clear();
 
           emit(PostReceiptStateSuccess(DateTime.now(), request));
         } else {
-          emit(PostReceiptStateFailure(request.toString(), DateTime.now()));
+          emit(PostReceiptStateFailure(request.errorMessage, DateTime.now()));
         }
       } catch (e) {
         print(e);
@@ -97,6 +99,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
         if (productOrErr.isNotEmpty) {
           for (int i = 0; i < productOrErr.length; i++) {
             listitemId.add(productOrErr[i].itemId);
+            listItem.add(productOrErr[i]);
           }
         }
         if (employees.isNotEmpty) {

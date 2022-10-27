@@ -45,8 +45,9 @@ class LoginScreen extends StatelessWidget {
         ),
         endDrawer: DrawerUser(),
         body: BlocConsumer<LoginBloc, LoginState>(listener: (context, state) {
-          if (state is LoginStateToggleShow) {
-            _showPass = state.isShow;
+        
+        if (state is LoginStateToggleShow) {
+            _showPass = !_showPass;
           }
         }, builder: (context, state) {
           // if (state is LoginStateLoadingRequest) {
@@ -153,8 +154,8 @@ class LoginScreen extends StatelessWidget {
                             },
                             icon: Icon(
                               _showPass
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                               color: Constants.mainColor,
                             ))
                       ]),
@@ -164,7 +165,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 CustomizedButton(
                   text: "Đăng nhập",
-                  onPressed: () {
+                  onPressed: () async {
                     BlocProvider.of<LoginBloc>(context).add(
                         LoginEventFetchToken(userController.text,
                             passController.text, DateTime.now()));

@@ -5,14 +5,14 @@ class ItemModel extends Item {
   ItemModel(
       String id,
       String name,
-      var piecesPerKilogram,
-     var minimumStockLevel,
-      var maximumStockLevel,
+      dynamic piecesPerKilogram,
+      dynamic lifeCycle,
+      // var minimumStockLevel,
+      // var maximumStockLevel,
       int unit,
-    // WarehouseEmployeeModel manager
-    dynamic manager 
-      )
-      : super(id, name, piecesPerKilogram, minimumStockLevel, maximumStockLevel,
+      // WarehouseEmployeeModel manager
+      dynamic manager)
+      : super(id, name, piecesPerKilogram, lifeCycle,
             unit, manager);
 
   factory ItemModel.fromJson(Map<String, dynamic> json) {
@@ -20,10 +20,13 @@ class ItemModel extends Item {
       json["itemId"],
       json["name"],
       json["piecesPerKilogram"],
-      json["minimumStockLevel"],
-      json["maximumStockLevel"],
+      json["lifeCycle"],
+      // json["minimumStockLevel"],
+      // json["maximumStockLevel"],
       json["unit"],
-      json["manager"] == null ? null : WarehouseEmployeeModel.fromJson(json["manager"]),
+      json["manager"] == null
+          ? null
+          : WarehouseEmployeeModel.fromJson(json["manager"]),
       //WarehouseEmployeeModel('', '', '', DateTime.now())
     );
   }

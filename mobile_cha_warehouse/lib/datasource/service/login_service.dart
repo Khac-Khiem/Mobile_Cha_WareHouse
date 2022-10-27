@@ -17,7 +17,7 @@ class LoginService {
         }));
     //  final res = await http.post(Uri.parse('https://chaauthenticationdelegateservice.azurewebsites.net/api/login'));
     if (response.statusCode == 200) {
-      token = response.body;
+      tokenId = response.body;
       return response.body;
     } else {
       return 'error';

@@ -8,13 +8,13 @@ class Item extends Equatable {
   String itemId;
   String name;
   dynamic piecesPerKilogram;
-  dynamic minimumStockLevel;
-  dynamic maximumStockLevel;
+  dynamic lifeCycle;
+  // dynamic minimumStockLevel;
+  // dynamic maximumStockLevel;
   int unit;
   // WarehouseEmployee manager;
   dynamic manager;
-  Item(this.itemId, this.name, this.piecesPerKilogram, this.minimumStockLevel,
-      this.maximumStockLevel, this.unit, this.manager);
+  Item(this.itemId, this.name, this.piecesPerKilogram, this.lifeCycle, this.unit, this.manager);
 
   @override
   // TODO: implement props

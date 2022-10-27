@@ -2,11 +2,11 @@ import 'package:equatable/equatable.dart';
 
 class ErrorPackage extends Equatable {
   String errorCode;
-  String message;
-  String detail;
-  ErrorPackage(this.errorCode, this.message, this.detail);
+  String errorMessage;
+  
+  ErrorPackage(this.errorCode, this.errorMessage, );
 
   @override
   // TODO: implement props
-  List<Object?> get props => [message, errorCode, detail];
+  List<Object?> get props => [errorMessage, errorCode];
 }

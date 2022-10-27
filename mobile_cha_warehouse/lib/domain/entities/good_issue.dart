@@ -8,28 +8,27 @@ class GoodsIssueEntryContainer extends Equatable {
   //int goodsIssueEntryId;
   dynamic quantity;
   String productionDate;
-  String containerId;
+  String lotId;
   //bool isTaken;
-  ProductionEmployee? productionEmployee;
-  GoodsIssueEntryContainer( this.quantity,
-      this.productionDate, this.containerId, this.productionEmployee);
+  //ProductionEmployee? productionEmployee;
+  GoodsIssueEntryContainer(
+      this.quantity, this.productionDate, this.lotId);
   @override
   // TODO: implement props
-  List<Object?> get props => [quantity, productionDate, containerId];
+  List<Object?> get props => [quantity, productionDate, lotId];
 }
 
 // từng dòng của một đơn xuất kho
 class GoodsIssueEntry extends Equatable {
- // int id;
- // int goodsIssueId;
- // int itemId;
+  // int id;
+  // int goodsIssueId;
+  // int itemId;
   dynamic plannedQuantity;
- // WarehouseEmployee employee;
+  // WarehouseEmployee employee;
   Item item;
   List<GoodsIssueEntryContainer>? container;
   //List<dynamic> container;
-  GoodsIssueEntry(this.plannedQuantity,
-      this.item, this.container);
+  GoodsIssueEntry(this.plannedQuantity, this.item, this.container);
   @override
   // TODO: implement props
   List<Object?> get props => [plannedQuantity, item, container];
@@ -42,7 +41,8 @@ class GoodsIssue extends Equatable {
   bool isConfirmed;
   WarehouseEmployee employee;
   List<GoodsIssueEntry> entries;
-  GoodsIssue(this.goodsIssueId, this.timestamp,this.employee, this.isConfirmed, this.entries);
+  GoodsIssue(this.goodsIssueId, this.timestamp, this.employee, this.isConfirmed,
+      this.entries);
   @override
   // TODO: implement props
   List<Object?> get props => [goodsIssueId, timestamp, isConfirmed, entries];

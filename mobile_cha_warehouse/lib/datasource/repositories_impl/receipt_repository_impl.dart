@@ -1,4 +1,5 @@
 import 'package:mobile_cha_warehouse/datasource/service/receipt_service.dart';
+import 'package:mobile_cha_warehouse/domain/entities/error_package.dart';
 import 'package:mobile_cha_warehouse/domain/repositories/receipt_repository.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/receipt/receipt_params.dart';
 
@@ -7,7 +8,7 @@ class ReceiptRepositoryImpl implements ReceiptsRepo {
   ReceiptRepositoryImpl(this.receiptService);
 
   @override
-  Future<int> postNewReceiptRepo(List<GoodsReceiptEntryContainerData> goodsReceipt, String receiptId) {
+  Future<ErrorPackage> postNewReceiptRepo(List<GoodsReceiptEntryContainerData> goodsReceipt, String receiptId) {
     // TODO: implement postNewReceiptRepo
     final statusRequest = receiptService.postNewReceiptService(goodsReceipt, receiptId);
     return statusRequest;
