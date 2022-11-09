@@ -43,7 +43,7 @@ class LoginScreen extends StatelessWidget {
             ),
           ],
         ),
-        endDrawer: DrawerUser(),
+        //endDrawer: DrawerUser(),
         body: BlocConsumer<LoginBloc, LoginState>(listener: (context, state) {
         
         if (state is LoginStateToggleShow) {

@@ -283,11 +283,13 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                                       readOnly: isFull,
                                       controller: isFull == true
                                           ? TextEditingController(
-                                              text: checkInfoState.basket.quantity
+                                              text: checkInfoState
+                                                  .basket.quantity
                                                   .toString())
                                           : TextEditingController(
                                               text: quanlity.toString()),
-                                      textAlignVertical: TextAlignVertical.center,
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontSize: 20 * SizeConfig.ratioFont),
@@ -297,16 +299,19 @@ class _ConfirmContainerScreenState extends State<ConfirmContainerScreen> {
                                                 10 * SizeConfig.ratioHeight),
                                         border: OutlineInputBorder(
                                             borderSide: BorderSide(
-                                                width: 1.0 * SizeConfig.ratioWidth,
+                                                width:
+                                                    1.0 * SizeConfig.ratioWidth,
                                                 color: Colors.black)),
                                         focusedBorder: OutlineInputBorder(
                                             borderSide: BorderSide(
-                                                width: 1.0 * SizeConfig.ratioWidth,
+                                                width:
+                                                    1.0 * SizeConfig.ratioWidth,
                                                 color: Colors.black)),
                                       ),
                                     ),
-                                    itemType == 1 ?
-                                    const Text("kg"): const Text("cái"),
+                                    itemType == 1
+                                        ? const Text("kg")
+                                        : const Text("cái"),
                                   ],
                                 )),
                             Container(

@@ -1,11 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_cha_warehouse/constant.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/login_usecase.dart';
+import 'package:mobile_cha_warehouse/global.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/events/login_event.dart';
 import 'package:mobile_cha_warehouse/presentation/bloc/states/login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  
   LoginUsecase loginUsecase;
   LoginBloc(this.loginUsecase) : super(LoginStateInitial(false, false, true)) {
     on((LoginEventChecking event, emit) => LoginStateFormatChecking(
@@ -13,10 +13,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         event.userName.length < Constants.minLengthUserName));
     // on<LoginEventLoginClicked>(_onLogin);
     on<LoginEventFetchToken>(_onFetch);
-  on((LoginRefreshEvent event, emit) =>
-       emit( LoginStateInitial(false, false, true)));
+    on((LoginRefreshEvent event, emit) =>
+        emit(LoginStateInitial(false, false, true)));
     on((LoginEventToggleShow event, emit) =>
-       emit( LoginStateToggleShow( !event.isShow)));
+        emit(LoginStateToggleShow(!event.isShow)));
   }
   // var authorizationUrl;
   // var grant;
@@ -86,10 +86,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (event is LoginEventFetchToken) {
       emit(LoginStateLoadingRequest(DateTime.now()));
       try {
-        final String request =
+        final request =
             await loginUsecase.fetchToken(event.userName, event.password);
         if (request != 'error') {
-          
+          employeeIdOverall = event.userName;
           emit(LoginStateLoginSuccessful(DateTime.now()));
         } else {
           emit(LoginStateLoginFailure(DateTime.now()));

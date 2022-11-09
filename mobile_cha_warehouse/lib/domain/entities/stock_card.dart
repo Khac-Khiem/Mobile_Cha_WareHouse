@@ -2,15 +2,15 @@ import 'package:equatable/equatable.dart';
 import 'package:mobile_cha_warehouse/domain/entities/item.dart';
 
 class StockCardEntry extends Equatable {
-  int itemId;
-  DateTime date;
+ // int itemId;
+  String date;
   double beforeQuantity;
   double inputQUantity;
   double outputQuantity;
   double afterQuantity;
-  Item item;
-  String note;
-  StockCardEntry(this.itemId, this.item, this.date, this.beforeQuantity, this.inputQUantity,
+//  Item item;
+  dynamic note;
+  StockCardEntry( this.date, this.beforeQuantity, this.inputQUantity,
       this.outputQuantity, this.afterQuantity, this.note);
   @override
   // TODO: implement props

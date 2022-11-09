@@ -437,8 +437,9 @@ class StockcardRow extends StatelessWidget {
               SizedBox(
                   width: 80 * SizeConfig.ratioWidth,
                   child: Text(
+                    //stockCardEntry.date,
                     DateFormat("yyyy-MM-dd")
-                        .format(stockCardEntry.date)
+                        .parse(stockCardEntry.date)
                         .toString(),
                     style: TextStyle(fontSize: 15 * SizeConfig.ratioFont),
                     textAlign: TextAlign.center,

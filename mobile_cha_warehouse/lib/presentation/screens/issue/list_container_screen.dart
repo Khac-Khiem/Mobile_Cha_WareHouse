@@ -73,7 +73,7 @@ class ListContainerScreen extends StatelessWidget {
               ),
               backgroundColor: const Color(0xff001D37), //màu xanh dương đậm
               title: const Text(
-                'Danh sách các rổ cần xuất',
+                'Danh sách hàng hóa cần xuất',
                 style: TextStyle(fontSize: 22), //chuẩn
               ),
             ),
@@ -225,7 +225,8 @@ class ListContainerScreen extends StatelessWidget {
                                                   ),
                                                 ),
                                                 Column(
-                                                  children: issueState.listLotExpected
+                                                  children: issueState
+                                                      .listLotExpected
                                                       .map((item) =>
                                                           RowContainerExported(
                                                               item))
@@ -436,7 +437,12 @@ class RowContainer extends StatelessWidget {
                 onPressed: () {
                   checkLot.clear();
                   checkLot.add(lot);
-
+                  quantity.clear();
+                  if (planned > lot.quantity) {
+                    quantity.add(lot.quantity);
+                  } else {
+                    quantity.add(planned);
+                  }
                   Navigator.pushNamed(context, '/check_lot_screen');
                 })),
       ),

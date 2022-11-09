@@ -24,7 +24,7 @@ class MainAppName extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image(
-                image: const AssetImage('lib/assets/logo_CHA_new_version.png'),
+                image: const AssetImage('lib/assets/CHA_logo.png'),
                 width: 100 * SizeConfig.ratioWidth,
               ),
               SizedBox(

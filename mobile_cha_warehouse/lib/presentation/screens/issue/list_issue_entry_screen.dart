@@ -266,9 +266,9 @@ class _ListIssueScreenState extends State<ListIssueScreen> {
                                                     //Sự kiện click vào từng dòng
                                                     // lưu biến planned
                                                     planned =
-                                                        goodsIssueEntryDataTemp[
+                                                       int.parse( goodsIssueEntryDataTemp[
                                                                 index]
-                                                            .planQuantity;
+                                                            .planQuantity.toString());
                                                     //
                                                     // containerExported =
                                                     //     goodsIssueEntryDataTemp[
@@ -310,7 +310,7 @@ class _ListIssueScreenState extends State<ListIssueScreen> {
                               height: 300,
                               title: "Không tìm thấy dữ liệu",
                               message:
-                                  "Các rổ trong đơn này đã được \nlấy ra khỏi kho, vui lòng \nkiểm tra lại đơn.",
+                                  "Các lô trong đơn này đã được \nlấy ra khỏi kho, vui lòng \nkiểm tra lại đơn.",
                               imageDirectory: 'lib/assets/sad_commander.png',
                               imageHeight: 100,
                             );

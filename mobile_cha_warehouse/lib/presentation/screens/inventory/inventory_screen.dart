@@ -42,7 +42,7 @@ class InventoryScreen extends StatelessWidget {
             listener: (context, checkInfoState) {
           if (checkInfoState is EditPerBasketStateUploadSuccess) {
             AlertDialogOneBtnCustomized(
-                    context, "Thành công", "Rổ đã được báo cáo", "Trở lại", () {
+                    context, "Thành công", "Lô đã được báo cáo", "Trở lại", () {
               Navigator.pushNamed(context, '///');
             }, 18, 22, () {})
                 .show();

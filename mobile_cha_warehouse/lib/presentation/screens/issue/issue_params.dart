@@ -15,7 +15,7 @@ class LotIssueExport {
 
 class GoodsIssueEntryView {
   String itemId;
-  int planQuantity;
-  int actualQuantity;
+  num planQuantity;
+  num actualQuantity;
   GoodsIssueEntryView(this.itemId, this.planQuantity, this.actualQuantity);
 }

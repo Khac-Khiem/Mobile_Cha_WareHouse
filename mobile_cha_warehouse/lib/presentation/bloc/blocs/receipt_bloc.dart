@@ -17,11 +17,11 @@ List<LocationServer> locationContainer = [];
 //
 List<String> listemployeeId = [];
 List<String> listitemId = [];
+List<String> listItemName = [];
 List<Item> listItem = [];
 
 class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
   ContainerUseCase containerUseCase;
-
   ReceiptUseCase receiptUseCase;
   ItemUseCase itemUseCase;
   ProductionEmployeeUseCase productionEmployeeUseCase;
@@ -39,7 +39,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
   Future<void> _onPostReceipt(
       ReceiptEvent event, Emitter<ReceiptState> emit) async {
     if (event is PostNewReceiptEvent) {
-        emit(ReceiptLoadingState(DateTime.now()));
+      emit(ReceiptLoadingState(DateTime.now()));
       try {
         final request =
             await receiptUseCase.postNewReceipt(event.lots, event.receiptId);
@@ -91,8 +91,10 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
     emit(ReceiptLoadingState(DateTime.now()));
     try {
       if (event is LoadAllDataEvent) {
-        listitemId = [];
-        listemployeeId = [];
+        listitemId.clear();
+        listemployeeId.clear();
+        listItemName.clear();
+        listItem.clear();
         final productOrErr = await itemUseCase.getAllItem();
         final employees = await productionEmployeeUseCase.getAllEmployee();
 
@@ -100,6 +102,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
           for (int i = 0; i < productOrErr.length; i++) {
             listitemId.add(productOrErr[i].itemId);
             listItem.add(productOrErr[i]);
+            listItemName.add(productOrErr[i].name);
           }
         }
         if (employees.isNotEmpty) {
@@ -111,7 +114,9 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
         print(listemployeeId);
         emit(ReceiptInitialState());
       }
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _onCheck(ReceiptEvent event, Emitter<ReceiptState> emit) async {
@@ -121,13 +126,13 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
         final basketOrErr =
             await containerUseCase.getContainerById(event.containerId);
         if (basketOrErr.location != null && basketOrErr.item != null) {
-          emit(CheckContainerStateFail(DateTime.now(), 'Rổ đã được nhập kho'));
+          emit(CheckContainerStateFail(DateTime.now(), 'Lô đã được nhập kho'));
         } else {
           emit(CheckContainerStateSuccess(DateTime.now()));
         }
       }
     } catch (e) {
-      emit(CheckContainerStateFail(DateTime.now(), 'Rổ không xác định'));
+      emit(CheckContainerStateFail(DateTime.now(), 'Lô không xác định'));
     }
   }
 

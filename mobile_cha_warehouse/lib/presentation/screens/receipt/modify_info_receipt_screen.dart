@@ -13,17 +13,18 @@ import '../../../constant.dart';
 List<String> labelTextList = [
   "Mã lô:",
   "Mã sản phẩm:",
+  "Tên sản phẩm:",
   "Ngày SX:",
   "Ca SX:",
   "Đơn vị",
   "Thực tế:",
-  
   "Vị trí kệ:",
 ];
 
 List<String> labelTextList2 = [
   "Mã lô:",
   "Mã sản phẩm:",
+  "Tên sản phẩm:",
   "Đơn vị",
   "Thực tế:",
   "Ngày SX:",
@@ -61,19 +62,31 @@ class ModifyInfoScreen extends StatefulWidget {
 class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
   String itemId = '';
 
+  String itemName = '';
+
   String actual = '';
 
   String lotId = '';
 
   String selectedShift = '';
 
+  String unitUpdate = '';
+
+  double ratioQuantity = 1;
+
   String unit = '', shelfId = '', rowId = '', columnId = '';
 
   String itemId2 = '';
 
+  String itemName2 = '';
+
   String actual2 = '';
 
   String lotId2 = '';
+
+  String unitUpdate2 = '';
+
+  double ratioQuantity2 = 1;
 
   String unit2 = '', shelfId2 = '', rowId2 = '', columnId2 = '';
   @override
@@ -82,32 +95,32 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
     return DefaultTabController(
       length: 2,
       child: WillPopScope(
-        onWillPop: () async{
-            final shouldPop = await showDialog<bool>(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Do you want to go back?'),
-              actionsAlignment: MainAxisAlignment.spaceBetween,
-              actions: [
-                TextButton(
-                  onPressed: () {
-                     Navigator.pushNamed(context, '/receipt_screen');
-                    // Navigator.pop(context, true);
-                  },
-                  child: const Text('Yes'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  },
-                  child: const Text('No'),
-                ),
-              ],
-            );
-          },
-        );
-        return shouldPop!;
+        onWillPop: () async {
+          final shouldPop = await showDialog<bool>(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Do you want to go back?'),
+                actionsAlignment: MainAxisAlignment.spaceBetween,
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/receipt_screen');
+                      // Navigator.pop(context, true);
+                    },
+                    child: const Text('Yes'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    child: const Text('No'),
+                  ),
+                ],
+              );
+            },
+          );
+          return shouldPop!;
         },
         child: Scaffold(
             appBar: AppBar(
@@ -180,7 +193,8 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                   Column(children: [
                                     Container(
                                         padding: EdgeInsets.symmetric(
-                                            vertical: 5 * SizeConfig.ratioHeight),
+                                            vertical:
+                                                5 * SizeConfig.ratioHeight),
                                         alignment: Alignment.centerRight,
                                         width: 200 * SizeConfig.ratioWidth,
                                         height: 55 * SizeConfig.ratioHeight,
@@ -188,9 +202,9 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         child: TextField(
                                           enabled: true,
                                           //  readOnly: true,
-                                             onChanged: (value) => {lotId = value},
-                                          controller:
-                                              TextEditingController(text: lotId),
+                                          onChanged: (value) => {lotId = value},
+                                          controller: TextEditingController(
+                                              text: lotId),
                                           textAlignVertical:
                                               TextAlignVertical.center,
                                           textAlign: TextAlign.center,
@@ -200,10 +214,11 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                           decoration: InputDecoration(
                                             // filled: true,
                                             // fillColor: Colors.grey[300],
-                                            contentPadding: EdgeInsets.symmetric(
-                                                horizontal:
-                                                    10 * SizeConfig.ratioHeight),
-      
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 10 *
+                                                        SizeConfig.ratioHeight),
+
                                             border: OutlineInputBorder(
                                                 borderSide: BorderSide(
                                                     width: 1.0 *
@@ -227,35 +242,48 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         //     const Radius.circular(10))
                                       ),
                                       child: DropdownSearch(
-                                        dropdownSearchDecoration: InputDecoration(
-                                            contentPadding: SizeConfig
-                                                        .ratioHeight >=
-                                                    1
-                                                ? EdgeInsets.fromLTRB(
-                                                    50 * SizeConfig.ratioWidth,
-                                                    14 * SizeConfig.ratioHeight,
-                                                    3 * SizeConfig.ratioWidth,
-                                                    3 * SizeConfig.ratioHeight)
-                                                : const EdgeInsets.fromLTRB(
-                                                    45,
-                                                    7,
-                                                    3,
-                                                    3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
-                                            hintText: "Chọn mã",
-                                            hintStyle: TextStyle(
-                                                fontSize:
-                                                    16 * SizeConfig.ratioFont),
-                                            border: const UnderlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                            fillColor: Colors.blue),
+                                        dropdownSearchDecoration:
+                                            InputDecoration(
+                                                contentPadding:
+                                                    // SizeConfig
+                                                    //             .ratioHeight >=
+                                                    //         1
+                                                    //     ? EdgeInsets.fromLTRB(
+                                                    //         50 *
+                                                    //             SizeConfig
+                                                    //                 .ratioWidth,
+                                                    //         14 *
+                                                    //             SizeConfig
+                                                    //                 .ratioHeight,
+                                                    //         3 *
+                                                    //             SizeConfig
+                                                    //                 .ratioWidth,
+                                                    //         3 *
+                                                    //             SizeConfig
+                                                    //                 .ratioHeight)
+                                                    //     :
+                                                    const EdgeInsets.fromLTRB(
+                                                        45,
+                                                        7,
+                                                        3,
+                                                        3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
+                                                hintText: "Chọn mã",
+                                                hintStyle: TextStyle(
+                                                    fontSize: 16 *
+                                                        SizeConfig.ratioFont),
+                                                border:
+                                                    const UnderlineInputBorder(
+                                                        borderSide:
+                                                            BorderSide.none),
+                                                fillColor: Colors.blue),
                                         showAsSuffixIcons: true,
                                         popupTitle: Padding(
-                                          padding: const EdgeInsets.all(20),
+                                          padding: const EdgeInsets.all(10),
                                           child: Text(
                                             "Chọn mã sản phẩm",
                                             style: TextStyle(
                                                 fontSize:
-                                                    22 * SizeConfig.ratioFont),
+                                                    16 * SizeConfig.ratioFont),
                                             textAlign: TextAlign.center,
                                           ),
                                         ),
@@ -264,17 +292,23 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         items: listitemId,
+                                        selectedItem: itemId,
                                         //searchBoxDecoration: InputDecoration(),
                                         onChanged: (String? data) {
                                           itemId = data.toString();
                                           setState(() {
                                             for (var element in listItem) {
                                               if (element.itemId == itemId) {
+                                                ratioQuantity = double.parse(
+                                                    element.piecesPerKilogram
+                                                        .toString());
+                                                itemName = element.name;
                                                 if (element.unit == 1) {
                                                   unit = "kg";
                                                 } else {
                                                   unit = "cái";
                                                 }
+                                                unitUpdate = unit;
                                               }
                                             }
                                           });
@@ -283,9 +317,94 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         //  autoFocusSearchBox: true,
                                       ),
                                     ),
-                                     Container(
+                                    Container(
+                                      width: 200 * SizeConfig.ratioWidth,
+                                      height: 50 * SizeConfig.ratioHeight,
+                                      padding: const EdgeInsets.all(0),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 1, color: Colors.grey),
+                                        // borderRadius: const BorderRadius.all(
+                                        //     const Radius.circular(10))
+                                      ),
+                                      child: DropdownSearch(
+                                        dropdownSearchDecoration:
+                                            InputDecoration(
+                                                contentPadding: SizeConfig
+                                                            .ratioHeight >=
+                                                        1
+                                                    ? EdgeInsets.fromLTRB(
+                                                        50 *
+                                                            SizeConfig
+                                                                .ratioWidth,
+                                                        14 *
+                                                            SizeConfig
+                                                                .ratioHeight,
+                                                        3 *
+                                                            SizeConfig
+                                                                .ratioWidth,
+                                                        3 *
+                                                            SizeConfig
+                                                                .ratioHeight)
+                                                    : const EdgeInsets.fromLTRB(
+                                                        45,
+                                                        7,
+                                                        3,
+                                                        3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
+                                                hintText: "Tên sản phẩm",
+                                                hintStyle: TextStyle(
+                                                    fontSize: 16 *
+                                                        SizeConfig.ratioFont),
+                                                border:
+                                                    const UnderlineInputBorder(
+                                                        borderSide:
+                                                            BorderSide.none),
+                                                fillColor: Colors.blue),
+                                        showAsSuffixIcons: true,
+                                        popupTitle: Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: Text(
+                                            "Chọn tên sản phẩm",
+                                            style: TextStyle(
+                                                fontSize:
+                                                    16 * SizeConfig.ratioFont),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        popupBackgroundColor: Colors.grey[200],
+                                        popupShape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        items: listItemName,
+                                        selectedItem: itemName,
+                                        //searchBoxDecoration: InputDecoration(),
+                                        onChanged: (String? data) {
+                                          itemName = data.toString();
+                                          setState(() {
+                                            for (var element in listItem) {
+                                              if (element.name == itemName) {
+                                                itemId = element.itemId;
+                                                ratioQuantity = double.parse(
+                                                    element.piecesPerKilogram
+                                                        .toString());
+                                                if (element.unit == 1) {
+                                                  unit = "kg";
+                                                } else {
+                                                  unit = "cái";
+                                                }
+                                                unitUpdate = unit;
+                                              }
+                                            }
+                                          });
+                                        },
+                                        showSearchBox: true,
+                                        //  autoFocusSearchBox: true,
+                                      ),
+                                    ),
+                                    Container(
                                         padding: EdgeInsets.symmetric(
-                                            vertical: 5 * SizeConfig.ratioHeight),
+                                            vertical:
+                                                5 * SizeConfig.ratioHeight),
                                         alignment: Alignment.centerRight,
                                         width: 200 * SizeConfig.ratioWidth,
                                         height: 55 * SizeConfig.ratioHeight,
@@ -295,8 +414,9 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                           //  readOnly: true,
                                           controller: TextEditingController(
                                               text: DateFormat('yyyy-MM-dd')
-                                                  .format(DateTime.now().subtract(
-                                                      const Duration(days: 1)))),
+                                                  .format(DateTime.now()
+                                                      .subtract(const Duration(
+                                                          days: 1)))),
                                           textAlignVertical:
                                               TextAlignVertical.center,
                                           textAlign: TextAlign.center,
@@ -304,9 +424,10 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                               fontSize:
                                                   20 * SizeConfig.ratioFont),
                                           decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.symmetric(
-                                                horizontal:
-                                                    10 * SizeConfig.ratioHeight),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 10 *
+                                                        SizeConfig.ratioHeight),
                                             border: OutlineInputBorder(
                                                 borderSide: BorderSide(
                                                     width: 1.0 *
@@ -354,14 +475,16 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                                             7,
                                                             3,
                                                             3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
-                                                    hintText: "Lấy cả rổ",
+                                                    hintText: "",
                                                     hintStyle: TextStyle(
                                                         fontSize: 16 *
-                                                            SizeConfig.ratioFont),
+                                                            SizeConfig
+                                                                .ratioFont),
                                                     border:
                                                         const UnderlineInputBorder(
                                                             borderSide:
-                                                                BorderSide.none),
+                                                                BorderSide
+                                                                    .none),
                                                     fillColor: Colors.blue),
                                             showAsSuffixIcons: true,
                                             popupTitle: Padding(
@@ -393,50 +516,128 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                               });
                                             })),
                                     Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 5 * SizeConfig.ratioHeight),
-                                        alignment: Alignment.centerRight,
                                         width: 200 * SizeConfig.ratioWidth,
-                                        height: 55 * SizeConfig.ratioHeight,
-                                        //color: Colors.grey[200],
-                                        child: TextField(
-                                          enabled: true,
-                                          // onChanged: (value) => {actual = value},
-                                          readOnly: true,
-                                          controller:
-                                              TextEditingController(text: unit),
-                                          textAlignVertical:
-                                              TextAlignVertical.center,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                                  20 * SizeConfig.ratioFont),
-                                          decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.symmetric(
-                                                horizontal:
-                                                    10 * SizeConfig.ratioHeight),
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                            focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                          ),
-                                        )),
+                                        height: 50 * SizeConfig.ratioHeight,
+                                        padding: const EdgeInsets.all(0),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1,
+                                              color: Constants.mainColor),
+                                          // borderRadius: const BorderRadius.all(
+                                          //     const Radius.circular(10))
+                                        ),
+                                        child: DropdownSearch(
+                                            dropdownSearchDecoration:
+                                                InputDecoration(
+                                                    contentPadding: SizeConfig
+                                                                .ratioHeight >=
+                                                            1
+                                                        ? EdgeInsets.fromLTRB(
+                                                            50 *
+                                                                SizeConfig
+                                                                    .ratioWidth,
+                                                            14 *
+                                                                SizeConfig
+                                                                    .ratioHeight,
+                                                            3 *
+                                                                SizeConfig
+                                                                    .ratioWidth,
+                                                            3 *
+                                                                SizeConfig
+                                                                    .ratioHeight)
+                                                        : const EdgeInsets.fromLTRB(
+                                                            45,
+                                                            7,
+                                                            3,
+                                                            3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
+                                                    hintText: "",
+                                                    hintStyle: TextStyle(
+                                                        fontSize: 16 *
+                                                            SizeConfig
+                                                                .ratioFont),
+                                                    border:
+                                                        const UnderlineInputBorder(
+                                                            borderSide:
+                                                                BorderSide
+                                                                    .none),
+                                                    fillColor: Colors.blue),
+                                            showAsSuffixIcons: true,
+                                            popupTitle: Padding(
+                                              padding: const EdgeInsets.all(20),
+                                              child: Text(
+                                                "Chọn đơn vị tính?",
+                                                style: TextStyle(
+                                                    fontSize: 22 *
+                                                        SizeConfig.ratioFont),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                            popupBackgroundColor:
+                                                Colors.grey[200],
+                                            popupShape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            items: ["cái", "kg"],
+                                            selectedItem: unitUpdate,
+                                            onChanged: (String? data) {
+                                              unitUpdate = data.toString();
+                                              if (data != unit &&
+                                                  unit == "cái") {
+                                              } else if (data != unit &&
+                                                  unit == "kg") {
+                                                ratioQuantity =
+                                                    1 / ratioQuantity;
+                                              }
+                                            })),
+                                    // Container(
+                                    //     padding: EdgeInsets.symmetric(
+                                    //         vertical:
+                                    //             5 * SizeConfig.ratioHeight),
+                                    //     alignment: Alignment.centerRight,
+                                    //     width: 200 * SizeConfig.ratioWidth,
+                                    //     height: 55 * SizeConfig.ratioHeight,
+                                    //     //color: Colors.grey[200],
+                                    //     child: TextField(
+                                    //       enabled: true,
+                                    //       // onChanged: (value) => {actual = value},
+                                    //       readOnly: true,
+                                    //       controller:
+                                    //           TextEditingController(text: unit),
+                                    //       textAlignVertical:
+                                    //           TextAlignVertical.center,
+                                    //       textAlign: TextAlign.center,
+                                    //       style: TextStyle(
+                                    //           fontSize:
+                                    //               20 * SizeConfig.ratioFont),
+                                    //       decoration: InputDecoration(
+                                    //         contentPadding:
+                                    //             EdgeInsets.symmetric(
+                                    //                 horizontal: 10 *
+                                    //                     SizeConfig.ratioHeight),
+                                    //         border: OutlineInputBorder(
+                                    //             borderSide: BorderSide(
+                                    //                 width: 1.0 *
+                                    //                     SizeConfig.ratioWidth,
+                                    //                 color: Colors.black)),
+                                    //         focusedBorder: OutlineInputBorder(
+                                    //             borderSide: BorderSide(
+                                    //                 width: 1.0 *
+                                    //                     SizeConfig.ratioWidth,
+                                    //                 color: Colors.black)),
+                                    //       ),
+                                    //     )),
                                     Container(
                                         padding: EdgeInsets.symmetric(
-                                            vertical: 5 * SizeConfig.ratioHeight),
+                                            vertical:
+                                                5 * SizeConfig.ratioHeight),
                                         alignment: Alignment.centerRight,
                                         width: 200 * SizeConfig.ratioWidth,
                                         height: 55 * SizeConfig.ratioHeight,
                                         //color: Colors.grey[200],
                                         child: TextField(
                                           enabled: true,
-                                          onChanged: (value) => {actual = value},
+                                          onChanged: (value) =>
+                                              {actual = value},
                                           //    readOnly: true,
                                           controller: TextEditingController(),
                                           textAlignVertical:
@@ -446,9 +647,10 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                               fontSize:
                                                   20 * SizeConfig.ratioFont),
                                           decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.symmetric(
-                                                horizontal:
-                                                    10 * SizeConfig.ratioHeight),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 10 *
+                                                        SizeConfig.ratioHeight),
                                             border: OutlineInputBorder(
                                                 borderSide: BorderSide(
                                                     width: 1.0 *
@@ -461,7 +663,6 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                                     color: Colors.black)),
                                           ),
                                         )),
-                                   
                                     Row(
                                       children: [
                                         Container(
@@ -477,14 +678,15 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                               //  readOnly: true,
                                               onChanged: (value) =>
                                                   {shelfId = value},
-      
-                                              controller: TextEditingController(),
+
+                                              controller:
+                                                  TextEditingController(),
                                               textAlignVertical:
                                                   TextAlignVertical.center,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                  fontSize:
-                                                      20 * SizeConfig.ratioFont),
+                                                  fontSize: 20 *
+                                                      SizeConfig.ratioFont),
                                               decoration: InputDecoration(
                                                 contentPadding:
                                                     EdgeInsets.symmetric(
@@ -494,12 +696,14 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                                 border: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                                 focusedBorder: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                               ),
                                             )),
@@ -519,14 +723,14 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                               //  readOnly: true,
                                               onChanged: (value) =>
                                                   {rowId = value},
-                                              controller:
-                                                  TextEditingController(text: ''),
+                                              controller: TextEditingController(
+                                                  text: ''),
                                               textAlignVertical:
                                                   TextAlignVertical.center,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                  fontSize:
-                                                      20 * SizeConfig.ratioFont),
+                                                  fontSize: 20 *
+                                                      SizeConfig.ratioFont),
                                               decoration: InputDecoration(
                                                 contentPadding:
                                                     EdgeInsets.symmetric(
@@ -536,12 +740,14 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                                 border: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                                 focusedBorder: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                               ),
                                             )),
@@ -561,14 +767,14 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                               //  readOnly: true,
                                               onChanged: (value) =>
                                                   {columnId = value},
-                                              controller:
-                                                  TextEditingController(text: ''),
+                                              controller: TextEditingController(
+                                                  text: ''),
                                               textAlignVertical:
                                                   TextAlignVertical.center,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                  fontSize:
-                                                      20 * SizeConfig.ratioFont),
+                                                  fontSize: 20 *
+                                                      SizeConfig.ratioFont),
                                               decoration: InputDecoration(
                                                 contentPadding:
                                                     EdgeInsets.symmetric(
@@ -578,12 +784,14 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                                 border: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                                 focusedBorder: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                               ),
                                             )),
@@ -607,12 +815,13 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         itemId != '' &&
                                         lotId != '') {
                                       // thêm rổ vừa điền thông tin vào danh sách
-      
+
                                       goodsReceiptEntryConainerDataTemp.add(
                                         GoodsReceiptEntryContainerData(
                                             lotId,
                                             itemId,
-                                            double.parse(actual),
+                                            double.parse(actual) *
+                                                ratioQuantity,
                                             DateFormat('yyyy-MM-dd')
                                                 .format(DateTime.now().subtract(
                                                     const Duration(days: 1)))
@@ -622,14 +831,14 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                                 int.parse(rowId),
                                                 int.parse(columnId))),
                                       );
-      
+
                                       Navigator.pushNamed(
                                           context, '/receipt_screen');
                                     } else {
                                       AlertDialogOneBtnCustomized(
                                               context,
                                               "Cảnh báo",
-                                              "Chưa hoàn thành nhập thông tin rổ",
+                                              "Chưa hoàn thành nhập thông tin lô",
                                               "Trở lại",
                                               () {},
                                               18,
@@ -669,7 +878,8 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                   Column(children: [
                                     Container(
                                         padding: EdgeInsets.symmetric(
-                                            vertical: 5 * SizeConfig.ratioHeight),
+                                            vertical:
+                                                5 * SizeConfig.ratioHeight),
                                         alignment: Alignment.centerRight,
                                         width: 200 * SizeConfig.ratioWidth,
                                         height: 55 * SizeConfig.ratioHeight,
@@ -677,9 +887,10 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         child: TextField(
                                           enabled: true,
                                           //  readOnly: true,
-                                             onChanged: (value) => {lotId2 = value},
-                                          controller:
-                                              TextEditingController(text: lotId2),
+                                          onChanged: (value) =>
+                                              {lotId2 = value},
+                                          controller: TextEditingController(
+                                              text: lotId2),
                                           textAlignVertical:
                                               TextAlignVertical.center,
                                           textAlign: TextAlign.center,
@@ -689,10 +900,11 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                           decoration: InputDecoration(
                                             // filled: true,
                                             // fillColor: Colors.grey[300],
-                                            contentPadding: EdgeInsets.symmetric(
-                                                horizontal:
-                                                    10 * SizeConfig.ratioHeight),
-      
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 10 *
+                                                        SizeConfig.ratioHeight),
+
                                             border: OutlineInputBorder(
                                                 borderSide: BorderSide(
                                                     width: 1.0 *
@@ -716,27 +928,38 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         //     const Radius.circular(10))
                                       ),
                                       child: DropdownSearch(
-                                        dropdownSearchDecoration: InputDecoration(
-                                            contentPadding: SizeConfig
-                                                        .ratioHeight >=
-                                                    1
-                                                ? EdgeInsets.fromLTRB(
-                                                    50 * SizeConfig.ratioWidth,
-                                                    14 * SizeConfig.ratioHeight,
-                                                    3 * SizeConfig.ratioWidth,
-                                                    3 * SizeConfig.ratioHeight)
-                                                : const EdgeInsets.fromLTRB(
-                                                    45,
-                                                    7,
-                                                    3,
-                                                    3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
-                                            hintText: "Chọn mã",
-                                            hintStyle: TextStyle(
-                                                fontSize:
-                                                    16 * SizeConfig.ratioFont),
-                                            border: const UnderlineInputBorder(
-                                                borderSide: BorderSide.none),
-                                            fillColor: Colors.blue),
+                                        dropdownSearchDecoration:
+                                            InputDecoration(
+                                                contentPadding: SizeConfig
+                                                            .ratioHeight >=
+                                                        1
+                                                    ? EdgeInsets.fromLTRB(
+                                                        50 *
+                                                            SizeConfig
+                                                                .ratioWidth,
+                                                        14 *
+                                                            SizeConfig
+                                                                .ratioHeight,
+                                                        3 *
+                                                            SizeConfig
+                                                                .ratioWidth,
+                                                        3 *
+                                                            SizeConfig
+                                                                .ratioHeight)
+                                                    : const EdgeInsets.fromLTRB(
+                                                        45,
+                                                        7,
+                                                        3,
+                                                        3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
+                                                hintText: "Chọn mã",
+                                                hintStyle: TextStyle(
+                                                    fontSize: 16 *
+                                                        SizeConfig.ratioFont),
+                                                border:
+                                                    const UnderlineInputBorder(
+                                                        borderSide:
+                                                            BorderSide.none),
+                                                fillColor: Colors.blue),
                                         showAsSuffixIcons: true,
                                         popupTitle: Padding(
                                           padding: const EdgeInsets.all(20),
@@ -753,6 +976,7 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         items: listitemId,
+                                        selectedItem: itemId2,
                                         //searchBoxDecoration: InputDecoration(),
                                         onChanged: (String? data) {
                                           itemId2 = data.toString();
@@ -760,14 +984,20 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                             lotId2 = "$itemId2 - " +
                                                 DateFormat('yyyy-MM-dd').format(
                                                     DateTime.now().subtract(
-                                                        const Duration(days: 1)));
+                                                        const Duration(
+                                                            days: 1)));
                                             for (var element in listItem) {
                                               if (element.itemId == itemId2) {
+                                                ratioQuantity2 = double.parse(
+                                                    element.piecesPerKilogram
+                                                        .toString());
+                                                itemName2 = element.name;
                                                 if (element.unit == 1) {
-                                                  unit2 = "cái";
-                                                } else {
                                                   unit2 = "kg";
+                                                } else {
+                                                  unit2 = "cái";
                                                 }
+                                                unitUpdate2 = unit2;
                                               }
                                             }
                                           });
@@ -777,50 +1007,218 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                       ),
                                     ),
                                     Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 5 * SizeConfig.ratioHeight),
-                                        alignment: Alignment.centerRight,
-                                        width: 200 * SizeConfig.ratioWidth,
-                                        height: 55 * SizeConfig.ratioHeight,
-                                        //color: Colors.grey[200],
-                                        child: TextField(
-                                          enabled: true,
-                                          // onChanged: (value) => {actual = value},
-                                          readOnly: true,
-                                          controller:
-                                              TextEditingController(text: unit2),
-                                          textAlignVertical:
-                                              TextAlignVertical.center,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                                  20 * SizeConfig.ratioFont),
-                                          decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.symmetric(
-                                                horizontal:
-                                                    10 * SizeConfig.ratioHeight),
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                            focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
+                                      width: 200 * SizeConfig.ratioWidth,
+                                      height: 50 * SizeConfig.ratioHeight,
+                                      padding: const EdgeInsets.all(0),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 1, color: Colors.grey),
+                                        // borderRadius: const BorderRadius.all(
+                                        //     const Radius.circular(10))
+                                      ),
+                                      child: DropdownSearch(
+                                        dropdownSearchDecoration:
+                                            InputDecoration(
+                                                contentPadding: SizeConfig
+                                                            .ratioHeight >=
+                                                        1
+                                                    ? EdgeInsets.fromLTRB(
+                                                        50 *
+                                                            SizeConfig
+                                                                .ratioWidth,
+                                                        14 *
+                                                            SizeConfig
+                                                                .ratioHeight,
+                                                        3 *
+                                                            SizeConfig
+                                                                .ratioWidth,
+                                                        3 *
+                                                            SizeConfig
+                                                                .ratioHeight)
+                                                    : const EdgeInsets.fromLTRB(
+                                                        45,
+                                                        7,
+                                                        3,
+                                                        3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
+                                                hintText: "Mã sản phẩm",
+                                                hintStyle: TextStyle(
+                                                    fontSize: 16 *
+                                                        SizeConfig.ratioFont),
+                                                border:
+                                                    const UnderlineInputBorder(
+                                                        borderSide:
+                                                            BorderSide.none),
+                                                fillColor: Colors.blue),
+                                        showAsSuffixIcons: true,
+                                        popupTitle: Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: Text(
+                                            "Chọn tên sản phẩm",
+                                            style: TextStyle(
+                                                fontSize:
+                                                    22 * SizeConfig.ratioFont),
+                                            textAlign: TextAlign.center,
                                           ),
-                                        )),
+                                        ),
+                                        popupBackgroundColor: Colors.grey[200],
+                                        popupShape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        items: listItemName,
+                                        selectedItem: itemName2,
+                                        //searchBoxDecoration: InputDecoration(),
+                                        onChanged: (String? data) {
+                                          itemName2 = data.toString();
+                                          setState(() {
+                                            for (var element in listItem) {
+                                              if (element.itemId == itemId2) {
+                                                itemId2 = element.itemId;
+                                                ratioQuantity2 = double.parse(
+                                                    element.piecesPerKilogram
+                                                        .toString());
+                                                lotId2 = "$itemId2 - " +
+                                                    DateFormat('yyyy-MM-dd')
+                                                        .format(DateTime.now()
+                                                            .subtract(
+                                                                const Duration(
+                                                                    days: 1)));
+                                                if (element.unit == 1) {
+                                                  unit2 = "kg";
+                                                } else {
+                                                  unit2 = "cái";
+                                                }
+                                                unitUpdate2 = unit2;
+                                              }
+                                            }
+                                          });
+                                        },
+                                        showSearchBox: true,
+                                        //  autoFocusSearchBox: true,
+                                      ),
+                                    ),
+                                    Container(
+                                        width: 200 * SizeConfig.ratioWidth,
+                                        height: 50 * SizeConfig.ratioHeight,
+                                        padding: const EdgeInsets.all(0),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 1,
+                                              color: Constants.mainColor),
+                                          // borderRadius: const BorderRadius.all(
+                                          //     const Radius.circular(10))
+                                        ),
+                                        child: DropdownSearch(
+                                            dropdownSearchDecoration:
+                                                InputDecoration(
+                                                    contentPadding: SizeConfig
+                                                                .ratioHeight >=
+                                                            1
+                                                        ? EdgeInsets.fromLTRB(
+                                                            50 *
+                                                                SizeConfig
+                                                                    .ratioWidth,
+                                                            14 *
+                                                                SizeConfig
+                                                                    .ratioHeight,
+                                                            3 *
+                                                                SizeConfig
+                                                                    .ratioWidth,
+                                                            3 *
+                                                                SizeConfig
+                                                                    .ratioHeight)
+                                                        : const EdgeInsets.fromLTRB(
+                                                            45,
+                                                            7,
+                                                            3,
+                                                            3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
+                                                    hintText: "",
+                                                    hintStyle: TextStyle(
+                                                        fontSize: 16 *
+                                                            SizeConfig
+                                                                .ratioFont),
+                                                    border:
+                                                        const UnderlineInputBorder(
+                                                            borderSide:
+                                                                BorderSide
+                                                                    .none),
+                                                    fillColor: Colors.blue),
+                                            showAsSuffixIcons: true,
+                                            popupTitle: Padding(
+                                              padding: const EdgeInsets.all(20),
+                                              child: Text(
+                                                "Chọn đơn vị tính?",
+                                                style: TextStyle(
+                                                    fontSize: 22 *
+                                                        SizeConfig.ratioFont),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                            popupBackgroundColor:
+                                                Colors.grey[200],
+                                            popupShape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10)),
+                                            items: ["cái", "kg"],
+                                            selectedItem: unitUpdate2,
+                                            onChanged: (String? data) {
+                                              unitUpdate2 = data.toString();
+                                              if (data != unit2 &&
+                                                  unit2 == "cái") {
+                                              } else if (data != unit2 &&
+                                                  unit2 == "kg") {
+                                                ratioQuantity2 =
+                                                    1 / ratioQuantity2;
+                                              }
+                                            })),
+                                    // Container(
+                                    //     padding: EdgeInsets.symmetric(
+                                    //         vertical:
+                                    //             5 * SizeConfig.ratioHeight),
+                                    //     alignment: Alignment.centerRight,
+                                    //     width: 200 * SizeConfig.ratioWidth,
+                                    //     height: 55 * SizeConfig.ratioHeight,
+                                    //     //color: Colors.grey[200],
+                                    //     child: TextField(
+                                    //       enabled: true,
+                                    //       // onChanged: (value) => {actual = value},
+                                    //       readOnly: true,
+                                    //       controller: TextEditingController(
+                                    //           text: unit2),
+                                    //       textAlignVertical:
+                                    //           TextAlignVertical.center,
+                                    //       textAlign: TextAlign.center,
+                                    //       style: TextStyle(
+                                    //           fontSize:
+                                    //               20 * SizeConfig.ratioFont),
+                                    //       decoration: InputDecoration(
+                                    //         contentPadding:
+                                    //             EdgeInsets.symmetric(
+                                    //                 horizontal: 10 *
+                                    //                     SizeConfig.ratioHeight),
+                                    //         border: OutlineInputBorder(
+                                    //             borderSide: BorderSide(
+                                    //                 width: 1.0 *
+                                    //                     SizeConfig.ratioWidth,
+                                    //                 color: Colors.black)),
+                                    //         focusedBorder: OutlineInputBorder(
+                                    //             borderSide: BorderSide(
+                                    //                 width: 1.0 *
+                                    //                     SizeConfig.ratioWidth,
+                                    //                 color: Colors.black)),
+                                    //       ),
+                                    //     )),
                                     Container(
                                         padding: EdgeInsets.symmetric(
-                                            vertical: 5 * SizeConfig.ratioHeight),
+                                            vertical:
+                                                5 * SizeConfig.ratioHeight),
                                         alignment: Alignment.centerRight,
                                         width: 200 * SizeConfig.ratioWidth,
                                         height: 55 * SizeConfig.ratioHeight,
                                         //color: Colors.grey[200],
                                         child: TextField(
                                           enabled: true,
-                                          onChanged: (value) => {actual2 = value},
+                                          onChanged: (value) =>
+                                              {actual2 = value},
                                           //    readOnly: true,
                                           controller: TextEditingController(),
                                           textAlignVertical:
@@ -830,9 +1228,10 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                               fontSize:
                                                   20 * SizeConfig.ratioFont),
                                           decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.symmetric(
-                                                horizontal:
-                                                    10 * SizeConfig.ratioHeight),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 10 *
+                                                        SizeConfig.ratioHeight),
                                             border: OutlineInputBorder(
                                                 borderSide: BorderSide(
                                                     width: 1.0 *
@@ -847,7 +1246,8 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         )),
                                     Container(
                                         padding: EdgeInsets.symmetric(
-                                            vertical: 5 * SizeConfig.ratioHeight),
+                                            vertical:
+                                                5 * SizeConfig.ratioHeight),
                                         alignment: Alignment.centerRight,
                                         width: 200 * SizeConfig.ratioWidth,
                                         height: 55 * SizeConfig.ratioHeight,
@@ -857,8 +1257,9 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                           //  readOnly: true,
                                           controller: TextEditingController(
                                               text: DateFormat('yyyy-MM-dd')
-                                                  .format(DateTime.now().subtract(
-                                                      const Duration(days: 1)))),
+                                                  .format(DateTime.now()
+                                                      .subtract(const Duration(
+                                                          days: 1)))),
                                           textAlignVertical:
                                               TextAlignVertical.center,
                                           textAlign: TextAlign.center,
@@ -866,9 +1267,10 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                               fontSize:
                                                   20 * SizeConfig.ratioFont),
                                           decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.symmetric(
-                                                horizontal:
-                                                    10 * SizeConfig.ratioHeight),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    horizontal: 10 *
+                                                        SizeConfig.ratioHeight),
                                             border: OutlineInputBorder(
                                                 borderSide: BorderSide(
                                                     width: 1.0 *
@@ -896,14 +1298,15 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                               //  readOnly: true,
                                               onChanged: (value) =>
                                                   {shelfId2 = value},
-      
-                                              controller: TextEditingController(),
+
+                                              controller:
+                                                  TextEditingController(),
                                               textAlignVertical:
                                                   TextAlignVertical.center,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                  fontSize:
-                                                      20 * SizeConfig.ratioFont),
+                                                  fontSize: 20 *
+                                                      SizeConfig.ratioFont),
                                               decoration: InputDecoration(
                                                 contentPadding:
                                                     EdgeInsets.symmetric(
@@ -913,12 +1316,14 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                                 border: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                                 focusedBorder: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                               ),
                                             )),
@@ -938,14 +1343,14 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                               //  readOnly: true,
                                               onChanged: (value) =>
                                                   {rowId2 = value},
-                                              controller:
-                                                  TextEditingController(text: ''),
+                                              controller: TextEditingController(
+                                                  text: ''),
                                               textAlignVertical:
                                                   TextAlignVertical.center,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                  fontSize:
-                                                      20 * SizeConfig.ratioFont),
+                                                  fontSize: 20 *
+                                                      SizeConfig.ratioFont),
                                               decoration: InputDecoration(
                                                 contentPadding:
                                                     EdgeInsets.symmetric(
@@ -955,12 +1360,14 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                                 border: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                                 focusedBorder: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                               ),
                                             )),
@@ -980,14 +1387,14 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                               //  readOnly: true,
                                               onChanged: (value) =>
                                                   {columnId2 = value},
-                                              controller:
-                                                  TextEditingController(text: ''),
+                                              controller: TextEditingController(
+                                                  text: ''),
                                               textAlignVertical:
                                                   TextAlignVertical.center,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                  fontSize:
-                                                      20 * SizeConfig.ratioFont),
+                                                  fontSize: 20 *
+                                                      SizeConfig.ratioFont),
                                               decoration: InputDecoration(
                                                 contentPadding:
                                                     EdgeInsets.symmetric(
@@ -997,12 +1404,14 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                                 border: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                                 focusedBorder: OutlineInputBorder(
                                                     borderSide: BorderSide(
                                                         width: 1.0 *
-                                                            SizeConfig.ratioWidth,
+                                                            SizeConfig
+                                                                .ratioWidth,
                                                         color: Colors.black)),
                                               ),
                                             )),
@@ -1026,18 +1435,18 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         itemId2 != '' &&
                                         lotId2 != '') {
                                       // thêm lô vừa điền thông tin vào danh sách
-      
+
                                       goodsReceiptEntryConainerDataTemp.add(
                                         GoodsReceiptEntryContainerData(
                                             lotId2,
                                             itemId2,
-                                            double.parse(actual2),
+                                            double.parse(actual2)*ratioQuantity2,
                                             DateFormat('yyyy-MM-dd')
                                                 .format(DateTime.now().subtract(
                                                     const Duration(days: 1)))
                                                 .toString(),
                                             LocationServer(
-                                                shelfId,
+                                                shelfId2,
                                                 int.parse(rowId2),
                                                 int.parse(columnId2))),
                                       );
