@@ -14,7 +14,9 @@ class Item extends Equatable {
   int unit;
   // WarehouseEmployee manager;
   dynamic manager;
-  Item(this.itemId, this.name, this.piecesPerKilogram, this.lifeCycle, this.unit, this.manager);
+  bool hasManyUnits;
+  Item(this.itemId, this.name, this.piecesPerKilogram, this.lifeCycle,
+      this.unit, this.manager, this.hasManyUnits);
 
   @override
   // TODO: implement props

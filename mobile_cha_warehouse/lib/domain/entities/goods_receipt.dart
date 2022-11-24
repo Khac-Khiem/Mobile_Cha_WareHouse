@@ -11,32 +11,55 @@ class GoodsReceiptContainer extends Equatable {
   Item item;
   ProductionEmployee productionEmployee;
 
-  GoodsReceiptContainer(this.goodsReceiptEntryId, this.containerId, this.quantity,
-      this.productionDate, this.item, this.productionEmployee);
+  GoodsReceiptContainer(this.goodsReceiptEntryId, this.containerId,
+      this.quantity, this.productionDate, this.item, this.productionEmployee);
   @override
   // TODO: implement props
-  List<Object?> get props => [ productionDate, containerId];
+  List<Object?> get props => [productionDate, containerId];
 }
 
 class GoodsReceipt extends Equatable {
   String goodsReceiptId;
   String timestamp;
-  bool isConfirmed;
-  WarehouseEmployee? approver;
+ // bool isConfirmed;
+  WarehouseEmployee? employee;
   //dynamic approver;
-  List<GoodsReceiptContainer> entries;
-  GoodsReceipt(this.goodsReceiptId, this.timestamp, this.isConfirmed,
-      this.approver, this.entries);
+  List<LotReceipt> lots;
+  GoodsReceipt(this.goodsReceiptId, this.timestamp,
+      this.employee, this.lots);
   @override
   // TODO: implement props
-  List<Object?> get props => [goodsReceiptId, timestamp, entries];
+  List<Object?> get props => [goodsReceiptId, timestamp, lots];
 }
 
-// class GoodsReceiptData extends Equatable {
-//   int totalItem;
-//   List<GoodsReceipt> items;
-//   GoodsReceiptData(this.totalItem, this.items);
-//   @override
-//   // TODO: implement props
-//   List<Object?> get props => [];
-// }
+class GoodsReceiptData extends Equatable {
+  int totalItem;
+  List<GoodsReceipt> items;
+  GoodsReceiptData(this.totalItem, this.items);
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class LotReceipt extends Equatable {
+  String lotId;
+  dynamic quantity;
+  String date;
+  Item? item;
+  LotReceipt(this.lotId, this.quantity, this.date, this.item);
+  @override
+  // TODO: implement props
+  List<Object?> get props => [lotId];
+}
+
+class UnlocatedLotReceipt extends Equatable {
+  String goodsReceiptId;
+  String lotId;
+  dynamic quantity;
+  String date;
+  Item? item;
+  UnlocatedLotReceipt(this.goodsReceiptId, this.lotId, this.quantity, this.date, this.item);
+  @override
+  // TODO: implement props
+  List<Object?> get props => throw UnimplementedError();
+}

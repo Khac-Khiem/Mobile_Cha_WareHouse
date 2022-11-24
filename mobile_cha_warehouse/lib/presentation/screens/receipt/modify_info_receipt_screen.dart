@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +16,7 @@ List<String> labelTextList = [
   "Mã lô:",
   "Mã sản phẩm:",
   "Tên sản phẩm:",
+  "Mã nhân viên:",
   "Ngày SX:",
   "Ca SX:",
   "Đơn vị",
@@ -64,894 +67,351 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
 
   String itemName = '';
 
+  DateTime date = DateFormat('yyyy-MM-dd').parse(DateFormat('yyyy-MM-dd')
+      .format(DateTime.now().subtract(const Duration(days: 1))));
+  // DateFormat('yyyy-MM-dd')
+  //     .parse(DateTime.now().subtract(const Duration(days: 1)).toString());
   String actual = '';
 
   String lotId = '';
 
-  String selectedShift = '';
+  String noteShift = '';
 
   String unitUpdate = '';
 
-  double ratioQuantity = 1;
+  String employeeId = '';
 
-  String unit = '', shelfId = '', rowId = '', columnId = '';
+  double piecePerKg = 1;
 
-  String itemId2 = '';
+  String unit = '';
 
-  String itemName2 = '';
+  bool hasManyUnits = false;
 
-  String actual2 = '';
-
-  String lotId2 = '';
-
-  String unitUpdate2 = '';
-
-  double ratioQuantity2 = 1;
-
-  String unit2 = '', shelfId2 = '', rowId2 = '', columnId2 = '';
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return DefaultTabController(
-      length: 2,
-      child: WillPopScope(
-        onWillPop: () async {
-          final shouldPop = await showDialog<bool>(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('Do you want to go back?'),
-                actionsAlignment: MainAxisAlignment.spaceBetween,
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/receipt_screen');
-                      // Navigator.pop(context, true);
-                    },
-                    child: const Text('Yes'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    },
-                    child: const Text('No'),
-                  ),
-                ],
-              );
-            },
-          );
-          return shouldPop!;
-        },
-        child: Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                icon: const Icon(
-                  Icons.west, //mũi tên back
-                  color: Colors.white,
+    return WillPopScope(
+      onWillPop: () async {
+        final shouldPop = await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Do you want to go back?'),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/receipt_screen');
+                    // Navigator.pop(context, true);
+                  },
+                  child: const Text('Yes'),
                 ),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/receipt_screen');
-                }, //sự kiện mũi tên back
-              ),
-              bottom: TabBar(
-                //  unselectedLabelColor: Colors.blueGrey,
-                indicator: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Constants.secondaryColor,
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  child: const Text('No'),
                 ),
-                tabs: [
-                  const Tab(text: "Nhập SX"),
-                  const Tab(text: "Nhập ngoài"),
-                ],
+              ],
+            );
+          },
+        );
+        return shouldPop!;
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(
+                Icons.west, //mũi tên back
+                color: Colors.white,
               ),
-              backgroundColor: const Color(0xff001D37), //màu xanh dương đậm
-              //nút bên phải
-              title: const Text(
-                'Nhập kho',
-                style: TextStyle(fontSize: 22), //chuẩn
-              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/receipt_screen');
+              }, //sự kiện mũi tên back
             ),
-            endDrawer: DrawerUser(),
-            body: BlocConsumer<ReceiptBloc, ReceiptState>(
-              listener: (context, state) {
-                if (state is CheckContainerStateFail) {
-                  AlertDialogOneBtnCustomized(
-                          context, "Cảnh báo", state.error, "Trở lại", () {
-                    Navigator.pushNamed(context, '/qr_scanner_screen');
-                  }, 18, 22, () {})
-                      .show();
-                } else if (state is ReceiptLoadingState) {
-                  CircularLoading();
-                }
-              },
-              builder: (context, state) {
-                if (state is ReceiptLoadingState) {
-                  return CircularLoading();
-                } else {
-                  return TabBarView(children: [
-                    SingleChildScrollView(
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.all(10 * SizeConfig.ratioHeight),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 350 * SizeConfig.ratioWidth,
-                              child: Row(
-                                children: [
-                                  Column(
-                                      children: labelTextList
-                                          .map((text) => LabelText(
-                                                text,
-                                              ))
-                                          .toList()),
-                                  SizedBox(
-                                    width: 15 * SizeConfig.ratioWidth,
-                                  ),
-                                  Column(children: [
-                                    Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical:
-                                                5 * SizeConfig.ratioHeight),
-                                        alignment: Alignment.centerRight,
-                                        width: 200 * SizeConfig.ratioWidth,
-                                        height: 55 * SizeConfig.ratioHeight,
-                                        //color: Colors.grey[200],
-                                        child: TextField(
-                                          enabled: true,
-                                          //  readOnly: true,
-                                          onChanged: (value) => {lotId = value},
-                                          controller: TextEditingController(
-                                              text: lotId),
-                                          textAlignVertical:
-                                              TextAlignVertical.center,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                                  20 * SizeConfig.ratioFont),
-                                          decoration: InputDecoration(
-                                            // filled: true,
-                                            // fillColor: Colors.grey[300],
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: 10 *
-                                                        SizeConfig.ratioHeight),
 
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                            focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                          ),
-                                        )),
-                                    Container(
-                                      width: 200 * SizeConfig.ratioWidth,
-                                      height: 50 * SizeConfig.ratioHeight,
-                                      padding: const EdgeInsets.all(0),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1, color: Colors.grey),
-                                        // borderRadius: const BorderRadius.all(
-                                        //     const Radius.circular(10))
-                                      ),
-                                      child: DropdownSearch(
-                                        dropdownSearchDecoration:
-                                            InputDecoration(
-                                                contentPadding:
-                                                    // SizeConfig
-                                                    //             .ratioHeight >=
-                                                    //         1
-                                                    //     ? EdgeInsets.fromLTRB(
-                                                    //         50 *
-                                                    //             SizeConfig
-                                                    //                 .ratioWidth,
-                                                    //         14 *
-                                                    //             SizeConfig
-                                                    //                 .ratioHeight,
-                                                    //         3 *
-                                                    //             SizeConfig
-                                                    //                 .ratioWidth,
-                                                    //         3 *
-                                                    //             SizeConfig
-                                                    //                 .ratioHeight)
-                                                    //     :
-                                                    const EdgeInsets.fromLTRB(
-                                                        45,
-                                                        7,
-                                                        3,
-                                                        3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
-                                                hintText: "Chọn mã",
-                                                hintStyle: TextStyle(
-                                                    fontSize: 16 *
-                                                        SizeConfig.ratioFont),
-                                                border:
-                                                    const UnderlineInputBorder(
-                                                        borderSide:
-                                                            BorderSide.none),
-                                                fillColor: Colors.blue),
-                                        showAsSuffixIcons: true,
-                                        popupTitle: Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: Text(
-                                            "Chọn mã sản phẩm",
-                                            style: TextStyle(
-                                                fontSize:
-                                                    16 * SizeConfig.ratioFont),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                        popupBackgroundColor: Colors.grey[200],
-                                        popupShape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        items: listitemId,
-                                        selectedItem: itemId,
-                                        //searchBoxDecoration: InputDecoration(),
-                                        onChanged: (String? data) {
-                                          itemId = data.toString();
-                                          setState(() {
-                                            for (var element in listItem) {
-                                              if (element.itemId == itemId) {
-                                                ratioQuantity = double.parse(
-                                                    element.piecesPerKilogram
-                                                        .toString());
-                                                itemName = element.name;
-                                                if (element.unit == 1) {
-                                                  unit = "kg";
-                                                } else {
-                                                  unit = "cái";
-                                                }
-                                                unitUpdate = unit;
-                                              }
-                                            }
-                                          });
-                                        },
-                                        showSearchBox: true,
-                                        //  autoFocusSearchBox: true,
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 200 * SizeConfig.ratioWidth,
-                                      height: 50 * SizeConfig.ratioHeight,
-                                      padding: const EdgeInsets.all(0),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1, color: Colors.grey),
-                                        // borderRadius: const BorderRadius.all(
-                                        //     const Radius.circular(10))
-                                      ),
-                                      child: DropdownSearch(
-                                        dropdownSearchDecoration:
-                                            InputDecoration(
-                                                contentPadding: SizeConfig
-                                                            .ratioHeight >=
-                                                        1
-                                                    ? EdgeInsets.fromLTRB(
-                                                        50 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        14 *
-                                                            SizeConfig
-                                                                .ratioHeight,
-                                                        3 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        3 *
-                                                            SizeConfig
-                                                                .ratioHeight)
-                                                    : const EdgeInsets.fromLTRB(
-                                                        45,
-                                                        7,
-                                                        3,
-                                                        3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
-                                                hintText: "Tên sản phẩm",
-                                                hintStyle: TextStyle(
-                                                    fontSize: 16 *
-                                                        SizeConfig.ratioFont),
-                                                border:
-                                                    const UnderlineInputBorder(
-                                                        borderSide:
-                                                            BorderSide.none),
-                                                fillColor: Colors.blue),
-                                        showAsSuffixIcons: true,
-                                        popupTitle: Padding(
-                                          padding: const EdgeInsets.all(20),
-                                          child: Text(
-                                            "Chọn tên sản phẩm",
-                                            style: TextStyle(
-                                                fontSize:
-                                                    16 * SizeConfig.ratioFont),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                        popupBackgroundColor: Colors.grey[200],
-                                        popupShape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        items: listItemName,
-                                        selectedItem: itemName,
-                                        //searchBoxDecoration: InputDecoration(),
-                                        onChanged: (String? data) {
-                                          itemName = data.toString();
-                                          setState(() {
-                                            for (var element in listItem) {
-                                              if (element.name == itemName) {
-                                                itemId = element.itemId;
-                                                ratioQuantity = double.parse(
-                                                    element.piecesPerKilogram
-                                                        .toString());
-                                                if (element.unit == 1) {
-                                                  unit = "kg";
-                                                } else {
-                                                  unit = "cái";
-                                                }
-                                                unitUpdate = unit;
-                                              }
-                                            }
-                                          });
-                                        },
-                                        showSearchBox: true,
-                                        //  autoFocusSearchBox: true,
-                                      ),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical:
-                                                5 * SizeConfig.ratioHeight),
-                                        alignment: Alignment.centerRight,
-                                        width: 200 * SizeConfig.ratioWidth,
-                                        height: 55 * SizeConfig.ratioHeight,
-                                        //color: Colors.grey[200],
-                                        child: TextField(
-                                          enabled: true,
-                                          //  readOnly: true,
-                                          controller: TextEditingController(
-                                              text: DateFormat('yyyy-MM-dd')
-                                                  .format(DateTime.now()
-                                                      .subtract(const Duration(
-                                                          days: 1)))),
-                                          textAlignVertical:
-                                              TextAlignVertical.center,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                                  20 * SizeConfig.ratioFont),
-                                          decoration: InputDecoration(
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: 10 *
-                                                        SizeConfig.ratioHeight),
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                            focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                          ),
-                                        )),
-                                    Container(
-                                        width: 200 * SizeConfig.ratioWidth,
-                                        height: 50 * SizeConfig.ratioHeight,
-                                        padding: const EdgeInsets.all(0),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              width: 1,
-                                              color: Constants.mainColor),
-                                          // borderRadius: const BorderRadius.all(
-                                          //     const Radius.circular(10))
-                                        ),
-                                        child: DropdownSearch(
-                                            dropdownSearchDecoration:
-                                                InputDecoration(
-                                                    contentPadding: SizeConfig
-                                                                .ratioHeight >=
-                                                            1
-                                                        ? EdgeInsets.fromLTRB(
-                                                            50 *
-                                                                SizeConfig
-                                                                    .ratioWidth,
-                                                            14 *
-                                                                SizeConfig
-                                                                    .ratioHeight,
-                                                            3 *
-                                                                SizeConfig
-                                                                    .ratioWidth,
-                                                            3 *
-                                                                SizeConfig
-                                                                    .ratioHeight)
-                                                        : const EdgeInsets.fromLTRB(
-                                                            45,
-                                                            7,
-                                                            3,
-                                                            3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
-                                                    hintText: "",
-                                                    hintStyle: TextStyle(
-                                                        fontSize: 16 *
-                                                            SizeConfig
-                                                                .ratioFont),
-                                                    border:
-                                                        const UnderlineInputBorder(
-                                                            borderSide:
-                                                                BorderSide
-                                                                    .none),
-                                                    fillColor: Colors.blue),
-                                            showAsSuffixIcons: true,
-                                            popupTitle: Padding(
-                                              padding: const EdgeInsets.all(20),
-                                              child: Text(
-                                                "Chọn ca sản xuất?",
-                                                style: TextStyle(
-                                                    fontSize: 22 *
-                                                        SizeConfig.ratioFont),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                            popupBackgroundColor:
-                                                Colors.grey[200],
-                                            popupShape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            items: ["1", "2"],
-                                            selectedItem: selectedShift,
-                                            onChanged: (String? data) {
-                                              setState(() {
-                                                lotId = "$itemId - " +
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateTime.now()
-                                                            .subtract(
-                                                                const Duration(
-                                                                    days: 1))) +
-                                                    " - $data";
-                                              });
-                                            })),
-                                    Container(
-                                        width: 200 * SizeConfig.ratioWidth,
-                                        height: 50 * SizeConfig.ratioHeight,
-                                        padding: const EdgeInsets.all(0),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              width: 1,
-                                              color: Constants.mainColor),
-                                          // borderRadius: const BorderRadius.all(
-                                          //     const Radius.circular(10))
-                                        ),
-                                        child: DropdownSearch(
-                                            dropdownSearchDecoration:
-                                                InputDecoration(
-                                                    contentPadding: SizeConfig
-                                                                .ratioHeight >=
-                                                            1
-                                                        ? EdgeInsets.fromLTRB(
-                                                            50 *
-                                                                SizeConfig
-                                                                    .ratioWidth,
-                                                            14 *
-                                                                SizeConfig
-                                                                    .ratioHeight,
-                                                            3 *
-                                                                SizeConfig
-                                                                    .ratioWidth,
-                                                            3 *
-                                                                SizeConfig
-                                                                    .ratioHeight)
-                                                        : const EdgeInsets.fromLTRB(
-                                                            45,
-                                                            7,
-                                                            3,
-                                                            3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
-                                                    hintText: "",
-                                                    hintStyle: TextStyle(
-                                                        fontSize: 16 *
-                                                            SizeConfig
-                                                                .ratioFont),
-                                                    border:
-                                                        const UnderlineInputBorder(
-                                                            borderSide:
-                                                                BorderSide
-                                                                    .none),
-                                                    fillColor: Colors.blue),
-                                            showAsSuffixIcons: true,
-                                            popupTitle: Padding(
-                                              padding: const EdgeInsets.all(20),
-                                              child: Text(
-                                                "Chọn đơn vị tính?",
-                                                style: TextStyle(
-                                                    fontSize: 22 *
-                                                        SizeConfig.ratioFont),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                            popupBackgroundColor:
-                                                Colors.grey[200],
-                                            popupShape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            items: ["cái", "kg"],
-                                            selectedItem: unitUpdate,
-                                            onChanged: (String? data) {
-                                              unitUpdate = data.toString();
-                                              if (data != unit &&
-                                                  unit == "cái") {
-                                              } else if (data != unit &&
-                                                  unit == "kg") {
-                                                ratioQuantity =
-                                                    1 / ratioQuantity;
-                                              }
-                                            })),
-                                    // Container(
-                                    //     padding: EdgeInsets.symmetric(
-                                    //         vertical:
-                                    //             5 * SizeConfig.ratioHeight),
-                                    //     alignment: Alignment.centerRight,
-                                    //     width: 200 * SizeConfig.ratioWidth,
-                                    //     height: 55 * SizeConfig.ratioHeight,
-                                    //     //color: Colors.grey[200],
-                                    //     child: TextField(
-                                    //       enabled: true,
-                                    //       // onChanged: (value) => {actual = value},
-                                    //       readOnly: true,
-                                    //       controller:
-                                    //           TextEditingController(text: unit),
-                                    //       textAlignVertical:
-                                    //           TextAlignVertical.center,
-                                    //       textAlign: TextAlign.center,
-                                    //       style: TextStyle(
-                                    //           fontSize:
-                                    //               20 * SizeConfig.ratioFont),
-                                    //       decoration: InputDecoration(
-                                    //         contentPadding:
-                                    //             EdgeInsets.symmetric(
-                                    //                 horizontal: 10 *
-                                    //                     SizeConfig.ratioHeight),
-                                    //         border: OutlineInputBorder(
-                                    //             borderSide: BorderSide(
-                                    //                 width: 1.0 *
-                                    //                     SizeConfig.ratioWidth,
-                                    //                 color: Colors.black)),
-                                    //         focusedBorder: OutlineInputBorder(
-                                    //             borderSide: BorderSide(
-                                    //                 width: 1.0 *
-                                    //                     SizeConfig.ratioWidth,
-                                    //                 color: Colors.black)),
-                                    //       ),
-                                    //     )),
-                                    Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical:
-                                                5 * SizeConfig.ratioHeight),
-                                        alignment: Alignment.centerRight,
-                                        width: 200 * SizeConfig.ratioWidth,
-                                        height: 55 * SizeConfig.ratioHeight,
-                                        //color: Colors.grey[200],
-                                        child: TextField(
-                                          enabled: true,
-                                          onChanged: (value) =>
-                                              {actual = value},
-                                          //    readOnly: true,
-                                          controller: TextEditingController(),
-                                          textAlignVertical:
-                                              TextAlignVertical.center,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                                  20 * SizeConfig.ratioFont),
-                                          decoration: InputDecoration(
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: 10 *
-                                                        SizeConfig.ratioHeight),
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                            focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                          ),
-                                        )),
-                                    Row(
-                                      children: [
-                                        Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical:
-                                                    5 * SizeConfig.ratioHeight),
-                                            alignment: Alignment.centerRight,
-                                            width: 60 * SizeConfig.ratioWidth,
-                                            height: 55 * SizeConfig.ratioHeight,
-                                            //color: Colors.grey[200],
-                                            child: TextField(
-                                              enabled: true,
-                                              //  readOnly: true,
-                                              onChanged: (value) =>
-                                                  {shelfId = value},
-
-                                              controller:
-                                                  TextEditingController(),
-                                              textAlignVertical:
-                                                  TextAlignVertical.center,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: 20 *
-                                                      SizeConfig.ratioFont),
-                                              decoration: InputDecoration(
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        horizontal: 10 *
-                                                            SizeConfig
-                                                                .ratioHeight),
-                                                border: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                                focusedBorder: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                              ),
-                                            )),
-                                        const SizedBox(
-                                          width: 9,
-                                        ),
-                                        Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical:
-                                                    5 * SizeConfig.ratioHeight),
-                                            alignment: Alignment.centerRight,
-                                            width: 60 * SizeConfig.ratioWidth,
-                                            height: 55 * SizeConfig.ratioHeight,
-                                            //color: Colors.grey[200],
-                                            child: TextField(
-                                              enabled: true,
-                                              //  readOnly: true,
-                                              onChanged: (value) =>
-                                                  {rowId = value},
-                                              controller: TextEditingController(
-                                                  text: ''),
-                                              textAlignVertical:
-                                                  TextAlignVertical.center,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: 20 *
-                                                      SizeConfig.ratioFont),
-                                              decoration: InputDecoration(
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        horizontal: 10 *
-                                                            SizeConfig
-                                                                .ratioHeight),
-                                                border: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                                focusedBorder: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                              ),
-                                            )),
-                                        const SizedBox(
-                                          width: 9,
-                                        ),
-                                        Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical:
-                                                    5 * SizeConfig.ratioHeight),
-                                            alignment: Alignment.centerRight,
-                                            width: 60 * SizeConfig.ratioWidth,
-                                            height: 55 * SizeConfig.ratioHeight,
-                                            //color: Colors.grey[200],
-                                            child: TextField(
-                                              enabled: true,
-                                              //  readOnly: true,
-                                              onChanged: (value) =>
-                                                  {columnId = value},
-                                              controller: TextEditingController(
-                                                  text: ''),
-                                              textAlignVertical:
-                                                  TextAlignVertical.center,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: 20 *
-                                                      SizeConfig.ratioFont),
-                                              decoration: InputDecoration(
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        horizontal: 10 *
-                                                            SizeConfig
-                                                                .ratioHeight),
-                                                border: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                                focusedBorder: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                              ),
-                                            )),
-                                      ],
-                                    ),
-                                  ])
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 20 * SizeConfig.ratioHeight,
-                            ),
-                            Column(
+            backgroundColor: const Color(0xff001D37), //màu xanh dương đậm
+            //nút bên phải
+            title: const Text(
+              'Nhập kho',
+              style: TextStyle(fontSize: 22), //chuẩn
+            ),
+          ),
+          endDrawer: DrawerUser(),
+          body: BlocConsumer<ReceiptBloc, ReceiptState>(
+            listener: (context, state) {
+              if (state is CheckContainerStateFail) {
+                AlertDialogOneBtnCustomized(
+                        context, "Cảnh báo", state.error, "Trở lại", () {
+                  Navigator.pushNamed(context, '/qr_scanner_screen');
+                }, 18, 22, () {})
+                    .show();
+              } else if (state is ReceiptLoadingState) {
+                CircularLoading();
+              }
+            },
+            builder: (context, state) {
+              if (state is ReceiptLoadingState) {
+                return CircularLoading();
+              } else {
+                return SingleChildScrollView(
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(10 * SizeConfig.ratioHeight),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 350 * SizeConfig.ratioWidth,
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                CustomizedButton(
-                                  text: "Xác nhận",
-                                  bgColor: Constants.mainColor,
-                                  fgColor: Colors.white,
-                                  onPressed: () async {
-                                    if (actual != '' &&
-                                        itemId != '' &&
-                                        lotId != '') {
-                                      // thêm rổ vừa điền thông tin vào danh sách
+                                Container(
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 5 * SizeConfig.ratioHeight),
+                                  width: 350 * SizeConfig.ratioWidth,
+                                  height: 60 * SizeConfig.ratioHeight,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 5 * SizeConfig.ratioHeight),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1, color: Colors.grey),
+                                      borderRadius: const BorderRadius.all(
+                                          const Radius.circular(5))),
+                                  child: DropdownSearch(
+                                    dropdownSearchDecoration: InputDecoration(
+                                        labelText: "Mã sản phẩm",
+                                        labelStyle: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 25 * SizeConfig.ratioFont,
+                                        ),
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal:
+                                                10 * SizeConfig.ratioHeight),
+                                        hintText: "Chọn mã",
+                                        hintStyle: TextStyle(
+                                            fontSize:
+                                                16 * SizeConfig.ratioFont),
+                                        border: const UnderlineInputBorder(
+                                            borderSide: BorderSide.none),
+                                        fillColor: Colors.blue),
+                                    showAsSuffixIcons: true,
+                                    popupTitle: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Text(
+                                        "Chọn mã sản phẩm",
+                                        style: TextStyle(
+                                            fontSize:
+                                                16 * SizeConfig.ratioFont),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    popupBackgroundColor: Colors.grey[200],
+                                    popupShape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    items: listitemId,
 
-                                      goodsReceiptEntryConainerDataTemp.add(
-                                        GoodsReceiptEntryContainerData(
-                                            lotId,
-                                            itemId,
-                                            double.parse(actual) *
-                                                ratioQuantity,
-                                            DateFormat('yyyy-MM-dd')
-                                                .format(DateTime.now().subtract(
-                                                    const Duration(days: 1)))
-                                                .toString(),
-                                            LocationServer(
-                                                shelfId,
-                                                int.parse(rowId),
-                                                int.parse(columnId))),
-                                      );
-
-                                      Navigator.pushNamed(
-                                          context, '/receipt_screen');
-                                    } else {
-                                      AlertDialogOneBtnCustomized(
-                                              context,
-                                              "Cảnh báo",
-                                              "Chưa hoàn thành nhập thông tin lô",
-                                              "Trở lại",
-                                              () {},
-                                              18,
-                                              22,
-                                              () {})
-                                          .show();
-                                    }
-                                  },
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    SingleChildScrollView(
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.all(10 * SizeConfig.ratioHeight),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 350 * SizeConfig.ratioWidth,
-                              child: Row(
-                                children: [
-                                  Column(
-                                      children: labelTextList2
-                                          .map((text) => LabelText(
-                                                text,
-                                              ))
-                                          .toList()),
-                                  SizedBox(
-                                    width: 15 * SizeConfig.ratioWidth,
+                                    selectedItem: itemId,
+                                    //searchBoxDecoration: InputDecoration(),
+                                    onChanged: (String? data) {
+                                      itemId = data.toString();
+                                      setState(() {
+                                        for (var element in listItem) {
+                                          if (element.itemId == itemId) {
+                                            piecePerKg = double.parse(element
+                                                .piecesPerKilogram
+                                                .toString());
+                                            hasManyUnits = element.hasManyUnits;
+                                            itemName = element.name;
+                                            if (element.unit == 1) {
+                                              unit = "kg";
+                                            } else {
+                                              unit = "cái";
+                                            }
+                                            unitUpdate = unit;
+                                          }
+                                        }
+                                      });
+                                    },
+                                    showSearchBox: true,
+                                    //  autoFocusSearchBox: true,
                                   ),
-                                  Column(children: [
-                                    Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical:
-                                                5 * SizeConfig.ratioHeight),
-                                        alignment: Alignment.centerRight,
-                                        width: 200 * SizeConfig.ratioWidth,
-                                        height: 55 * SizeConfig.ratioHeight,
-                                        //color: Colors.grey[200],
-                                        child: TextField(
-                                          enabled: true,
-                                          //  readOnly: true,
-                                          onChanged: (value) =>
-                                              {lotId2 = value},
-                                          controller: TextEditingController(
-                                              text: lotId2),
-                                          textAlignVertical:
-                                              TextAlignVertical.center,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                                  20 * SizeConfig.ratioFont),
-                                          decoration: InputDecoration(
-                                            // filled: true,
-                                            // fillColor: Colors.grey[300],
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: 10 *
-                                                        SizeConfig.ratioHeight),
-
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                            focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                          ),
-                                        )),
-                                    Container(
-                                      width: 200 * SizeConfig.ratioWidth,
-                                      height: 50 * SizeConfig.ratioHeight,
-                                      padding: const EdgeInsets.all(0),
-                                      decoration: BoxDecoration(
+                                ),
+                                Container(
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 5 * SizeConfig.ratioHeight),
+                                  width: 350 * SizeConfig.ratioWidth,
+                                  height: 60 * SizeConfig.ratioHeight,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 5 * SizeConfig.ratioHeight),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1, color: Colors.grey),
+                                      borderRadius: const BorderRadius.all(
+                                          const Radius.circular(5))),
+                                  child: DropdownSearch(
+                                    dropdownSearchDecoration: InputDecoration(
+                                        labelText: "Tên sản phẩm",
+                                        labelStyle: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 25 * SizeConfig.ratioFont,
+                                        ),
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal:
+                                                10 * SizeConfig.ratioHeight),
+                                        hintText: "Tên sản phẩm",
+                                        hintStyle: TextStyle(
+                                            fontSize:
+                                                16 * SizeConfig.ratioFont),
+                                        border: const UnderlineInputBorder(
+                                            borderSide: BorderSide.none),
+                                        fillColor: Colors.blue),
+                                    showAsSuffixIcons: true,
+                                    popupTitle: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Text(
+                                        "Chọn tên sản phẩm",
+                                        style: TextStyle(
+                                            fontSize:
+                                                16 * SizeConfig.ratioFont),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    popupBackgroundColor: Colors.grey[200],
+                                    popupShape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    items: listItemName,
+                                    selectedItem: itemName,
+                                    //searchBoxDecoration: InputDecoration(),
+                                    onChanged: (String? data) {
+                                      itemName = data.toString();
+                                      setState(() {
+                                        for (var element in listItem) {
+                                          if (element.name == itemName) {
+                                            itemId = element.itemId;
+                                            piecePerKg = double.parse(element
+                                                .piecesPerKilogram
+                                                .toString());
+                                            hasManyUnits = element.hasManyUnits;
+                                            if (element.unit == 1) {
+                                              unit = "kg";
+                                            } else {
+                                              unit = "cái";
+                                            }
+                                            unitUpdate = unit;
+                                          }
+                                        }
+                                      });
+                                    },
+                                    showSearchBox: true,
+                                    //  autoFocusSearchBox: true,
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 5 * SizeConfig.ratioHeight),
+                                  width: 350 * SizeConfig.ratioWidth,
+                                  height: 60 * SizeConfig.ratioHeight,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 5 * SizeConfig.ratioHeight),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1, color: Colors.grey),
+                                      borderRadius: const BorderRadius.all(
+                                          const Radius.circular(5))),
+                                  child: DropdownSearch(
+                                    dropdownSearchDecoration: InputDecoration(
+                                        labelText: "Mã nhân viên",
+                                        labelStyle: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 25 * SizeConfig.ratioFont,
+                                        ),
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal:
+                                                10 * SizeConfig.ratioHeight),
+                                        hintText: "Mã nhân viên",
+                                        hintStyle: TextStyle(
+                                            fontSize:
+                                                16 * SizeConfig.ratioFont),
+                                        border: const UnderlineInputBorder(
+                                            borderSide: BorderSide.none),
+                                        fillColor: Colors.blue),
+                                    showAsSuffixIcons: true,
+                                    popupTitle: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Text(
+                                        "Chọn mã nhân viên",
+                                        style: TextStyle(
+                                            fontSize:
+                                                16 * SizeConfig.ratioFont),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    popupBackgroundColor: Colors.grey[200],
+                                    popupShape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    items: listemployeeId,
+                                    selectedItem: employeeId,
+                                    //searchBoxDecoration: InputDecoration(),
+                                    onChanged: (String? data) {
+                                      employeeId = data.toString();
+                                    },
+                                    showSearchBox: true,
+                                    //  autoFocusSearchBox: true,
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 5 * SizeConfig.ratioHeight),
+                                  width: 350 * SizeConfig.ratioWidth,
+                                  height: 60 * SizeConfig.ratioHeight,
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 5 * SizeConfig.ratioHeight),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1, color: Colors.grey),
+                                      borderRadius: const BorderRadius.all(
+                                          const Radius.circular(5))),
+                                  child: CustomizeDatePicker(
+                                    fontColor: Colors.black,
+                                    fontWeight: FontWeight.normal,
+                                    initDateTime: date,
+                                    okBtnClickedFunction: (pickedTime) {
+                                      date = pickedTime;
+                                    },
+                                  ),
+                                ),
+                                Container(
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 5 * SizeConfig.ratioHeight),
+                                    width: 350 * SizeConfig.ratioWidth,
+                                    height: 60 * SizeConfig.ratioHeight,
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 5 * SizeConfig.ratioHeight),
+                                    decoration: BoxDecoration(
                                         border: Border.all(
                                             width: 1, color: Colors.grey),
-                                        // borderRadius: const BorderRadius.all(
-                                        //     const Radius.circular(10))
-                                      ),
-                                      child: DropdownSearch(
+                                        borderRadius: const BorderRadius.all(
+                                            const Radius.circular(5))),
+                                    child: DropdownSearch(
                                         dropdownSearchDecoration:
                                             InputDecoration(
-                                                contentPadding: SizeConfig
-                                                            .ratioHeight >=
-                                                        1
-                                                    ? EdgeInsets.fromLTRB(
-                                                        50 *
+                                                labelText: "Ca sản xuất",
+                                                labelStyle: TextStyle(
+                                                  color: Colors.grey[700],
+                                                  fontSize:
+                                                      25 * SizeConfig.ratioFont,
+                                                ),
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        horizontal: 10 *
                                                             SizeConfig
-                                                                .ratioWidth,
-                                                        14 *
-                                                            SizeConfig
-                                                                .ratioHeight,
-                                                        3 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        3 *
-                                                            SizeConfig
-                                                                .ratioHeight)
-                                                    : const EdgeInsets.fromLTRB(
-                                                        45,
-                                                        7,
-                                                        3,
-                                                        3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
-                                                hintText: "Chọn mã",
+                                                                .ratioHeight),
+                                                hintText: "",
                                                 hintStyle: TextStyle(
                                                     fontSize: 16 *
                                                         SizeConfig.ratioFont),
@@ -964,7 +424,7 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         popupTitle: Padding(
                                           padding: const EdgeInsets.all(20),
                                           child: Text(
-                                            "Chọn mã sản phẩm",
+                                            "Chọn ca sản xuất?",
                                             style: TextStyle(
                                                 fontSize:
                                                     22 * SizeConfig.ratioFont),
@@ -975,72 +435,48 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         popupShape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        items: listitemId,
-                                        selectedItem: itemId2,
-                                        //searchBoxDecoration: InputDecoration(),
+                                        items: ["0", "1", "2"],
+                                        selectedItem: noteShift,
                                         onChanged: (String? data) {
-                                          itemId2 = data.toString();
+                                          noteShift = data.toString();
                                           setState(() {
-                                            lotId2 = "$itemId2 - " +
-                                                DateFormat('yyyy-MM-dd').format(
-                                                    DateTime.now().subtract(
-                                                        const Duration(
-                                                            days: 1)));
-                                            for (var element in listItem) {
-                                              if (element.itemId == itemId2) {
-                                                ratioQuantity2 = double.parse(
-                                                    element.piecesPerKilogram
-                                                        .toString());
-                                                itemName2 = element.name;
-                                                if (element.unit == 1) {
-                                                  unit2 = "kg";
-                                                } else {
-                                                  unit2 = "cái";
-                                                }
-                                                unitUpdate2 = unit2;
-                                              }
-                                            }
+                                            data != "0"
+                                                ? lotId = "$itemId-" +
+                                                    DateFormat('yyyy-MM-dd')
+                                                        .format(date) +
+                                                    "-$data"
+                                                : lotId = "$itemId-" +
+                                                    DateFormat('yyyy-MM-dd')
+                                                        .format(date);
                                           });
-                                        },
-                                        showSearchBox: true,
-                                        //  autoFocusSearchBox: true,
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 200 * SizeConfig.ratioWidth,
-                                      height: 50 * SizeConfig.ratioHeight,
-                                      padding: const EdgeInsets.all(0),
-                                      decoration: BoxDecoration(
+                                        })),
+                                Container(
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 5 * SizeConfig.ratioHeight),
+                                    width: 350 * SizeConfig.ratioWidth,
+                                    height: 60 * SizeConfig.ratioHeight,
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 5 * SizeConfig.ratioHeight),
+                                    decoration: BoxDecoration(
                                         border: Border.all(
                                             width: 1, color: Colors.grey),
-                                        // borderRadius: const BorderRadius.all(
-                                        //     const Radius.circular(10))
-                                      ),
-                                      child: DropdownSearch(
+                                        borderRadius: const BorderRadius.all(
+                                            const Radius.circular(5))),
+                                    child: DropdownSearch(
                                         dropdownSearchDecoration:
                                             InputDecoration(
-                                                contentPadding: SizeConfig
-                                                            .ratioHeight >=
-                                                        1
-                                                    ? EdgeInsets.fromLTRB(
-                                                        50 *
+                                                labelText: "Đơn vị tính",
+                                                labelStyle: TextStyle(
+                                                  color: Colors.grey[700],
+                                                  fontSize:
+                                                      25 * SizeConfig.ratioFont,
+                                                ),
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        horizontal: 10 *
                                                             SizeConfig
-                                                                .ratioWidth,
-                                                        14 *
-                                                            SizeConfig
-                                                                .ratioHeight,
-                                                        3 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        3 *
-                                                            SizeConfig
-                                                                .ratioHeight)
-                                                    : const EdgeInsets.fromLTRB(
-                                                        45,
-                                                        7,
-                                                        3,
-                                                        3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
-                                                hintText: "Mã sản phẩm",
+                                                                .ratioHeight),
+                                                hintText: "",
                                                 hintStyle: TextStyle(
                                                     fontSize: 16 *
                                                         SizeConfig.ratioFont),
@@ -1053,7 +489,7 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         popupTitle: Padding(
                                           padding: const EdgeInsets.all(20),
                                           child: Text(
-                                            "Chọn tên sản phẩm",
+                                            "Chọn đơn vị tính?",
                                             style: TextStyle(
                                                 fontSize:
                                                     22 * SizeConfig.ratioFont),
@@ -1064,420 +500,210 @@ class _ModifyInfoScreenState extends State<ModifyInfoScreen> {
                                         popupShape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        items: listItemName,
-                                        selectedItem: itemName2,
-                                        //searchBoxDecoration: InputDecoration(),
+                                        items: ["cái", "kg"],
+                                        selectedItem: unitUpdate,
                                         onChanged: (String? data) {
-                                          itemName2 = data.toString();
-                                          setState(() {
-                                            for (var element in listItem) {
-                                              if (element.itemId == itemId2) {
-                                                itemId2 = element.itemId;
-                                                ratioQuantity2 = double.parse(
-                                                    element.piecesPerKilogram
-                                                        .toString());
-                                                lotId2 = "$itemId2 - " +
-                                                    DateFormat('yyyy-MM-dd')
-                                                        .format(DateTime.now()
-                                                            .subtract(
-                                                                const Duration(
-                                                                    days: 1)));
-                                                if (element.unit == 1) {
-                                                  unit2 = "kg";
-                                                } else {
-                                                  unit2 = "cái";
-                                                }
-                                                unitUpdate2 = unit2;
-                                              }
-                                            }
-                                          });
-                                        },
-                                        showSearchBox: true,
-                                        //  autoFocusSearchBox: true,
+                                          unitUpdate = data.toString();
+                                          // if (data != unit && unit == "cái") {
+                                          //   kgPerPiece = 1 / piecePerKg;
+                                          // } else if (data != unit &&
+                                          //     unit == "kg") {
+                                          //   piecePerKg = 1 / piecePerKg;
+                                          // }
+                                        })),
+                                Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 5 * SizeConfig.ratioHeight),
+                                    alignment: Alignment.centerRight,
+                                    width: 350 * SizeConfig.ratioWidth,
+                                    height: 55 * SizeConfig.ratioHeight,
+                                    //color: Colors.grey[200],
+                                    child: TextField(
+                                      enabled: true,
+
+                                      //  readOnly: true,
+                                      onChanged: (value) => {lotId = value},
+                                      controller:
+                                          TextEditingController(text: lotId),
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 20 * SizeConfig.ratioFont),
+                                      decoration: InputDecoration(
+                                        labelText: "Mã lô",
+                                        labelStyle: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 20 * SizeConfig.ratioFont,
+                                        ),
+                                        // filled: true,
+                                        // fillColor: Colors.grey[300],
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal:
+                                                10 * SizeConfig.ratioHeight),
+
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width:
+                                                    1.0 * SizeConfig.ratioWidth,
+                                                color: Colors.black)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width:
+                                                    1.0 * SizeConfig.ratioWidth,
+                                                color: Colors.black)),
                                       ),
-                                    ),
-                                    Container(
-                                        width: 200 * SizeConfig.ratioWidth,
-                                        height: 50 * SizeConfig.ratioHeight,
-                                        padding: const EdgeInsets.all(0),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              width: 1,
-                                              color: Constants.mainColor),
-                                          // borderRadius: const BorderRadius.all(
-                                          //     const Radius.circular(10))
-                                        ),
-                                        child: DropdownSearch(
-                                            dropdownSearchDecoration:
-                                                InputDecoration(
-                                                    contentPadding: SizeConfig
-                                                                .ratioHeight >=
-                                                            1
-                                                        ? EdgeInsets.fromLTRB(
-                                                            50 *
-                                                                SizeConfig
-                                                                    .ratioWidth,
-                                                            14 *
-                                                                SizeConfig
-                                                                    .ratioHeight,
-                                                            3 *
-                                                                SizeConfig
-                                                                    .ratioWidth,
-                                                            3 *
-                                                                SizeConfig
-                                                                    .ratioHeight)
-                                                        : const EdgeInsets.fromLTRB(
-                                                            45,
-                                                            7,
-                                                            3,
-                                                            3), //Không thêm ratio do để nó cân với fontSize, fontSize trong đây ko chỉnh được
-                                                    hintText: "",
-                                                    hintStyle: TextStyle(
-                                                        fontSize: 16 *
-                                                            SizeConfig
-                                                                .ratioFont),
-                                                    border:
-                                                        const UnderlineInputBorder(
-                                                            borderSide:
-                                                                BorderSide
-                                                                    .none),
-                                                    fillColor: Colors.blue),
-                                            showAsSuffixIcons: true,
-                                            popupTitle: Padding(
-                                              padding: const EdgeInsets.all(20),
-                                              child: Text(
-                                                "Chọn đơn vị tính?",
-                                                style: TextStyle(
-                                                    fontSize: 22 *
-                                                        SizeConfig.ratioFont),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                            popupBackgroundColor:
-                                                Colors.grey[200],
-                                            popupShape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            items: ["cái", "kg"],
-                                            selectedItem: unitUpdate2,
-                                            onChanged: (String? data) {
-                                              unitUpdate2 = data.toString();
-                                              if (data != unit2 &&
-                                                  unit2 == "cái") {
-                                              } else if (data != unit2 &&
-                                                  unit2 == "kg") {
-                                                ratioQuantity2 =
-                                                    1 / ratioQuantity2;
-                                              }
-                                            })),
-                                    // Container(
-                                    //     padding: EdgeInsets.symmetric(
-                                    //         vertical:
-                                    //             5 * SizeConfig.ratioHeight),
-                                    //     alignment: Alignment.centerRight,
-                                    //     width: 200 * SizeConfig.ratioWidth,
-                                    //     height: 55 * SizeConfig.ratioHeight,
-                                    //     //color: Colors.grey[200],
-                                    //     child: TextField(
-                                    //       enabled: true,
-                                    //       // onChanged: (value) => {actual = value},
-                                    //       readOnly: true,
-                                    //       controller: TextEditingController(
-                                    //           text: unit2),
-                                    //       textAlignVertical:
-                                    //           TextAlignVertical.center,
-                                    //       textAlign: TextAlign.center,
-                                    //       style: TextStyle(
-                                    //           fontSize:
-                                    //               20 * SizeConfig.ratioFont),
-                                    //       decoration: InputDecoration(
-                                    //         contentPadding:
-                                    //             EdgeInsets.symmetric(
-                                    //                 horizontal: 10 *
-                                    //                     SizeConfig.ratioHeight),
-                                    //         border: OutlineInputBorder(
-                                    //             borderSide: BorderSide(
-                                    //                 width: 1.0 *
-                                    //                     SizeConfig.ratioWidth,
-                                    //                 color: Colors.black)),
-                                    //         focusedBorder: OutlineInputBorder(
-                                    //             borderSide: BorderSide(
-                                    //                 width: 1.0 *
-                                    //                     SizeConfig.ratioWidth,
-                                    //                 color: Colors.black)),
-                                    //       ),
-                                    //     )),
-                                    Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical:
-                                                5 * SizeConfig.ratioHeight),
-                                        alignment: Alignment.centerRight,
-                                        width: 200 * SizeConfig.ratioWidth,
-                                        height: 55 * SizeConfig.ratioHeight,
-                                        //color: Colors.grey[200],
-                                        child: TextField(
-                                          enabled: true,
-                                          onChanged: (value) =>
-                                              {actual2 = value},
-                                          //    readOnly: true,
-                                          controller: TextEditingController(),
-                                          textAlignVertical:
-                                              TextAlignVertical.center,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                                  20 * SizeConfig.ratioFont),
-                                          decoration: InputDecoration(
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: 10 *
-                                                        SizeConfig.ratioHeight),
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                            focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                          ),
-                                        )),
-                                    Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical:
-                                                5 * SizeConfig.ratioHeight),
-                                        alignment: Alignment.centerRight,
-                                        width: 200 * SizeConfig.ratioWidth,
-                                        height: 55 * SizeConfig.ratioHeight,
-                                        //color: Colors.grey[200],
-                                        child: TextField(
-                                          enabled: true,
-                                          //  readOnly: true,
-                                          controller: TextEditingController(
-                                              text: DateFormat('yyyy-MM-dd')
-                                                  .format(DateTime.now()
-                                                      .subtract(const Duration(
-                                                          days: 1)))),
-                                          textAlignVertical:
-                                              TextAlignVertical.center,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize:
-                                                  20 * SizeConfig.ratioFont),
-                                          decoration: InputDecoration(
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: 10 *
-                                                        SizeConfig.ratioHeight),
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                            focusedBorder: OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    width: 1.0 *
-                                                        SizeConfig.ratioWidth,
-                                                    color: Colors.black)),
-                                          ),
-                                        )),
-                                    Row(
-                                      children: [
-                                        Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical:
-                                                    5 * SizeConfig.ratioHeight),
-                                            alignment: Alignment.centerRight,
-                                            width: 60 * SizeConfig.ratioWidth,
-                                            height: 55 * SizeConfig.ratioHeight,
-                                            //color: Colors.grey[200],
-                                            child: TextField(
-                                              enabled: true,
-                                              //  readOnly: true,
-                                              onChanged: (value) =>
-                                                  {shelfId2 = value},
+                                    )),
+                                Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 5 * SizeConfig.ratioHeight),
+                                    alignment: Alignment.centerRight,
+                                    width: 350 * SizeConfig.ratioWidth,
+                                    height: 55 * SizeConfig.ratioHeight,
+                                    //color: Colors.grey[200],
+                                    child: TextField(
+                                      enabled: true,
 
-                                              controller:
-                                                  TextEditingController(),
-                                              textAlignVertical:
-                                                  TextAlignVertical.center,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: 20 *
-                                                      SizeConfig.ratioFont),
-                                              decoration: InputDecoration(
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        horizontal: 10 *
-                                                            SizeConfig
-                                                                .ratioHeight),
-                                                border: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                                focusedBorder: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                              ),
-                                            )),
-                                        const SizedBox(
-                                          width: 9,
+                                      //  readOnly: true,
+                                      onChanged: (value) => {actual = value},
+                                      controller:
+                                          TextEditingController(text: actual),
+                                      textAlignVertical:
+                                          TextAlignVertical.center,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 20 * SizeConfig.ratioFont),
+                                      decoration: InputDecoration(
+                                        labelText: "Khối lượng / Số lượng",
+                                        labelStyle: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 20 * SizeConfig.ratioFont,
                                         ),
-                                        Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical:
-                                                    5 * SizeConfig.ratioHeight),
-                                            alignment: Alignment.centerRight,
-                                            width: 60 * SizeConfig.ratioWidth,
-                                            height: 55 * SizeConfig.ratioHeight,
-                                            //color: Colors.grey[200],
-                                            child: TextField(
-                                              enabled: true,
-                                              //  readOnly: true,
-                                              onChanged: (value) =>
-                                                  {rowId2 = value},
-                                              controller: TextEditingController(
-                                                  text: ''),
-                                              textAlignVertical:
-                                                  TextAlignVertical.center,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: 20 *
-                                                      SizeConfig.ratioFont),
-                                              decoration: InputDecoration(
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        horizontal: 10 *
-                                                            SizeConfig
-                                                                .ratioHeight),
-                                                border: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                                focusedBorder: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                              ),
-                                            )),
-                                        const SizedBox(
-                                          width: 9,
-                                        ),
-                                        Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical:
-                                                    5 * SizeConfig.ratioHeight),
-                                            alignment: Alignment.centerRight,
-                                            width: 60 * SizeConfig.ratioWidth,
-                                            height: 55 * SizeConfig.ratioHeight,
-                                            //color: Colors.grey[200],
-                                            child: TextField(
-                                              enabled: true,
-                                              //  readOnly: true,
-                                              onChanged: (value) =>
-                                                  {columnId2 = value},
-                                              controller: TextEditingController(
-                                                  text: ''),
-                                              textAlignVertical:
-                                                  TextAlignVertical.center,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  fontSize: 20 *
-                                                      SizeConfig.ratioFont),
-                                              decoration: InputDecoration(
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        horizontal: 10 *
-                                                            SizeConfig
-                                                                .ratioHeight),
-                                                border: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                                focusedBorder: OutlineInputBorder(
-                                                    borderSide: BorderSide(
-                                                        width: 1.0 *
-                                                            SizeConfig
-                                                                .ratioWidth,
-                                                        color: Colors.black)),
-                                              ),
-                                            )),
-                                      ],
-                                    ),
-                                  ])
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 20 * SizeConfig.ratioHeight,
-                            ),
-                            Column(
-                              children: [
-                                CustomizedButton(
-                                  text: "Xác nhận",
-                                  bgColor: Constants.mainColor,
-                                  fgColor: Colors.white,
-                                  onPressed: () async {
-                                    if (actual2 != '' &&
-                                        itemId2 != '' &&
-                                        lotId2 != '') {
-                                      // thêm lô vừa điền thông tin vào danh sách
+                                        // filled: true,
+                                        // fillColor: Colors.grey[300],
+                                        contentPadding: EdgeInsets.symmetric(
+                                            horizontal:
+                                                10 * SizeConfig.ratioHeight),
 
-                                      goodsReceiptEntryConainerDataTemp.add(
-                                        GoodsReceiptEntryContainerData(
-                                            lotId2,
-                                            itemId2,
-                                            double.parse(actual2)*ratioQuantity2,
-                                            DateFormat('yyyy-MM-dd')
-                                                .format(DateTime.now().subtract(
-                                                    const Duration(days: 1)))
-                                                .toString(),
-                                            LocationServer(
-                                                shelfId2,
-                                                int.parse(rowId2),
-                                                int.parse(columnId2))),
-                                      );
-                                      print(goodsReceiptEntryConainerDataTemp);
-                                      Navigator.pushNamed(
-                                          context, '/receipt_screen');
-                                    } else {
-                                      AlertDialogOneBtnCustomized(
-                                              context,
-                                              "Cảnh báo",
-                                              "Chưa hoàn thành nhập thông tin rổ",
-                                              "Trở lại",
-                                              () {},
-                                              18,
-                                              22,
-                                              () {})
-                                          .show();
-                                    }
-                                  },
-                                ),
-                              ],
-                            )
-                          ],
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width:
+                                                    1.0 * SizeConfig.ratioWidth,
+                                                color: Colors.black)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width:
+                                                    1.0 * SizeConfig.ratioWidth,
+                                                color: Colors.black)),
+                                      ),
+                                    )),
+                              ]),
                         ),
-                      ),
+                        SizedBox(
+                          height: 20 * SizeConfig.ratioHeight,
+                        ),
+                        Column(
+                          children: [
+                            CustomizedButton(
+                              text: "Xác nhận",
+                              bgColor: Constants.mainColor,
+                              fgColor: Colors.white,
+                              onPressed: () async {
+                                if (actual != '' &&
+                                    itemId != '' &&
+                                    lotId != '') {
+                                  // thêm rổ vừa điền thông tin vào danh sách
+                                  if (hasManyUnits == false &&
+                                      unit == "cái" &&
+                                      unitUpdate == "cái") {
+                                    goodsReceiptEntryConainerDataTemp.add(
+                                      GoodsReceiptEntryContainerData(
+                                        lotId,
+                                        itemId,
+                                        double.parse(actual),
+                                        0.0,
+                                        piecePerKg,
+                                        unit,
+                                        employeeId,
+                                        date.toString(),
+                                        noteShift,
+                                      ),
+                                    );
+                                  } else if (hasManyUnits == false &&
+                                      unit == "cái" &&
+                                      unitUpdate == "kg") {
+                                    goodsReceiptEntryConainerDataTemp.add(
+                                      GoodsReceiptEntryContainerData(
+                                        lotId,
+                                        itemId,
+                                        double.parse((double.parse(actual) * piecePerKg).toStringAsFixed(2)),
+                                        0.0,
+                                        piecePerKg,
+                                        unit,
+                                        employeeId,
+                                        date.toString(),
+                                        noteShift,
+                                      ),
+                                    );
+                                  } else if (hasManyUnits == true &&
+                                      unit == "cái" &&
+                                      unitUpdate == "cái") {
+                                    goodsReceiptEntryConainerDataTemp.add(
+                                      GoodsReceiptEntryContainerData(
+                                        lotId,
+                                        itemId,
+                                        double.parse(actual),
+                                       double.parse((double.parse(actual) * (1 / piecePerKg)).toStringAsFixed(2)),
+                                        piecePerKg,
+                                        unit,
+                                        employeeId,
+                                        date.toString(),
+                                        noteShift,
+                                      ),
+                                    );
+                                  } else if (hasManyUnits == true &&
+                                      unit == "cái" &&
+                                      unitUpdate == "kg") {
+                                    goodsReceiptEntryConainerDataTemp.add(
+                                      GoodsReceiptEntryContainerData(
+                                        lotId,
+                                        itemId,
+                                       double.parse((double.parse(actual) * piecePerKg).toStringAsFixed(2)),
+                                        double.parse(actual),
+                                        piecePerKg,
+                                        unit,
+                                        employeeId,
+                                        date.toString(),
+                                        noteShift,
+                                      ),
+                                    );
+                                  }
+
+                                  Navigator.pushNamed(
+                                      context, '/receipt_screen');
+                                } else {
+                                  AlertDialogOneBtnCustomized(
+                                          context,
+                                          "Cảnh báo",
+                                          "Chưa hoàn thành nhập thông tin lô",
+                                          "Trở lại",
+                                          () {},
+                                          18,
+                                          22,
+                                          () {})
+                                      .show();
+                                }
+                              },
+                            ),
+                          ],
+                        )
+                      ],
                     ),
-                  ]);
-                }
-              },
-            )),
-      ),
+                  ),
+                );
+              }
+            },
+          )),
     );
   }
 }

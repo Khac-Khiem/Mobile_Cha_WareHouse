@@ -3,10 +3,25 @@ class GoodsReceiptEntryContainerData {
   String lotId;
   String itemId;
   double actualQuantity;
+  double actualMass;
+  double piecesPerKg;
+  String unit;
+  String productionEmployeeId;
   String productionDate;
-  LocationServer location;
-  GoodsReceiptEntryContainerData(this.lotId, this.itemId,
-      this.actualQuantity, this.productionDate, this.location);
+
+  // note về ca sản xuất và nhập ngoài
+  String note;
+  // LocationServer location;
+  GoodsReceiptEntryContainerData(
+      this.lotId,
+      this.itemId,
+      this.actualQuantity,
+      this.actualMass,
+      this.piecesPerKg,
+      this.unit,
+      this.productionEmployeeId,
+      this.productionDate,
+      this.note);
 }
 
 class LocationServer {

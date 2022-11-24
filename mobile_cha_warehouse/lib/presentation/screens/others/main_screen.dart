@@ -12,7 +12,6 @@ import 'package:mobile_cha_warehouse/presentation/bloc/events/stockcard_event.da
 import 'package:mobile_cha_warehouse/presentation/bloc/states/login_state.dart';
 import 'package:mobile_cha_warehouse/presentation/dialog/dialog.dart';
 import 'package:mobile_cha_warehouse/presentation/screens/issue/qr_issue_screen.dart';
-import 'package:mobile_cha_warehouse/presentation/screens/receipt/qr_scanner_receipt_screen.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/exception_widget.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/main_app_name.dart';
 import 'package:mobile_cha_warehouse/presentation/widget/widget.dart';
@@ -71,10 +70,9 @@ class MainScreen extends StatelessWidget {
                       text: "Nhập kho",
                       onPressed: () async {
                         BlocProvider.of<ReceiptBloc>(context)
-                            .add(LoadAllContainerExporting(DateTime.now()));
+                              .add(LoadAllDataEvent(DateTime.now()));
+                        Navigator.pushNamed(context, '/receipt_main_screen');
 
-                        Navigator.pushNamed(context, '/receipt_screen');
-                        scanQRReceiptresult = "-1";
                         //scanQRresult = "bb210611150004035";
                       },
                     ),
@@ -85,13 +83,12 @@ class MainScreen extends StatelessWidget {
                       text: "Xuất kho",
                       onPressed: () async {
                         scanQRIssueresult = "-1";
-                        
+
                         // load tất cả các đơn xuất hiện có
 
                         BlocProvider.of<IssueBloc>(context)
                             .add(LoadIssueEvent(DateTime.now(), "2021-03-01"));
                         Navigator.pushNamed(context, '/issue_screen');
-                    
                       },
                     ),
                     SizedBox(
@@ -111,8 +108,8 @@ class MainScreen extends StatelessWidget {
                     CustomizedButton(
                       text: "Kiểm kê",
                       onPressed: () async {
-                           BlocProvider.of<EditPerBasketBloc>(context).add(
-                            LoadAllItemIInventoryEvent(DateTime.now()));
+                        BlocProvider.of<EditPerBasketBloc>(context)
+                            .add(LoadAllItemIInventoryEvent(DateTime.now()));
                         Navigator.pushNamed(context, '/choose_lot_screen');
                       },
                     ),
@@ -122,8 +119,8 @@ class MainScreen extends StatelessWidget {
             } else if (state is LoginStateLoginFailure) {
               return Center(
                 child: Column(
-                  mainAxisAlignment:  MainAxisAlignment.center,
-                  crossAxisAlignment:  CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ExceptionErrorState(
                       height: 300,
@@ -132,13 +129,12 @@ class MainScreen extends StatelessWidget {
                       imageDirectory: 'lib/assets/sad_face_search.png',
                       imageHeight: 140,
                     ),
-                      CustomizedButton(
-                    text: "Đăng nhập",
-                    onPressed: () {
-                      
-                      Navigator.pushNamed(context, '//');
-                    },
-                  )
+                    CustomizedButton(
+                      text: "Đăng nhập",
+                      onPressed: () {
+                        Navigator.pushNamed(context, '//');
+                      },
+                    )
                   ],
                 ),
               );

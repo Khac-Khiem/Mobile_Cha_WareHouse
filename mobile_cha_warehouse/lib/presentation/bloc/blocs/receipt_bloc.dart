@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/container_usecase.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/item_usecase.dart';
 import 'package:mobile_cha_warehouse/domain/usecases/production_employee_usecase.dart';
@@ -10,11 +11,10 @@ import '../../screens/receipt/receipt_params.dart';
 
 // lưu tạm và sẽ xóa khi hoàn thành tạo đơn để gửi lên server
 List<GoodsReceiptEntryContainerData> goodsReceiptEntryConainerDataTemp = [];
-//lưu trữ tất cả các rổ để add vị trí + gộp chung nhiều đơn vào 1 list
-//List<GoodsReceiptEntryContainerData> goodsReceiptEntryConainerData = [];
 //lưu trữ vị trí các rổ để gửi lên server
 List<LocationServer> locationContainer = [];
 //
+List<String> shelfIds = [];
 List<String> listemployeeId = [];
 List<String> listitemId = [];
 List<String> listItemName = [];
@@ -31,10 +31,12 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
       : super(ReceiptInitialState()) {
     on<LoadAllDataEvent>(_onLoadData);
     on<RefershReceiptEvent>(_onRefresh);
-    on<CheckContainerAvailableEvent>(_onCheck);
-    on<LoadAllContainerExporting>(_onLoading);
+    on<LoadReceiptHistoryEvent>(_onLoadHistory);
+    on<LoadUnlocatedLotEvent>(_onLoadUnlocatedLot);
+    on<LoadAllReceiptExported>(_onLoading);
     on<PostNewReceiptEvent>(_onPostReceipt);
     on<UpdateLocationReceiptEvent>(_onUpdateLocation);
+    on<UpdateQuantityReceiptEvent>(_onUpdateQuantity);
   }
   Future<void> _onPostReceipt(
       ReceiptEvent event, Emitter<ReceiptState> emit) async {
@@ -71,17 +73,39 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
     try {
       if (event is UpdateLocationReceiptEvent) {
         final request = await receiptUseCase.updateLocation(
-            event.containerId, event.shelfid, event.rowId, event.id);
+            event.receiptId, event.lotId, event.shelfid, event.rowId, event.id);
 
         if (request == 200) {
           print('success');
-          emit(UpdateLocationReceiptStateSuccess(DateTime.now()));
+          final receipts = await receiptUseCase.getUnlocatedLot();
+          emit(LoadUnlocatedLotSuccess(receipts, DateTime.now()));
+          // emit(UpdateLocationReceiptStateSuccess(DateTime.now()));
         } else {
           emit(UpdateLocationReceiptStateFailure(DateTime.now()));
         }
       }
     } catch (e) {
       emit(UpdateLocationReceiptStateFailure(DateTime.now()));
+      // state fail
+    }
+  }
+
+  Future<void> _onUpdateQuantity(
+      ReceiptEvent event, Emitter<ReceiptState> emit) async {
+    emit(ReceiptLoadingState(DateTime.now()));
+    try {
+      if (event is UpdateQuantityReceiptEvent) {
+        final request = await receiptUseCase.updateQuantity(
+            event.receiptId, event.lotId, event.quantity);
+        if (request == 200) {
+          emit(UpdateQuantitySuccess(DateTime.now()));
+        } else {
+          emit(UpdateQuantityFail(DateTime.now()));
+        }
+      }
+    } catch (e) {
+      print(e);
+      emit(UpdateQuantityFail(DateTime.now()));
       // state fail
     }
   }
@@ -95,9 +119,11 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
         listemployeeId.clear();
         listItemName.clear();
         listItem.clear();
+        shelfIds.clear();
         final productOrErr = await itemUseCase.getAllItem();
         final employees = await productionEmployeeUseCase.getAllEmployee();
-
+        final shelfs = await receiptUseCase.getShelfIds();
+        shelfIds = shelfs;
         if (productOrErr.isNotEmpty) {
           for (int i = 0; i < productOrErr.length; i++) {
             listitemId.add(productOrErr[i].itemId);
@@ -110,8 +136,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
             listemployeeId.add(employees[i].employeeId);
           }
         }
-        print(listitemId);
-        print(listemployeeId);
+
         emit(ReceiptInitialState());
       }
     } catch (e) {
@@ -119,6 +144,7 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
     }
   }
 
+//---------------------------------------
   Future<void> _onCheck(ReceiptEvent event, Emitter<ReceiptState> emit) async {
     emit(ReceiptLoadingState(DateTime.now()));
     try {
@@ -140,16 +166,41 @@ class ReceiptBloc extends Bloc<ReceiptEvent, ReceiptState> {
       ReceiptEvent event, Emitter<ReceiptState> emit) async {
     emit(ReceiptLoadingState(DateTime.now()));
     try {
-      if (event is LoadAllContainerExporting) {
-        final basketOrErr = await containerUseCase.getExportingContainer();
-        if (basketOrErr.isEmpty) {
-          emit(LoadContainerExportingStateSuccess(DateTime.now(), []));
-        } else {
-          emit(LoadContainerExportingStateSuccess(DateTime.now(), basketOrErr));
-        }
+      if (event is LoadAllReceiptExported) {
+        final receipts = await receiptUseCase.getAllReceipt();
+        emit(LoadReceiptExportingStateSuccess(DateTime.now(), receipts));
       }
     } catch (e) {
-      emit(LoadContainerExportingStateFail(DateTime.now()));
+      emit(LoadReceiptExportingStateFail(DateTime.now()));
+    }
+  }
+//---------------------------------------
+
+  Future<void> _onLoadHistory(
+      ReceiptEvent event, Emitter<ReceiptState> emit) async {
+    emit(ReceiptLoadingState(DateTime.now()));
+    try {
+      if (event is LoadReceiptHistoryEvent) {
+        final receipts = await receiptUseCase.getReceiptHistory(
+            DateFormat('yyyy-MM-dd').format(event.startdate),
+            DateFormat('yyyy-MM-dd').format(event.enddate));
+        emit(HistoryStateLoadSuccess(DateTime.now(), receipts));
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _onLoadUnlocatedLot(
+      ReceiptEvent event, Emitter<ReceiptState> emit) async {
+    emit(ReceiptLoadingState(DateTime.now()));
+    try {
+      if (event is LoadUnlocatedLotEvent) {
+        final receipts = await receiptUseCase.getUnlocatedLot();
+        emit(LoadUnlocatedLotSuccess(receipts, DateTime.now()));
+      }
+    } catch (e) {
+      print(e);
     }
   }
 

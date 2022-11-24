@@ -34,38 +34,65 @@ class GoodsReceiptsModel extends GoodsReceipt {
   GoodsReceiptsModel(
       String goodsReceiptId,
       String timestamp,
-      bool isConfirmed,
-      WarehouseEmployeeModel? approver,
-      List<GoodsReceiptContainerModel> entries)
-      : super(goodsReceiptId, timestamp, isConfirmed, approver, entries);
+     // bool isConfirmed,
+      WarehouseEmployeeModel? employee,
+      List<LotReceiptModel> lots)
+      : super(goodsReceiptId, timestamp, employee, lots);
   factory GoodsReceiptsModel.fromJson(Map<String, dynamic> json) {
     return GoodsReceiptsModel(
       json["goodsReceiptId"],
       json["timestamp"],
-      json["confirmed"],
-      json["approver"] == null
+    //  json["isConfirmed"],
+      json["employee"] == null
           ? null
-          : WarehouseEmployeeModel.fromJson(json["approver"]),
-      json["entries"] == null
+          : WarehouseEmployeeModel.fromJson(json["employee"]),
+      json ["lots"] == null
           ? []
-          : (json["entries"] as List)
-              .map((e) => GoodsReceiptContainerModel.fromJson(e))
+          : (json["lots"] as List)
+              .map((e) => LotReceiptModel.fromJson(e))
               .toList(),
     );
   }
 }
 
-// class GoodsReceiptDataModel extends GoodsReceiptData {
-//   GoodsReceiptDataModel(int totalItem, List<GoodsReceiptsModel> items)
-//       : super(totalItem, items);
-//   factory GoodsReceiptDataModel.fromJson(Map<String, dynamic> json) {
-//     return GoodsReceiptDataModel(
-//       json["totalItems"],
-//       json["items"] == null
-//           ? []
-//           : (json["items"] as List)
-//               .map((e) => GoodsReceiptsModel.fromJson(e))
-//               .toList(),
-//     );
-//   }
-// }
+class GoodsReceiptDataModel extends GoodsReceiptData {
+  GoodsReceiptDataModel(int totalItem, List<GoodsReceiptsModel> items)
+      : super(totalItem, items);
+  factory GoodsReceiptDataModel.fromJson(Map<String, dynamic> json) {
+    return GoodsReceiptDataModel(
+      json["totalItems"],
+      json["items"] == null
+          ? []
+          : (json["items"] as List)
+              .map((e) => GoodsReceiptsModel.fromJson(e))
+              .toList(),
+    );
+  }
+}
+
+class LotReceiptModel extends LotReceipt {
+  LotReceiptModel(String lotId, dynamic quantity, String date, Item? item)
+      : super(lotId, quantity, date, item);
+    factory LotReceiptModel.fromJson(Map<String, dynamic> json) {
+    return LotReceiptModel(
+      json["lotId"],
+      json["quantity"],
+      json["date"],
+      json["item"] == null ? null : ItemModel.fromJson(json["item"]), 
+    );
+  }
+}
+
+class UnlocatedLotReceiptModel extends UnlocatedLotReceipt {
+  UnlocatedLotReceiptModel(String goodsReceiptId, String lotId, dynamic quantity, String date, Item? item)
+      : super(goodsReceiptId, lotId, quantity, date, item);
+    factory UnlocatedLotReceiptModel.fromJson(Map<String, dynamic> json) {
+    return UnlocatedLotReceiptModel(
+      json["goodsReceiptId"],
+      json["lotId"],
+      json["quantity"],
+      json["date"],
+      json["item"] == null ? null : ItemModel.fromJson(json["item"]), 
+    );
+  }
+}
